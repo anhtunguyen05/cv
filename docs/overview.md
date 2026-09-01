@@ -11,11 +11,13 @@ CareerFit AI is a CV and Job Description matching product for students and job s
 
 ## Reading Order
 
-1. `architecture.md`
-2. `database.md`
-3. `api.md`
-4. `ai-workflow.md`
-5. `decisions.md`
+1. `implementation-plan.md` — executable phases, code locations, tests, and exit criteria
+2. `implementation/README.md` — phase folders and GitHub issue execution order
+3. `architecture.md` — system boundaries and responsibilities
+4. `database.md` — current storage and target domain model
+5. `api.md` — current endpoint and proposed resource contracts
+6. `ai-workflow.md` — patch lifecycle and human approval rules
+7. `decisions.md` — design decisions and unresolved questions
 
 ## Core Idea
 
@@ -36,3 +38,7 @@ These docs distinguish between:
 - current implementation state in the repository
 - target architecture described in the README
 - design decisions that keep AI output controlled and auditable
+
+`implementation-plan.md` is the bridge between those descriptions and code. It
+is the source for delivery sequencing; it does not claim that a phase is
+implemented until its exit criteria and verification checks pass.

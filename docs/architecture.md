@@ -10,7 +10,7 @@ The repository is still at an early stage.
 
 - Frontend: Vue 3, Vite, Pinia, Vue Router
 - Backend: Laravel 13 skeleton
-- API surface: `GET /health`
+- API surface: Laravel `GET /api/health`
 - Web surface: default Vue starter routes and views
 - Persistence: default Laravel tables plus SQLite development database
 
@@ -92,6 +92,9 @@ The worker layer is optional but useful for expensive tasks:
 - document parsing
 - queued analysis jobs
 - background exports
+
+The worker health endpoint remains separate at `GET /health`. Worker
+capabilities are optional integrations and are not required by the MVP.
 
 ## 5. Why This Shape
 

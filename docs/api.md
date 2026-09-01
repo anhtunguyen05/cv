@@ -2,9 +2,9 @@
 
 ## 1. Status
 
-The repository currently exposes only one meaningful API endpoint:
+The repository currently exposes only one meaningful Laravel API endpoint:
 
-- `GET /health`
+- `GET /api/health`
 
 Everything else in the README is still target design rather than implemented business API.
 
@@ -12,7 +12,7 @@ Everything else in the README is still target design rather than implemented bus
 
 ### Health Check
 
-`GET /health`
+`GET /api/health`
 
 Response shape:
 
@@ -104,3 +104,9 @@ Keep failures consistent:
 ## 7. Important Boundary
 
 AI-generated suggestions should be submitted as proposals. Only the backend should accept, reject, or apply them.
+
+## 8. Export Boundary
+
+The MVP Export path is browser print/HTML from a Preview rendered from a saved
+CV Version. Worker/server-side Export is a later capability and is not an MVP
+dependency.
