@@ -66,10 +66,16 @@ Document the current scaffold state separately from the target product architect
 
 The docs are a little more explicit, but much more honest.
 
-## 5. Open Questions
+## 5. Settled MVP Decisions
+
+- Laravel `GET /api/health` is the API health endpoint; the worker health
+  endpoint is separate.
+- Browser print/HTML is the MVP Export path.
+- Worker/server-side Export is deferred until browser Export fails an approved
+  artifact requirement.
+
+## 6. Remaining Open Questions
 
 - which auth flow will be used first
-- whether exports happen in-browser or through a worker
 - whether CV templates are stored as JSON config or rendered components
 - which AI provider is the initial default
-

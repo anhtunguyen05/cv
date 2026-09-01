@@ -42,6 +42,8 @@ The README points to a more complete domain model:
 - `cv_profiles`
 - `cv_versions`
 - `job_descriptions`
+- `job_description_revisions`
+- `job_description_analyses`
 - `match_reports`
 - `ai_interview_sessions`
 - `ai_interview_messages`
@@ -65,10 +67,40 @@ cv_versions
   -> cv_patches
 
 job_descriptions
+  -> job_description_revisions
+
+job_description_revisions
+  -> job_description_analyses
   -> match_reports
+
+match_reports
+  -> exact job_description_revision and analysis
   -> ai_interview_sessions
   -> cv_patches
 ```
+
+### Job Description Traceability
+
+The canonical derived-data chain is:
+
+```text
+Job Description
+  (job_description_id)
+    -> immutable Job Description Revision
+       (job_description_revision_id)
+         -> immutable Analysis
+            (analysis_id, analysis_rule_version)
+              -> Match Report
+                 (pins the exact revision and analysis)
+```
+
+Editing a Job Description creates a new immutable revision. Each persisted
+Analysis has a stable immutable `analysis_id`, belongs to exactly one
+`job_description_revision_id`, and records its `analysis_rule_version`. A Match
+Report must store `job_description_id`, `job_description_revision_id`, and
+`analysis_id`, so the exact stored analysis that produced the report can be
+identified and reproduced. Historical revisions and Reports remain readable;
+they are not replaced by later edits.
 
 ## 6. Schema Principles
 

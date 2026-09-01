@@ -1,5 +1,9 @@
 # CareerFit AI
 
+Delivery scope: MVP ends with Match Report → Template Preview → browser
+print/HTML Export. AI Follow-up Questions and Structured CV Patches are
+post-MVP extensions.
+
 **CareerFit AI** is a CV and Job Description matching platform that helps students, freshers, and job seekers tailor their CV for a specific job. The system analyzes a user's CV and a target Job Description, identifies skill gaps, asks follow-up questions to collect missing information, and generates structured CV revision patches that can be reviewed and applied directly to a selected CV template.
 
 > Core idea: **CV + Job Description → Match Report → AI Follow-up Questions → Structured CV Patch → Template Preview → Export PDF**
@@ -325,13 +329,17 @@ careerfit-ai/
 4. System analyzes the Job Description.
 5. System compares the CV with the JD.
 6. System generates a match report.
-7. AI identifies weak or missing sections.
-8. AI asks follow-up questions.
-9. User answers the questions.
-10. AI generates structured CV patches.
-11. User reviews and accepts/rejects patches.
-12. Template preview updates automatically.
-13. User exports the final CV.
+7. User selects a Template and previews the saved CV Version.
+8. User exports the reviewed CV through browser print/HTML.
+
+Post-MVP AI Revision:
+
+9. AI identifies weak or missing sections.
+10. AI asks follow-up questions.
+11. User answers the questions.
+12. AI generates structured CV patches.
+13. User reviews and accepts/rejects patches.
+14. An approved patch creates a new CV Version.
 ```
 
 ### 7.2 LLM Tool Calling
@@ -805,11 +813,10 @@ The recommended MVP includes:
 - Job Description input
 - JD analysis
 - CV-JD match report
-- AI follow-up questions
-- AI-generated structured CV patches
-- Accept/reject patch flow
 - CV versioning
 - PDF export through browser print or simple HTML-to-PDF
+
+AI follow-up questions, AI-generated patches, and patch approval are post-MVP.
 
 Not included in MVP:
 
@@ -840,7 +847,7 @@ Not included in MVP:
 - Implement rule-based matching score
 - Generate match report
 
-### Phase 3: AI Revision
+### Phase 3: AI Revision (post-MVP)
 
 - Add AI interview session
 - Generate follow-up questions
@@ -848,13 +855,16 @@ Not included in MVP:
 - Add patch accept/reject flow
 - Add patch history
 
-### Phase 4: Export and Polish
+### Phase 4: Export and Polish (MVP completion)
 
 - Improve CV templates
 - Add PDF export
 - Add dashboard
 - Improve UI/UX
 - Add deployment scripts
+
+The delivery order is `Phase 1 → Phase 2 → Phase 4 → Phase 3`; the existing
+phase numbers are retained for continuity.
 
 ### Phase 5: Advanced AI
 
