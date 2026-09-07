@@ -1,5 +1,9 @@
 # GitHub Issues — Phase 5
 
+> **Legacy phase reference:** Do not use this file to select, sequence, assign,
+> or break down current work. Use the current
+> [BMAD story breakdown protocol](../../story-execution.md).
+
 Suggested labels: `phase-5`, `security`, `observability`, `ai`, `operations`.
 
 ## #P5-1 — Add sanitized AI tool-call audit records

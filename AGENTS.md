@@ -1,28 +1,40 @@
 <!-- bmad:context -->
-<!-- Verified 2026-09-01 against deaf546c939db3fb34e5074c41594bf143207dc8. Managed by bmad-project-context; edits inside this block are replaced on refresh. -->
+<!-- Verified 2026-09-08 against e7067d6. Managed by bmad-project-context; edits inside this block are replaced on refresh. -->
 
 ## CareerFitCV
 
-CareerFitCV is a Vue 3/Vite frontend, Laravel 13 API, and minimal Python worker repository. The current codebase is an early scaffold; product behavior is planned in `docs/implementation-plan.md` and phase execution packages under `docs/implementation/`. Keep implementation status separate from target architecture.
+CareerFitCV is a Vue 3/Vite frontend, Laravel 13 API, and minimal Python worker repository. The current codebase is an early scaffold. Current product planning and story breakdown are managed through BMAD artifacts under `_bmad-output/`; keep planned behavior separate from implemented behavior.
+
+## Policy
+
+- Never push directly to `main`; use a reviewable branch and pull request for each cohesive planning or implementation change.
+- When the assigned scope is story breakdown, use BMAD workflows and modify planning artifacts only; do not change application, infrastructure, automation, or validation code.
+- Treat `_bmad-output/planning-artifacts/epics.md` as the canonical story definition and `_bmad-output/implementation-artifacts/sprint-status.yaml` as the lifecycle tracker.
+- Do not use `docs/implementation-plan.md` or `docs/implementation/` to select, order, or decompose current work; those files are legacy phase references.
+- Multiple stories and tasks may be active concurrently. Every task marked `doing` must identify one owner, its story, dependencies, branch or worktree, and declared scope in the BMAD story artifact.
+- Coordinate before starting tasks whose file, contract, persistence, or domain scope overlaps; independent tasks with satisfied dependencies may proceed in parallel.
+- Do not mark a story `ready-for-dev` until its behavior, contracts, backend rules, security, validation, frontend, integration, acceptance criteria, dependencies, and verification coverage are explicit.
+- Keep tasks atomic, dependency-aware, independently assignable, and independently verifiable; do not impose a repository-wide single-active-task rule.
+- Do not expand story scope silently; record independent discovered work separately and keep the current story within its approved boundary.
 
 ## Where things are
 
-- Frontend work: `apps/web/src/`; frontend commands and dependencies: `apps/web/package.json`
+- BMAD PRD: `_bmad-output/planning-artifacts/prds/prd-CareerFitCV-2026-09-01/`
+- BMAD architecture spine: `_bmad-output/planning-artifacts/architecture/architecture-CareerFitCV-2026-09-01/ARCHITECTURE-SPINE.md`
+- Canonical epics and stories: `_bmad-output/planning-artifacts/epics.md`
+- Story lifecycle tracker: `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- Story breakdown artifacts: `_bmad-output/implementation-artifacts/`
+- Story breakdown protocol: `docs/story-execution.md`
+- Frontend work and conventions: `apps/web/src/`, `apps/web/package.json`, and `docs/frontend-architecture.md`
 - Laravel API work: `apps/api/`; read `apps/api/AGENTS.md` before changing files under `apps/api/`
 - Worker work: `apps/worker/app/`; worker tests: `apps/worker/tests/`
-- Architecture and current/target boundaries: `docs/architecture.md`
-- API contracts and endpoint status: `docs/api.md`
-- Database design: `docs/database.md`
-- AI workflow and patch safety: `docs/ai-workflow.md`
-- Executable implementation sequence: `docs/implementation-plan.md`
-- Phase-level implementation tasks and GitHub issues: `docs/implementation/`
-- Architecture decisions: `docs/decisions.md`
+- Current and target technical documentation: `docs/architecture.md`, `docs/api.md`, `docs/database.md`, `docs/ai-workflow.md`, and `docs/decisions.md`
 
 ## Running and verifying
 
-- Verify the Laravel API endpoint as `/api/health`; `/health` is the worker alias, not the current Laravel API route.
-- Treat `apps/api/docker-compose.yml` as the API-local Docker entry point; do not assume a root-level Compose file exists.
-- Use the application-specific commands documented in each manifest and README.
+- Verify the Laravel API endpoint as `/api/health`; `/health` is the worker alias, not the Laravel API route.
+- Treat `apps/api/docker-compose.yml` as the API-local Docker entry point; no root-level Compose file exists.
+- For planning-only changes, validate completeness and consistency through BMAD review; do not install or run application dependencies unless the planning task specifically requires them.
 
 ## Conventions that differ from defaults
 
@@ -34,8 +46,9 @@ CareerFitCV is a Vue 3/Vite frontend, Laravel 13 API, and minimal Python worker 
 
 ## Known pitfalls
 
+- Do not treat legacy phase files under `docs/implementation/` as current BMAD planning authority.
 - Do not document or test Laravel health as `GET /health`; the current Laravel route is `GET /api/health`.
 - Do not assume README target directories such as `packages/`, `infra/`, or root Docker files exist.
-- Do not install Laravel Boost for documentation-only changes; the nested Laravel instruction applies to application work under `apps/api/`.
+- Do not install Laravel Boost for planning-only or documentation-only work.
 
 <!-- /bmad:context -->

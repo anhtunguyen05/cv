@@ -1,5 +1,9 @@
 # GitHub Issues — Phase 4
 
+> **Legacy phase reference:** Do not use this file to select, sequence, assign,
+> or break down current work. Use the current
+> [BMAD story breakdown protocol](../../story-execution.md).
+
 Suggested labels: `phase-4`, `templates`, `export`, `frontend`, `backend`.
 
 ## #P4-1 — Add MVP template catalog

@@ -1,10 +1,13 @@
-# Implementation Plan
+# Legacy Implementation Plan
 
-This document converts the product vision in `README.md` and the design notes in
-`docs/` into an executable implementation plan. It is intentionally more
-concrete than the architecture documents: every phase has a scope boundary,
-expected code locations, data/API work, verification steps, and a definition
-of done.
+> **Legacy reference:** Current story selection, sequencing, and task breakdown
+> are managed through BMAD artifacts under `_bmad-output/`. Do not use this
+> document as current planning authority.
+
+This document records the former phase-based interpretation of the product
+vision in `README.md` and the design notes in `docs/`. Its phase boundaries,
+code locations, data/API work, verification steps, and definitions of done are
+historical context only.
 
 ## 1. Implementation Baseline
 
@@ -578,7 +581,7 @@ Keep domain errors actionable: invalid state transition, stale patch, provider
 unavailable, export failed, and validation failed should be distinguishable in
 the API while avoiding internal stack traces.
 
-## 10. Suggested Delivery Sequence
+## 10. Historical Delivery Sequence
 
 **execution_order:** `0 → 1 → 2 → 4 → 3 → 5`
 
@@ -586,7 +589,7 @@ The phase folder numbers are retained for continuity and do not represent
 delivery order. Phase 4 completes the MVP Preview/Export path before Phase 3
 post-MVP AI Revision work.
 
-Implement in small vertical slices:
+The former plan proposed these vertical slices:
 
 1. Phase 0: shell, auth boundary, test baseline.
 2. Phase 1: create/edit/read one structured CV and one immutable version.
@@ -600,7 +603,7 @@ the next module. If a phase grows beyond its exit criteria, split the work;
 do not hide unfinished behavior behind a broad endpoint or a feature flag that
 has no documented owner.
 
-## 11. Implementation Checklist
+## 11. Historical Implementation Checklist
 
 ### Before coding a phase
 
@@ -641,6 +644,6 @@ implicit implementation details:
 | AI log retention | Phase 5 | Minimal metadata, redacted payloads, documented deletion |
 
 The existing `docs/architecture.md`, `docs/database.md`, `docs/api.md`, and
-`docs/ai-workflow.md` remain the conceptual references. This document is the
-implementation sequencing reference and should be updated when code changes
-the agreed design.
+`docs/ai-workflow.md` remain conceptual references. This file was the former
+implementation sequencing reference; current planning updates belong in BMAD
+artifacts under `_bmad-output/`.

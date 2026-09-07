@@ -11,8 +11,8 @@ CareerFit AI is a CV and Job Description matching product for students and job s
 
 ## Reading Order
 
-1. `implementation-plan.md` — executable phases, code locations, tests, and exit criteria
-2. `implementation/README.md` — phase folders and GitHub issue execution order
+1. `../_bmad-output/planning-artifacts/epics.md` — canonical epics, stories, and acceptance criteria
+2. `story-execution.md` — current BMAD story-to-task breakdown protocol
 3. `architecture.md` — system boundaries and responsibilities
 4. `database.md` — current storage and target domain model
 5. `api.md` — current endpoint and proposed resource contracts
@@ -39,6 +39,6 @@ These docs distinguish between:
 - target architecture described in the README
 - design decisions that keep AI output controlled and auditable
 
-`implementation-plan.md` is the bridge between those descriptions and code. It
-is the source for delivery sequencing; it does not claim that a phase is
-implemented until its exit criteria and verification checks pass.
+Current planning and task breakdown are managed through BMAD artifacts under
+`_bmad-output/`. `implementation-plan.md` and `implementation/` are retained as
+legacy references and are not current planning authority.

@@ -1,5 +1,9 @@
 # GitHub Issues — Phase 0
 
+> **Legacy phase reference:** Do not use this file to select, sequence, assign,
+> or break down current work. Use the current
+> [BMAD story breakdown protocol](../../story-execution.md).
+
 Create these issues in order. Suggested labels: `phase-0`, `foundation`,
 `backend`, `frontend`, `testing`.
 

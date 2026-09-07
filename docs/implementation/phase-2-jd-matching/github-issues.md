@@ -1,5 +1,9 @@
 # GitHub Issues — Phase 2
 
+> **Legacy phase reference:** Do not use this file to select, sequence, assign,
+> or break down current work. Use the current
+> [BMAD story breakdown protocol](../../story-execution.md).
+
 Suggested labels: `phase-2`, `matching`, `backend`, `frontend`, `testing`.
 
 ## #P2-1 — Add JD revisions and match report schema

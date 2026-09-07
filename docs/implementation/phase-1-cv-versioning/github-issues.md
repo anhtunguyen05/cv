@@ -1,5 +1,9 @@
 # GitHub Issues — Phase 1
 
+> **Legacy phase reference:** Do not use this file to select, sequence, assign,
+> or break down current work. Use the current
+> [BMAD story breakdown protocol](../../story-execution.md).
+
 Suggested labels: `phase-1`, `cv`, `backend`, `frontend`, `database`, `testing`.
 
 ## #P1-1 — Add CV profile and immutable version schema

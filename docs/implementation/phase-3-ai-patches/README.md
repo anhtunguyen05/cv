@@ -1,5 +1,9 @@
 # Phase 3 — Evidence Interview and AI Patches
 
+> **Legacy phase reference:** Do not use this file to select, sequence, assign,
+> or break down current work. Use the current
+> [BMAD story breakdown protocol](../../story-execution.md).
+
 Status: `planned`  
 **Depends on:** Phase 2
 
