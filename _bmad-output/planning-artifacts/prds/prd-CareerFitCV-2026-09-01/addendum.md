@@ -28,24 +28,22 @@ source; if it conflicts with `prd.md`, the PRD and its recorded decisions win.
 - The Python worker is currently only a health service. It is not treated as a
   PDF or parsing dependency.
 
-## 2. Implementation mapping
+## 2. Current delivery mapping
 
-The implementation sequence remains in `docs/implementation-plan.md` and the
-phase packages remain in `docs/implementation/`:
+Current delivery planning is organized by BMAD sprint charters and canonical
+story keys:
 
-| PRD capability | Implementation package | Notes |
+| PRD capability | Canonical epic | Notes |
 | --- | --- | --- |
-| Account access and API boundary | Phase 0 | Auth mechanism remains a Phase 0 decision |
-| CV Profile and CV Version | Phase 1 | Draft Profile plus immutable Versions |
-| Job Description and Match Report | Phase 2 | Deterministic, provider-free first |
-| Template Preview and browser Export | Phase 4 | Pull forward as MVP completion after core matching |
-| AI interview and Patch | Phase 3 | Post-MVP; requires explicit approval |
-| Audit, retention, advanced AI | Phase 5 | Post-MVP hardening |
+| Account access, CV Profile, and CV Version | Epic 1 | Auth mechanism remains an implementation-level decision |
+| Job Description and Match Report | Epic 2 | Deterministic, provider-free first |
+| Template Preview and browser Export | Epic 3 | Completes the MVP after the core CV and matching capabilities |
+| AI interview and Patch | Epic 4 | Post-MVP; requires explicit approval |
+| Audit, retention, and advanced AI | Epic 5 | Post-MVP hardening |
 
-The original implementation plan places Template/Export after AI Patch work.
-The canonical PRD intentionally changes release sequencing so Preview/Export
-completes the MVP while AI Patch work remains later. This is a release-scope
-decision, not a change to the underlying architecture.
+Sprint charters select story keys from these epics according to a measurable
+goal, dependencies, and team capacity. Epic numbers do not define sprint
+boundaries.
 
 ## 3. Proposed MVP data boundaries
 

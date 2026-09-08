@@ -12,12 +12,13 @@ CareerFit AI is a CV and Job Description matching product for students and job s
 ## Reading Order
 
 1. `../_bmad-output/planning-artifacts/epics.md` — canonical epics, stories, and acceptance criteria
-2. `story-execution.md` — current BMAD story-to-task breakdown protocol
-3. `architecture.md` — system boundaries and responsibilities
-4. `database.md` — current storage and target domain model
-5. `api.md` — current endpoint and proposed resource contracts
-6. `ai-workflow.md` — patch lifecycle and human approval rules
-7. `decisions.md` — design decisions and unresolved questions
+2. `sprint-workflow.md` — sprint planning, commitment, coordination, review, and closure
+3. `story-execution.md` — BMAD story-to-task breakdown protocol within a sprint
+4. `architecture.md` — system boundaries and responsibilities
+5. `database.md` — current storage and target domain model
+6. `api.md` — current endpoint and proposed resource contracts
+7. `ai-workflow.md` — patch lifecycle and human approval rules
+8. `decisions.md` — design decisions and unresolved questions
 
 ## Core Idea
 
@@ -39,6 +40,5 @@ These docs distinguish between:
 - target architecture described in the README
 - design decisions that keep AI output controlled and auditable
 
-Current planning and task breakdown are managed through BMAD artifacts under
-`_bmad-output/`. `implementation-plan.md` and `implementation/` are retained as
-legacy references and are not current planning authority.
+Current planning, sprint coordination, and task breakdown are managed through
+BMAD artifacts under `_bmad-output/`.

@@ -1,9 +1,10 @@
 # Sprint status for the approved CareerFitCV BMAD plan.
 # Story selection and breakdown follow the canonical epics.md artifact.
-# Legacy phase packages under docs/implementation are not planning authority.
+# Sprint membership and goals live under implementation-artifacts/sprints/.
+# Draft stories remain nested; only approved story files live at this root.
 
 generated: 09-01-2026 03:30
-last_updated: 09-08-2026 09:51
+last_updated: 09-08-2026 11:58
 project: CareerFitCV
 project_key: CAREERFITCV
 tracking_system: file-system

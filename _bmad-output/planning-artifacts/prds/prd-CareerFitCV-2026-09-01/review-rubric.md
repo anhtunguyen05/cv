@@ -51,7 +51,7 @@ the relevant implementation stories when resolved.
   define an evaluation fixture and threshold before finalizing matching rules.
 - **[medium] Export visual acceptance is qualitative** (§4.5, §11) — the PRD
   requires a usable Template but does not define its approved visual direction.
-  *Fix:* approve the first Template and print layout before Phase 4 delivery.
+  *Fix:* approve the first Template and print layout before Preview/Export delivery.
 
 ## Scope honesty — strong
 
