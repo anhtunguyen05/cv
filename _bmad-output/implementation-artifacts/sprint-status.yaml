@@ -1,10 +1,10 @@
-# Sprint status for the approved CareerFitCV plan.
-# Execution order: 0 -> 1 -> 2 -> 4 -> 3 -> 5.
-# Numeric epic identifiers follow the canonical epics.md document; delivery
-# order is governed by the implementation packages and dependencies.
+# Sprint status for the approved CareerFitCV BMAD plan.
+# Story selection and breakdown follow the canonical epics.md artifact.
+# Sprint membership and goals live under implementation-artifacts/sprints/.
+# Draft stories remain nested; only approved story files live at this root.
 
 generated: 09-01-2026 03:30
-last_updated: 09-01-2026 03:30
+last_updated: 09-08-2026 11:58
 project: CareerFitCV
 project_key: CAREERFITCV
 tracking_system: file-system
@@ -54,5 +54,4 @@ development_status:
   5-6-decide-whether-multi-agent-orchestration-is-justified: backlog
   5-7-verify-the-operational-safety-baseline: backlog
   epic-5-retrospective: optional
-
 action_items: []

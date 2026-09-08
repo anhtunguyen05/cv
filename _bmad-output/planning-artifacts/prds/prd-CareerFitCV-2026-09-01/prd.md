@@ -2,7 +2,7 @@
 title: CareerFitCV
 status: final
 created: 2026-09-01
-updated: 2026-09-01
+updated: 2026-09-08
 ---
 
 # PRD: CareerFitCV
@@ -10,12 +10,12 @@ updated: 2026-09-01
 ## 0. Document Purpose
 
 This is the canonical product requirements document for CareerFitCV. It
-normalizes the product vision in `README.md` and the implementation sequence in
-`docs/implementation-plan.md` into capability-focused requirements for product,
-UX, architecture, and implementation work. The repository is currently a
-scaffold; this PRD describes the MVP behavior to build and explicitly separates
-later AI capabilities from the first release. Technical implementation details
-and source reconciliation are recorded in `addendum.md`.
+normalizes the product vision in `README.md` and the repository's prior
+implementation planning into capability-focused requirements for product, UX,
+architecture, and implementation work. The repository is currently a scaffold;
+this PRD describes the MVP behavior to build and explicitly separates later AI
+capabilities from the first release. Technical implementation details and
+source reconciliation are recorded in `addendum.md`.
 
 ## 1. Vision
 
@@ -414,19 +414,19 @@ must produce the same Match Report.
 - Automatic document parsing and external profile integrations; defer because
   structured manual input is the current source workflow.
 
-## 9. Later Phases
+## 9. Post-MVP Capabilities
 
-### Phase 3: AI-assisted revision
+### AI-assisted revision
 
 Add Evidence interview sessions, provider-neutral generation, Patch validation,
 review, rejection, regeneration, and atomic approval into a new CV Version.
 
-### Phase 4: Export expansion
+### Export expansion
 
 Add additional Templates and server-side/queued Export only if browser Export
 does not satisfy artifact requirements.
 
-### Phase 5: Hardening and advanced AI
+### Hardening and advanced AI
 
 Add sanitized tool-call audit records, provider failure handling, retention and
 deletion controls, operational metrics, ATS/review validators, and an

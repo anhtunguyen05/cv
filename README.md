@@ -829,50 +829,24 @@ Not included in MVP:
 
 ---
 
-## 18. Roadmap
+## 18. Delivery Planning
 
-### Phase 1: Foundation
+The canonical capability backlog and acceptance intent live in
+[`_bmad-output/planning-artifacts/epics.md`](_bmad-output/planning-artifacts/epics.md).
+Epic and story lifecycle state lives in
+[`_bmad-output/implementation-artifacts/sprint-status.yaml`](_bmad-output/implementation-artifacts/sprint-status.yaml).
 
-- Set up monorepo
-- Build auth
-- Build CV profile CRUD
-- Build template preview
-- Build basic CV versioning
+Delivery is planned by sprint rather than by fixed implementation phases. Each
+sprint has one charter under
+`_bmad-output/implementation-artifacts/sprints/` containing its goal, dates,
+capacity assumptions, constraints, refinement story keys, and committed story
+keys. Story and task statuses remain in their canonical BMAD artifacts and are
+not copied into the sprint charter.
 
-### Phase 2: JD and Matching
-
-- Add Job Description input
-- Add JD analyzer
-- Implement skill extraction
-- Implement rule-based matching score
-- Generate match report
-
-### Phase 3: AI Revision (post-MVP)
-
-- Add AI interview session
-- Generate follow-up questions
-- Generate structured CV patches
-- Add patch accept/reject flow
-- Add patch history
-
-### Phase 4: Export and Polish (MVP completion)
-
-- Improve CV templates
-- Add PDF export
-- Add dashboard
-- Improve UI/UX
-- Add deployment scripts
-
-The delivery order is `Phase 1 → Phase 2 → Phase 4 → Phase 3`; the existing
-phase numbers are retained for continuity.
-
-### Phase 5: Advanced AI
-
-- Add tool call logs
-- Add Review Agent
-- Add ATS Optimization Agent
-- Add multi-agent orchestration
-- Add better evidence validation
+See [`docs/sprint-workflow.md`](docs/sprint-workflow.md) for sprint planning,
+commitment, concurrent execution, review, and closure. See
+[`docs/story-execution.md`](docs/story-execution.md) for planning-only story
+breakdown before implementation begins.
 
 ---
 

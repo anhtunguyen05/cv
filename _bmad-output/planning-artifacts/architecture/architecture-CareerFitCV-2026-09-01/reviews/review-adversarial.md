@@ -23,6 +23,6 @@ owner or mutation path was found after the AD-4 refinement.
 ## Deferred risk
 
 The future authentication mechanism, storage deployment topology, and async
-job contract need explicit decisions before independent Phase 0/5 units are
+job contract need explicit decisions before independent account-access and hardening work streams are
 implemented. The spine names each as Deferred rather than silently selecting
 one.

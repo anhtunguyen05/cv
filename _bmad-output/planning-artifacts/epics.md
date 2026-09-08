@@ -4,33 +4,19 @@ inputDocuments:
   - README.md
   - _bmad-output/planning-artifacts/prds/prd-CareerFitCV-2026-09-01/prd.md
   - _bmad-output/planning-artifacts/architecture/architecture-CareerFitCV-2026-09-01/ARCHITECTURE-SPINE.md
-  - docs/implementation-plan.md
-  - docs/implementation/README.md
-  - docs/implementation/phase-0-foundation/README.md
-  - docs/implementation/phase-0-foundation/github-issues.md
-  - docs/implementation/phase-1-cv-versioning/README.md
-  - docs/implementation/phase-1-cv-versioning/github-issues.md
-  - docs/implementation/phase-2-jd-matching/README.md
-  - docs/implementation/phase-2-jd-matching/github-issues.md
-  - docs/implementation/phase-3-ai-patches/README.md
-  - docs/implementation/phase-3-ai-patches/github-issues.md
-  - docs/implementation/phase-4-preview-export/README.md
-  - docs/implementation/phase-4-preview-export/github-issues.md
-  - docs/implementation/phase-5-hardening/README.md
-  - docs/implementation/phase-5-hardening/github-issues.md
   - docs/architecture.md
   - docs/ai-workflow.md
   - docs/database.md
   - docs/decisions.md
 ---
 
-# CareerFitCV - Epic Breakdown
+# CareerFitCV - Delivery Plan
 
 ## Overview
 
 This document provides the complete epic and story breakdown for CareerFitCV,
-decomposing the canonical PRD, architecture spine, current implementation
-plan, and phase issue packages into implementable stories.
+decomposing the canonical BMAD PRD, architecture spine, and current technical
+constraints into implementable stories.
 
 ## Requirements Inventory
 
@@ -92,7 +78,7 @@ FR10: Epic 3 - Template Preview
 FR11: Epic 3 - Browser Export
 FR12: Epic 4 - Evidence-based AI Patch proposal
 
-## Epic List
+## Capability Map
 
 ### Epic 1: Create and Manage a Trusted CV
 
@@ -755,7 +741,9 @@ AI integrations, retention, and monitoring are introduced.
 
 **FRs covered:** NFR1, NFR2, NFR3, NFR4, NFR5
 
-### Story 5.1: Audit AI tool calls safely *(post-MVP hardening)*
+### Story 5.1: Audit AI tool calls safely
+
+**Delivery classification:** Post-MVP hardening.
 
 As an operator,
 I want sanitized AI tool-call metadata,
@@ -773,7 +761,9 @@ So that I can diagnose provider behavior without exposing User content or secret
 **Then** it is distinguishable from trusted product state
 **And** it cannot be used to modify a CV Version directly
 
-### Story 5.2: Handle provider and background failures *(post-MVP hardening)*
+### Story 5.2: Handle provider and background failures
+
+**Delivery classification:** Post-MVP hardening.
 
 As a User,
 I want provider and background failures to produce clear outcomes,
@@ -792,7 +782,9 @@ So that a temporary failure does not create a misleading CV result.
 **Then** the status is terminal or retryable according to the documented lifecycle
 **And** it does not remain falsely marked as successful
 
-### Story 5.3: Retain and delete User data safely *(post-MVP hardening)*
+### Story 5.3: Retain and delete User data safely
+
+**Delivery classification:** Post-MVP hardening.
 
 As a User,
 I want my stored content and generated artifacts to follow a clear retention and deletion policy,
@@ -811,7 +803,9 @@ So that I can control the lifecycle of my career data.
 **And** unrelated Users' data is unchanged
 **And** the deletion result is auditable without retaining unnecessary sensitive content
 
-### Story 5.4: Monitor operational health *(post-MVP hardening)*
+### Story 5.4: Monitor operational health
+
+**Delivery classification:** Post-MVP hardening.
 
 As an operator,
 I want metrics for matching, provider, Patch, Export, and system failures,
@@ -824,7 +818,9 @@ So that I can identify regressions without inspecting User content.
 **Then** the system captures the defined latency, status, and failure metrics
 **And** the metrics do not contain raw User CV or Job Description content
 
-### Story 5.5: Validate deterministic matching quality *(MVP baseline)*
+### Story 5.5: Validate deterministic matching quality
+
+**Delivery classification:** MVP baseline.
 
 As an operator,
 I want deterministic Match Reports evaluated against fixtures,
@@ -837,7 +833,9 @@ So that matching regressions are detected without changing User data.
 **Then** it reports repeatability and rule-version results
 **And** it does not silently change the stored Match Report
 
-### Story 5.6: Decide whether multi-agent orchestration is justified *(post-MVP hardening)*
+### Story 5.6: Decide whether multi-agent orchestration is justified
+
+**Delivery classification:** Post-MVP hardening.
 
 As an architecture owner,
 I want an evidence-based decision about multi-agent decomposition,
@@ -855,7 +853,9 @@ So that added routing and ownership complexity is justified by a measured limita
 **Then** no multi-agent component is added
 **And** the deferral condition is recorded for future review
 
-### Story 5.7: Verify the operational safety baseline *(post-MVP hardening)*
+### Story 5.7: Verify the operational safety baseline
+
+**Delivery classification:** Post-MVP hardening.
 
 As an operator,
 I want a verified safety and operations baseline,
@@ -869,7 +869,7 @@ So that the system can be maintained without guessing about failures or data han
 **And** unresolved production decisions are explicitly listed
 **And** the architecture decision record for multi-agent work is available
 
-## Story Planning Assumptions
+## Planning Assumptions
 
 - MVP authentication creates an authenticated application state after registration; exact browser session/token mechanics remain implementation-level.
 - Job Description edits create immutable revisions; analysis and Match Reports pin a revision, while deletion is logical and preserves historical reports for the owning User.

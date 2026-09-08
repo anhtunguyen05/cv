@@ -7,7 +7,7 @@ paradigm: 'layered application with an authoritative domain boundary'
 scope: 'MVP and later AI-assisted CV tailoring across the web client, Laravel API, persistence, and optional worker'
 status: final
 created: '2026-09-01'
-updated: '2026-09-01'
+updated: '2026-09-08'
 binds: ['FR-1', 'FR-2', 'FR-3', 'FR-4', 'FR-5', 'FR-6', 'FR-7', 'FR-8', 'FR-9', 'FR-10', 'FR-11', 'FR-12', 'NFR-1', 'NFR-2', 'NFR-3', 'NFR-4', 'NFR-5']
 sources:
   - 'README.md'
@@ -15,11 +15,9 @@ sources:
   - 'docs/ai-workflow.md'
   - 'docs/database.md'
   - 'docs/decisions.md'
-  - 'docs/implementation-plan.md'
   - '_bmad-output/planning-artifacts/prds/prd-CareerFitCV-2026-09-01/prd.md'
 companions:
   - '_bmad-output/planning-artifacts/prds/prd-CareerFitCV-2026-09-01/prd.md'
-  - 'docs/implementation/'
 ---
 
 # Architecture Spine — CareerFitCV
@@ -118,7 +116,7 @@ boundaries and never become alternate owners of trusted product state.
 
 ### AD-9 — [SOURCE-CORRECTED][REPLACE] Laravel health path is `/api/health`
 
-- **Binds:** current operational verification and Phase 0 baseline
+- **Binds:** current operational verification and the account-access baseline
 - **Prevents:** Health checks and documentation targeting a route that the Laravel source does not expose.
 - **Rule:** Treat Laravel `GET /api/health` and framework `GET /up` as the API health surface. Treat worker `GET /health` and `GET /api/health` as worker endpoints; do not conflate the services.
 
@@ -233,14 +231,14 @@ MVP production shape:
 ## Deferred
 
 - Browser authentication mechanism and account recovery policy remain open until
-  Phase 0 implementation begins.
+  account-access implementation begins.
 - Production database/storage topology and retention policy remain open; local
   SQLite and API-local Docker MySQL are both current repository options.
 - Exact CV JSON field limits, aliases, matching weights, and quality thresholds
-  belong to the Phase 1/2 contracts and evaluation fixtures.
+  belong to the CV and matching capability contracts and evaluation fixtures.
 - Template representation and final visual/print direction remain open until
-  Phase 4 design work; the architecture only requires a renderer consuming a
-  saved CV Version.
+  Preview/Export design work; the architecture only requires a renderer
+  consuming a saved CV Version.
 - Server-side/worker PDF generation remains deferred until browser Export fails
   an approved artifact requirement.
 - AI provider, prompt versioning, tool-call logging, retention, and deletion
