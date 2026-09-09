@@ -7,7 +7,7 @@ paradigm: 'layered application with an authoritative domain boundary'
 scope: 'MVP and later AI-assisted CV tailoring across the web client, Laravel API, persistence, and optional worker'
 status: final
 created: '2026-09-01'
-updated: '2026-09-08'
+updated: '2026-09-10'
 binds: ['FR-1', 'FR-2', 'FR-3', 'FR-4', 'FR-5', 'FR-6', 'FR-7', 'FR-8', 'FR-9', 'FR-10', 'FR-11', 'FR-12', 'NFR-1', 'NFR-2', 'NFR-3', 'NFR-4', 'NFR-5']
 sources:
   - 'README.md'
@@ -15,6 +15,10 @@ sources:
   - 'docs/ai-workflow.md'
   - 'docs/database.md'
   - 'docs/decisions.md'
+  - 'docs/architecture/overview.md'
+  - 'docs/contracts/common/http.md'
+  - 'docs/standards/'
+  - 'docs/domain/glossary.md'
   - '_bmad-output/planning-artifacts/prds/prd-CareerFitCV-2026-09-01/prd.md'
 companions:
   - '_bmad-output/planning-artifacts/prds/prd-CareerFitCV-2026-09-01/prd.md'
@@ -71,25 +75,6 @@ boundaries and never become alternate owners of trusted product state.
   Preview and Export identify the exact CV Version, Template, and applicable
   template version used.
 
-### AD-11 — [ADOPTED][REFINE] Job Description revisions preserve report history
-
-- **Binds:** FR-6, FR-7, FR-8, NFR-2, NFR-4, NFR-5
-- **Prevents:** Editing or deleting a Job Description from changing the meaning
-  of an existing analysis or Match Report.
-- **Rule:** A Job Description has a stable `job_description_id` and immutable
-  `job_description_revision_id` records. An edit creates a new current
-  revision; analysis is pinned to exactly one revision and one
-  `analysis_rule_version`, and is not implicitly regenerated. New Match Reports
-  may use only the current revision of a non-deleted Job Description, and only
-  after that revision has successful analysis. A deleted Job Description is
-  logically deleted from new analysis and matching workflows. Its revisions,
-  analyses, and historical Match Reports remain readable and reproducible to
-  its owner. A Match Report stores the logical Job Description ID, exact
-  revision ID, and exact analysis it consumed. The persisted source identifiers
-  are `job_description_id`, `job_description_revision_id`, `analysis_id`, and
-  `analysis_rule_version`; the Match Report also stores its `cv_version_id` and
-  `matching_rule_version`.
-
 ### AD-5 — [ADOPTED][REFINE] Deterministic matching is the MVP decision
 
 - **Binds:** FR-7, FR-8, FR-9, NFR-5
@@ -126,6 +111,73 @@ boundaries and never become alternate owners of trusted product state.
 - **Prevents:** Coupling MVP completion to server-side PDF infrastructure before artifact requirements justify it.
 - **Rule:** Render Preview from a saved CV Version and Template, then use the browser print/HTML path for initial Export. Add server-side or worker Export only as a separately justified capability.
 
+### AD-11 — [ADOPTED][REFINE] Job Description revisions preserve report history
+
+- **Binds:** FR-6, FR-7, FR-8, NFR-2, NFR-4, NFR-5
+- **Prevents:** Editing or deleting a Job Description from changing the meaning
+  of an existing analysis or Match Report.
+- **Rule:** A Job Description has a stable `job_description_id` and immutable
+  `job_description_revision_id` records. An edit creates a new current
+  revision; analysis is pinned to exactly one revision and one
+  `analysis_rule_version`, and is not implicitly regenerated. New Match Reports
+  may use only the current revision of a non-deleted Job Description, and only
+  after that revision has successful analysis. A deleted Job Description is
+  logically deleted from new analysis and matching workflows. Its revisions,
+  analyses, and historical Match Reports remain readable and reproducible to
+  its owner. A Match Report stores the logical Job Description ID, exact
+  revision ID, and exact analysis it consumed. The persisted source identifiers
+  are `job_description_id`, `job_description_revision_id`, `analysis_id`, and
+  `analysis_rule_version`; the Match Report also stores its `cv_version_id` and
+  `matching_rule_version`.
+
+### AD-12 — [ADOPTED] Global engineering knowledge has one stable home
+
+- **Binds:** all epics and stories
+- **Prevents:** Developers and agents duplicating cross-epic rules in planning artifacts, story files, and ad-hoc implementation notes.
+- **Rule:** `docs/architecture/` owns stable system shape and ADR policy; `docs/standards/` owns cross-epic engineering rules; `docs/contracts/` owns stable component agreements; and `docs/domain/` owns shared vocabulary and domain invariants. Epic and story artifacts reference these sources and add only scope-specific behavior.
+
+### AD-13 — [ADOPTED] First-party web authentication uses Sanctum stateful sessions
+
+- **Binds:** FR-1, FR-2, NFR-1, web/API integration
+- **Prevents:** Browser bearer-token storage, inconsistent CSRF handling, and client-controlled identity.
+- **Rule:** The Vue SPA authenticates to Laravel through Sanctum stateful HttpOnly cookie sessions with CSRF protection. The API explicitly configures allowed stateful origins, credentialed CORS, session-cookie attributes, CSRF bootstrap, logout, and authentication-expiry handling. Protected product endpoints use `auth:sanctum` and server-side ownership policies. Mobile and third-party tokens are deferred.
+
+### AD-14 — [ADOPTED] Product HTTP contracts are versioned and uniform
+
+- **Binds:** all product endpoints, web API client, NFR-3, NFR-4
+- **Prevents:** Per-feature response envelopes, framework-error leakage, and non-versioned public API drift.
+- **Rule:** Product endpoints live under `/api/v1`. Successful resource responses use `data`; paginated collections additionally use `meta` and `links`. Errors use `code`, `message`, and `details`; validation errors are field-keyed in `details`. `/api/health` is a separate operational payload.
+
+### AD-15 — [ADOPTED] MySQL is the canonical product database
+
+- **Binds:** migrations, persistence, integration tests, deployment planning
+- **Prevents:** MySQL, SQLite, and PostgreSQL behaving as unverified interchangeable production dialects.
+- **Rule:** MySQL 8.4 is required for shared development, integration/E2E verification, and production. SQLite is limited to local fast unit/scaffold work. PostgreSQL is out of MVP scope. Redis remains optional and cannot be required by the core MVP flow.
+
+### AD-16 — [ADOPTED] New product aggregates have ULID identities
+
+- **Binds:** FR-2 through FR-12, API contracts, persistence, audit records
+- **Prevents:** Incompatible public identifier formats and client-created trusted identities.
+- **Rule:** Retain existing bigint keys for Laravel users and system tables. Every new product aggregate uses a ULID string as both primary and public API ID; relationships between new aggregates use the same type. Ownership policies, not ID opacity, enforce access control.
+
+### AD-17 — [ADOPTED] Verification is risk-based and environment-aware
+
+- **Binds:** all stories, NFR-1 through NFR-5
+- **Prevents:** Critical journeys being accepted from unit tests alone, or E2E resets touching non-disposable data.
+- **Rule:** Use PHPUnit for PHP domain/application and Laravel HTTP tests, Vitest for Vue/TypeScript unit and component/composable tests, MySQL 8.4 for integration verification, and Playwright for critical browser journeys. Every story maps acceptance criteria to suitable tests; deterministic behavior uses repeatability fixtures. E2E reset operations require a declared disposable database.
+
+### AD-18 — [ADOPTED] Sensitive content is private by default
+
+- **Binds:** NFR-1, NFR-2, FR-12, worker and provider integrations
+- **Prevents:** CV/JD content, credentials, or raw AI exchanges leaking through logs, audit records, or public storage.
+- **Rule:** CV data, raw Job Descriptions, authentication material, credentials, and raw AI prompts/outputs do not enter ordinary application logs. Audit records are append-only, sanitized, and reference resources by ULID and actors by their existing User identity. User content and artifacts use private storage by default. Raw AI payload retention is deferred to Epic 5 policy.
+
+### AD-19 — [ADOPTED] Validation is layered, with the server authoritative
+
+- **Binds:** all write contracts, NFR-1, NFR-2, NFR-4
+- **Prevents:** Frontend-only validation, HTTP framework checks becoming domain invariants, and integration callers bypassing business rules.
+- **Rule:** Laravel Form Requests enforce HTTP shape and boundary constraints. Domain/application code enforces business invariants, ownership, and state transitions for every caller. Frontend schemas improve UX only. Contract changes update documentation, backend validation, frontend schemas, and tests together.
+
 ### Dependency direction
 
 ```mermaid
@@ -154,6 +206,12 @@ flowchart TD
 | Integration boundary | Providers and workers return DTO/result data through application contracts; they cannot call persistence or become trusted-state owners. |
 | Failure behavior | Analysis and Export failures are explicit and retryable where safe; partial trusted state is not silently committed. |
 | MVP boundary | Implement account access, structured CV, deterministic matching, Template Preview, and browser Export first; keep AI Patch, provider, worker PDF, and multi-agent work later. |
+| Global documentation | Stable cross-epic rules live in `docs/`; planning artifacts and stories reference, rather than duplicate, them. |
+| Authentication | First-party web requests use Sanctum stateful cookie sessions and CSRF; ownership is always server-enforced. |
+| HTTP contracts | Product API is `/api/v1`, successful payloads are enveloped, and errors are machine-readable. |
+| Data platform | MySQL 8.4 is canonical; new product aggregates use ULID strings; all timestamps use UTC ISO-8601 at API boundaries. |
+| Sensitive data | Logs omit CV/JD, credentials, cookies, and raw AI data; audits use sanitized metadata and private storage is the default. |
+| Verification | Tests map to ACs and critical journeys have browser coverage against disposable data. |
 
 ## Stack
 
@@ -230,8 +288,8 @@ MVP production shape:
 
 ## Deferred
 
-- Browser authentication mechanism and account recovery policy remain open until
-  account-access implementation begins.
+- Account recovery policy remains open until account-access implementation
+  begins; browser authentication is fixed by AD-13.
 - Production database/storage topology and retention policy remain open; local
   SQLite and API-local Docker MySQL are both current repository options.
 - Exact CV JSON field limits, aliases, matching weights, and quality thresholds
@@ -245,6 +303,5 @@ MVP production shape:
   controls remain deferred to the post-MVP AI/hardening work.
 - Multi-agent decomposition remains deferred until a measured single-orchestrator
   limitation is recorded.
-- The existing `docs/architecture.md` remains a conceptual source document; this
-  spine is the build substrate and corrects the stale current health-route claim
-  without rewriting the source document.
+- The compatibility files at `docs/*.md` route existing links to the canonical
+  global documentation tree; they do not define a second source of truth.

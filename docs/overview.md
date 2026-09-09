@@ -1,44 +1,38 @@
-# CareerFit AI Documentation Map
+# CareerFitCV Documentation Map
 
-CareerFit AI is a CV and Job Description matching product for students and job seekers. The README describes the target product vision; the codebase currently contains a Vue 3 frontend scaffold and a Laravel backend scaffold, with only a thin health endpoint implemented on the API side.
+`docs/` is the stable, implementation-facing source of truth. It records rules
+shared across epics; it does not replace the canonical backlog, story contracts,
+or sprint lifecycle artifacts in `_bmad-output/`.
 
-## What Exists Now
+## Current implementation
 
-- `apps/web`: Vue 3 + Vite + Pinia + Vue Router starter app
-- `apps/api`: Laravel application skeleton
-- `docs/`: architecture, API, database, and AI workflow notes
-- No domain models for CVs, job descriptions, patches, or match reports yet
+- `apps/web`: Vue 3/Vite application foundation.
+- `apps/api`: Laravel 13 foundation with `GET /api/health`.
+- `apps/worker`: optional Python health service.
+- Product domain behavior is planned, not implemented, until code and
+  verification demonstrate it.
 
-## Reading Order
+## Read by intent
 
-1. `../_bmad-output/planning-artifacts/epics.md` — canonical epics, stories, and acceptance criteria
-2. `sprint-workflow.md` — sprint planning, commitment, coordination, review, and closure
-3. `story-execution.md` — BMAD story-to-task breakdown protocol within a sprint
-4. `architecture.md` — system boundaries and responsibilities
-5. `database.md` — current storage and target domain model
-6. `api.md` — current endpoint and proposed resource contracts
-7. `ai-workflow.md` — patch lifecycle and human approval rules
-8. `decisions.md` — design decisions and unresolved questions
+| Need | Canonical source |
+| --- | --- |
+| System boundaries and deployment posture | [architecture/overview.md](architecture/overview.md) |
+| Durable architecture decisions | [architecture spine](../_bmad-output/planning-artifacts/architecture/architecture-CareerFitCV-2026-09-01/ARCHITECTURE-SPINE.md) and [ADR policy](architecture/adr/README.md) |
+| HTTP envelope, errors, versioning and pagination | [contracts/common/http.md](contracts/common/http.md) |
+| API implementation rules | [standards/api.md](standards/api.md) |
+| Authentication, authorization and sensitive data | [standards/security.md](standards/security.md) |
+| IDs, timestamps, persistence and lifecycle rules | [standards/data.md](standards/data.md) |
+| Validation and error ownership | [standards/validation.md](standards/validation.md) and [standards/errors.md](standards/errors.md) |
+| Tests and acceptance evidence | [standards/testing.md](standards/testing.md) |
+| Accessibility and UI states | [standards/accessibility.md](standards/accessibility.md) |
+| Logging, audit and operations | [standards/observability.md](standards/observability.md) and [standards/reliability.md](standards/reliability.md) |
+| Post-MVP asynchronous work | [contracts/common/async-job.md](contracts/common/async-job.md) |
+| Shared product vocabulary | [domain/glossary.md](domain/glossary.md) |
+| Story and sprint process | [story-execution.md](story-execution.md), [sprint-workflow.md](sprint-workflow.md) |
 
-## Core Idea
+## Boundary of this documentation
 
-```text
-CV profile + Job Description
-    -> match analysis
-    -> gap detection
-    -> follow-up questions
-    -> structured patch
-    -> user review
-    -> versioned CV export
-```
-
-## Documentation Boundary
-
-These docs distinguish between:
-
-- current implementation state in the repository
-- target architecture described in the README
-- design decisions that keep AI output controlled and auditable
-
-Current planning, sprint coordination, and task breakdown are managed through
-BMAD artifacts under `_bmad-output/`.
+Global docs define reusable rules. An epic owns rules shared only by its
+stories; a story owns user-visible behavior, acceptance criteria, and its task
+breakdown. Every lower-level artifact references global rule IDs rather than
+copying their contents.
