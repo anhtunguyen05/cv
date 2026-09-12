@@ -431,15 +431,24 @@ _bmad-output/
 │   ├── prd.md
 │   ├── architecture.md
 │   ├── epics/
-│   │   ├── epic-authentication.md
-│   │   └── epic-user-management.md
+│   │   ├── epic-authentication/
+│   │   │   ├── README.md
+│   │   │   ├── business-rules.md
+│   │   │   ├── contracts.md
+│   │   │   └── stories/
+│   │   │       └── register-account/
+│   │   │           ├── README.md
+│   │   │           ├── requirements.md
+│   │   │           ├── contract.md
+│   │   │           ├── tasks.md
+│   │   │           └── verification.md
+│   │   └── epic-user-management/
 │   └── ...
 │
 ├── implementation-artifacts/
 │   ├── sprint-status.yaml
-│   ├── spec-register-account.md
-│   ├── spec-login.md
-│   └── ...
+│   └── sprints/
+│       └── ...
 │
 └── project-context.md
 ```
@@ -488,7 +497,8 @@ docs/
 
 # 9. Epic-specific documents nên đặt ở đâu?
 
-Nếu tài liệu chỉ phục vụ planning của một Epic:
+Nếu tài liệu chỉ phục vụ planning của một Epic, đặt toàn bộ package Epic và
+các Story con trong cùng hierarchy:
 
 ```text
 _bmad-output/planning-artifacts/epics/
@@ -497,7 +507,19 @@ _bmad-output/planning-artifacts/epics/
 Ví dụ:
 
 ```text
-_bmad-output/planning-artifacts/epics/epic-authentication.md
+_bmad-output/planning-artifacts/epics/epic-authentication/
+├── README.md
+├── business-rules.md
+├── contracts.md
+└── stories/
+    ├── register-account/
+    │   ├── README.md
+    │   ├── requirements.md
+    │   ├── contract.md
+    │   ├── tasks.md
+    │   └── verification.md
+    └── sign-in-and-out/
+        └── ...
 ```
 
 Nếu một contract trở thành stable source of truth và được implementation/test/runtime dựa vào lâu dài:

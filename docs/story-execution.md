@@ -1,8 +1,8 @@
 # BMAD Story Breakdown Protocol
 
-This protocol governs planning-only work that turns an approved CareerFitCV
-story into concrete, reviewable tasks. It does not authorize changes to product
-code, infrastructure, CI, dependencies, or runtime configuration.
+This protocol governs planning-only work that turns a canonical CareerFitCV
+story into a concrete, reviewable package. It does not authorize product code,
+infrastructure, CI, dependency, or runtime changes.
 
 ## Sources of truth
 
@@ -11,14 +11,42 @@ code, infrastructure, CI, dependencies, or runtime configuration.
 | `_bmad-output/planning-artifacts/prds/prd-CareerFitCV-2026-09-01/` | Product requirements and business intent |
 | `_bmad-output/planning-artifacts/architecture/architecture-CareerFitCV-2026-09-01/ARCHITECTURE-SPINE.md` | Architecture constraints and system boundaries |
 | `_bmad-output/planning-artifacts/epics.md` | Canonical epic, story, and acceptance-criteria definitions |
-| `_bmad-output/implementation-artifacts/sprint-status.yaml` | Epic and story lifecycle only |
-| `_bmad-output/implementation-artifacts/sprints/<sprint-id>.md` | Sprint goal, capacity assumptions, constraints, refinement story keys, and committed story keys |
-| `_bmad-output/implementation-artifacts/story-drafts/<story-key>.md` | Unapproved BMAD story analysis and task breakdown |
-| `_bmad-output/implementation-artifacts/<story-key>.md` | Approved BMAD story contract and task board |
+| `_bmad-output/planning-artifacts/epics/<epic-key>/` | One Epic planning package with shared rules and nested Story packages |
+| `_bmad-output/planning-artifacts/epics/<epic-key>/stories/<story-key>/` | One permanent Story package |
+| `_bmad-output/implementation-artifacts/sprint-status.yaml` | Epic and Story lifecycle only |
+| `_bmad-output/implementation-artifacts/sprints/<sprint-id>.md` | Sprint goal, capacity, constraints, and membership |
 
-Sprint selection and lifecycle follow [`sprint-workflow.md`](sprint-workflow.md).
-When current BMAD artifacts disagree, record the conflict, keep the tracker
-state unchanged, and block `ready-for-dev` until the product owner resolves it.
+Sprint selection and lifecycle follow [sprint-workflow.md](sprint-workflow.md).
+When BMAD artifacts disagree, record the conflict, keep the tracker unchanged,
+and block `ready-for-dev` until the product owner resolves it.
+
+## Permanent hierarchy
+
+Epic and Story planning must stay in one navigable hierarchy:
+
+```text
+_bmad-output/planning-artifacts/epics/
+└── <epic-key>/
+    ├── README.md
+    ├── business-rules.md
+    ├── contracts.md
+    ├── data-and-lifecycle.md
+    ├── security-and-access.md
+    ├── ux-and-validation.md
+    ├── test-strategy.md
+    ├── decisions.md
+    └── stories/
+        └── <story-key>/
+            ├── README.md
+            ├── requirements.md
+            ├── contract.md
+            ├── tasks.md
+            └── verification.md
+```
+
+There is no `story-drafts/` directory and no separate published Story copy.
+A Story folder never moves when its lifecycle changes. The Story package owns
+content; `sprint-status.yaml` owns lifecycle.
 
 ## Planning boundary
 
@@ -26,93 +54,87 @@ Story-breakdown work may:
 
 - read the repository and BMAD artifacts;
 - analyze user behavior, business rules, interfaces, dependencies, and risk;
-- create or update BMAD planning and story artifacts; and
-- record review decisions in draft story artifacts.
+- create or update Epic and Story planning packages; and
+- record unresolved decisions and review outcomes.
 
 Story-breakdown work must not:
 
 - implement or refactor application code;
 - add dependencies or change runtime configuration;
-- create CI, validation scripts, database migrations, or tests; or
+- create CI, validation scripts, database migrations, or tests;
+- advance lifecycle without human approval; or
 - mark implementation tasks complete without implementation evidence.
 
-Discovered implementation defects and unrelated improvements are recorded as
-follow-up work; they are not fixed on a planning-only branch.
+Discovered implementation defects and unrelated improvements are separate
+follow-up work, not hidden additions to a planning-only branch.
 
 ## Story readiness coverage
 
-A story can move to `ready-for-dev` only when each applicable category below is
-documented explicitly and no unresolved decision can change behavior, security,
-data semantics, a public contract, dependencies, or verification. Mark a
-category `N/A` with a reason when it genuinely does not apply.
+A Story can move to `ready-for-dev` only when every applicable concern is
+explicit and no unresolved decision can change behavior, security, data
+semantics, public contracts, dependencies, or verification. Mark a concern
+`N/A` only with a reason.
 
 ### Behavior
 
-- user, goal, trigger, and preconditions;
-- happy path and state transitions;
-- alternate paths, cancellation, retry, and recovery; and
-- success and failure behavior visible to the user.
+- User, goal, trigger, preconditions, and state transitions.
+- Happy path, alternate paths, cancellation, retry, and recovery.
+- User-visible success and failure behavior.
 
 ### Contract
 
-- request fields, types, required/optional rules, and normalization;
-- success and failure response shapes;
-- HTTP status codes or equivalent interface outcomes; and
-- stable error codes and user-safe messages.
+- Request fields, types, optionality, and normalization.
+- Success and failure response shapes.
+- HTTP status codes or equivalent outcomes.
+- Stable error codes, field paths, headers, and user-safe messages.
 
 ### Backend
 
-- domain rules and invariants;
-- application use case and responsibility boundaries;
-- persistence reads and writes;
-- transaction, idempotency, concurrency, and side effects; and
-- external service or worker interaction where applicable.
+- Domain rules and invariants.
+- Use-case and responsibility boundaries.
+- Persistence reads/writes and ownership.
+- Transactions, idempotency, concurrency, and side effects.
+- Worker or external service interaction when applicable.
 
 ### Security
 
-- authentication and authorization;
-- ownership and cross-user isolation;
-- credential and sensitive-data handling;
-- enumeration and information-disclosure behavior; and
-- abuse protection such as throttling or rate limiting where applicable.
+- Authentication, authorization, and cross-user isolation.
+- Credential and sensitive-data handling.
+- Enumeration and information-disclosure behavior.
+- Abuse controls such as throttling when applicable.
 
 ### Validation
 
-- accepted formats and normalization;
-- field and cross-field rules;
-- uniqueness and conflict behavior; and
-- boundary, malformed, duplicate, and concurrent input cases.
+- Accepted formats and canonicalization.
+- Field and cross-field rules.
+- Uniqueness and conflict behavior.
+- Boundary, malformed, duplicate, and concurrent cases.
 
 ### Frontend
 
-- form or interaction structure;
-- loading, submitting, success, empty, and failure states;
-- field-level and form-level error presentation;
-- accessibility and keyboard behavior; and
-- navigation and state synchronization.
+- Form or interaction structure.
+- Loading, submitting, success, empty, stale, and failure states.
+- Accessible field/form errors and keyboard behavior.
+- Navigation and state synchronization.
 
 ### Integration
 
-- frontend-to-API mapping;
-- authentication and request headers;
-- response and error mapping into UI states; and
-- retry, refresh, stale-state, and duplicate-submit behavior.
+- Frontend-to-API mapping and authentication headers/cookies.
+- Response/error mapping into UI states.
+- Retry, refresh, expiry, stale state, and duplicate submission.
 
 ### Verification
 
-- unit coverage for domain and validation rules;
-- backend feature or integration coverage for contracts and persistence;
-- frontend component coverage for interaction states;
-- integration coverage across frontend and API; and
-- end-to-end scenarios for the critical user path and meaningful failures.
+- Unit coverage for domain and validation rules.
+- API feature/integration coverage for contracts and persistence.
+- Frontend component coverage for interaction states.
+- FE/API contract coverage.
+- End-to-end coverage for critical paths and meaningful failures.
 
-## Story artifact
+## Story package contract
 
-Create an unapproved story file at
-`_bmad-output/implementation-artifacts/story-drafts/<story-key>.md`. Base it on
-`.agents/skills/bmad-build/spec-template.md` so later BMAD implementation can
-consume it without translation, but do not run the implementation workflow
-during planning-only work. Extend the template with this coordination metadata:
+Each Story uses exactly one folder. Its `README.md` frontmatter contains
+identity and coordination metadata, but no lifecycle `status` field:
 
 ```yaml
 ---
@@ -120,7 +142,6 @@ story_key: <story-key>
 title: <story title>
 type: feature
 created: <YYYY-MM-DD>
-status: draft
 story_owner: unassigned
 depends_on_stories: []
 source_story: _bmad-output/planning-artifacts/epics.md
@@ -130,45 +151,24 @@ context: []
 ---
 ```
 
-The body must contain:
+File ownership is fixed:
 
-1. the template's human-owned intent, boundaries, and non-goals;
-2. assumptions and unresolved decisions;
-3. the eight-category readiness analysis;
-4. canonical acceptance criteria copied without changing intent and assigned
-   stable IDs in the form `AC-<story-key>-<nn>`;
-5. an ordered task breakdown;
-6. a dependency and concurrency map;
-7. coordination records for overlapping work; and
-8. planned verification coverage.
-
-The story artifact's `status` is dispatch metadata that mirrors, but does not
-replace, the authoritative tracker entry. Use this mapping:
-
-| Story artifact | `sprint-status.yaml` |
+| File | Owns |
 | --- | --- |
-| `draft` in `story-drafts/` | `backlog` |
-| `ready-for-dev` | `ready-for-dev` |
-| `in-progress` | `in-progress` |
-| `in-review` | `review` |
-| `done` | `done` |
+| `README.md` | Identity, frozen intent, references, canonical ACs, readiness summary, code map, and change log |
+| `requirements.md` | Behavior, constraints, domain/backend rules, security, validation, frontend, integration, and edge cases |
+| `contract.md` | Story-owned request, response, status/error, and FE/API contract slice |
+| `tasks.md` | Task status, owner, branch/worktree, scope, dependencies, and coordination |
+| `verification.md` | AC traceability, test layers, exit gate, and actual evidence rules |
 
-A draft remains in the nested directory. After approval, publish exactly one
-root-level `<story-key>.md`; the existence of this file is the BMAD readiness
-signal. `sprint-status.yaml` remains authoritative, and any mismatch blocks
-dispatch. Root-file detection can establish only the `ready-for-dev` floor;
-later transitions are synchronized by `bmad-build`. Every tracker entry at
-`ready-for-dev` or later must have exactly one matching root story artifact.
+Do not duplicate Epic-shared or Global rules inside Story files. Reference the
+stable IDs at the lowest level that covers all consumers.
 
 ## Task contract
 
-Use this shape for every task:
+Every task in `tasks.md` uses this shape:
 
 ```markdown
-## Tasks & Acceptance
-
-**Execution:**
-
 - [ ] TASK-<story>-<nn>: <bounded outcome>
   - Status: `todo`
   - Owner: `unassigned`
@@ -183,48 +183,34 @@ Use this shape for every task:
   - Verification: `<planned check; replace with evidence before done>`
 ```
 
-Each task must define one bounded, reviewable outcome for one owner; its allowed
-boundary; at least one acceptance-criterion ID; completion conditions; and
-planned verification. `Depends on` may reference only existing tasks in the
-same story: reject missing, self, or cyclic dependencies, and treat only `done`
-dependencies as satisfied. Split independent outcomes, owners, or unrelated
-boundaries into separate tasks. Preserve one cross-layer story while separating
-assignable backend, frontend, integration, and verification work where
-dependencies allow.
+Each task has one bounded, reviewable outcome for one owner. `Depends on` may
+reference only tasks in the same Story and must be acyclic. A dependency is
+satisfied only when its predecessor is `done` with acceptance and evidence.
+Split independent outcomes, owners, or unrelated boundaries into separate
+tasks.
 
-The checkbox is the format consumed by `bmad-build`: use `[x]` only when the
-task status is `done`; use `[ ]` for every other status. A story owner maintains
-checkboxes, task status, and verification evidence on one story-coordination
-branch or worktree. Task owners report results to that owner rather than making
-parallel edits to the same task board.
+The checkbox is consumed by `bmad-build`: use `[x]` only with `Status: done`.
+The Story owner integrates task status and evidence; task owners report results
+rather than editing the same task board concurrently.
 
 ## Team concurrency
 
-There is no repository-wide single-active-story or single-active-task lock.
+There is no repository-wide single-active-Story or single-active-task lock.
 
-- Multiple stories may be `in-progress` or tracker `review` concurrently.
-- Multiple tasks may be `doing` concurrently, including tasks within the same
-  story, when their dependencies are satisfied.
-- During breakdown, a task remains `todo`, and its owner and branch/worktree may
-  remain `unassigned`.
-- Before a task enters `doing`, the story must have exactly one `story_owner`.
-  The task must have one owner, a non-`main` branch or worktree, a declared
-  scope, and dependencies that are all `done`.
-- An unmet `depends_on_stories` entry blocks story implementation unless the
-  story artifacts record an approved contract checkpoint that makes the tasks
-  independent.
-- Tasks with overlapping file, API contract, persistence, or domain scope must
-  reserve the shared boundary before `doing` and reference a coordination
-  record in every affected story.
-- A story owner coordinates acceptance criteria, cross-task integration, and
-  final readiness; task owners remain responsible for their bounded outcomes.
-  The story owner also owns the story-coordination branch and integrates task
-  status and evidence updates.
+- Multiple Stories and tasks may be active concurrently.
+- During breakdown, tasks remain `todo` with owner and branch unassigned.
+- Before `doing`, a task needs one owner, a non-`main` branch/worktree, declared
+  scope, and all dependencies `done`.
+- Tasks with overlapping files, API contracts, persistence, or domain scope
+  reserve the shared boundary and reference the same coordination record.
+- Independent tasks with satisfied dependencies may proceed in parallel.
+- The Story owner owns cross-task integration and final acceptance; each task
+  owner remains responsible for their bounded outcome.
 
-Use this shape for every shared-boundary decision:
+Use this shape for a shared-boundary decision:
 
 ```markdown
-### COORD-<story>-<nn>: <shared boundary>
+### COORD-<scope>-<nn>: <shared boundary>
 
 - Tasks: `<task IDs across affected stories>`
 - Decision owner: `<one owner>`
@@ -232,52 +218,53 @@ Use this shape for every shared-boundary decision:
 - Sequence/merge rule: `<ordering and integration rule>`
 ```
 
-Allowed task transitions are `todo -> doing -> review -> done`. A task in
-`todo`, `doing`, or `review` may move to `blocked`. Before the task resumes,
-record its blocker and previous state. Do not skip states. The `done` status
-requires the task's acceptance condition and verification evidence. A blocked
-task does not prevent independent tasks from progressing.
+Task transitions are `todo -> doing -> review -> done`. A task in `todo`,
+`doing`, or `review` may move to `blocked`; record the blocker and previous
+state before resuming. Do not skip states.
+
+## Lifecycle synchronization
+
+Story lifecycle exists only in `sprint-status.yaml`. This repository's nested
+Story folders are intentionally not used as automatic readiness signals.
+
+- Breakdown/review leaves the Story at `backlog`.
+- Human approval resolves material decisions and accepts the complete package.
+- The sprint integration owner then runs `bmad-sprint-planning` from the latest
+  base, explicitly setting the approved key to `ready-for-dev`, and validates
+  the tracker.
+- Later transitions are synchronized by `bmad-build` with implementation and
+  verification evidence.
+
+Do not hand-edit generated lifecycle entries. BMAD's root Markdown-file
+detection is a generic fallback and is not the publication mechanism for this
+nested project structure.
 
 ## Change control
 
-- Never change canonical story intent silently while breaking it into tasks.
-- A missing business rule that changes user-visible behavior, security, data
-  semantics, or a public contract requires a decision from the product owner.
-- Record assumptions explicitly and do not treat an unresolved assumption as
-  an approved requirement.
-- Record independent stories or improvements separately from the current story
-  artifact; do not hide them inside a convenient task.
-- Story breakdown PRs must identify the story keys, summarize resolved and open
-  decisions, and confirm that no product code was changed.
-
-Reopening an approved story is not a normal lifecycle transition. Prefer a new
-story that preserves the delivered contract. If correction requires reopening,
-obtain explicit product-owner approval, record the reason in the change log,
-move the single root artifact back to `story-drafts/`, use the confirmed
-`bmad-sprint-planning` fix flow to change the tracker, and validate before any
-dispatch. Never retain simultaneous draft and root copies.
+- Never change canonical Story intent silently during breakdown.
+- A missing rule affecting behavior, security, data, public contracts, or
+  verification requires a product-owner decision.
+- Assumptions remain explicit and never become approved requirements by prose.
+- Independent discoveries become separate backlog items.
+- A reopened Story remains in the same folder. Record the reason and approval
+  in its change log, then use the confirmed sprint-status fix flow if lifecycle
+  must move backward.
+- Story-breakdown PRs identify Story keys, open/resolved decisions, hierarchy
+  changes, and planning-only scope.
 
 ## BMAD planning workflow
 
-1. Supply a `sprint_id`, then select a story key listed in that charter's
-   `refinement_stories`. The key must exactly match one non-epic entry in both
-   `epics.md` and `sprint-status.yaml`.
-2. Read the canonical story, PRD requirements, architecture boundaries, and
-   relevant current technical documents.
-3. Identify gaps in user behavior and business rules. Record material gaps as
-   decisions required from the product owner; do not invent them.
-4. Create or resume `story-drafts/<story-key>.md` with status `draft`. If a root
-   artifact already exists, stop and follow the approved reopening procedure.
-5. Complete the readiness coverage and produce atomic tasks with dependencies,
-   scope, acceptance, and planned verification.
-6. Run `bmad-review` on the story artifact using every applicable document
-   lens, including the adversarial, edge-case, structure, and prose lenses.
-7. Present the story artifact for human review and apply approved corrections.
-8. Open one reviewable planning PR containing the draft story artifact unless
-   the team explicitly approves a cohesive multi-story batch. Identify the
-   story keys, resolved and open decisions, and planning-only scope.
-9. Stop. Do not publish the draft, update shared sprint artifacts, or invoke
-   `bmad-build`. After approval, the sprint integration owner publishes the
-   root artifact, moves its key from refinement to commitment, runs
-   `bmad-sprint-planning`, and validates the tracker in a serialized integration
-   change.
+1. Supply a `sprint_id` and select keys listed in its `refinement_stories`.
+2. Read canonical Story/AC intent, PRD, architecture, Global standards, and
+   the owning Epic package.
+3. Create or resume each permanent `stories/<story-key>/` package.
+4. Analyze all eight readiness concerns; record material gaps in the Epic or
+   Story decision register without inventing approval.
+5. Produce atomic tasks, dependencies, coordination records, and AC evidence
+   mapping in the fixed five-file structure.
+6. Run `bmad-review` on the whole Epic/Story package with all applicable lenses.
+7. Apply review corrections and open one cohesive planning PR for the accepted
+   Epic or Story batch.
+8. Stop. Do not implement code or advance lifecycle.
+9. After human approval, the sprint integration owner explicitly synchronizes
+   approved Story keys through `bmad-sprint-planning` and validates the tracker.

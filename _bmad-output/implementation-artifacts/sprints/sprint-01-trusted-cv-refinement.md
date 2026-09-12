@@ -5,7 +5,7 @@ status: draft
 start: null
 end: null
 facilitator: unassigned
-goal: Produce a reviewed Epic 1 shared planning package and atomic draft task breakdowns for all eight Trusted CV stories without changing application code.
+goal: Produce a reviewed Epic 1 package and atomic task breakdowns for all eight Trusted CV stories without changing application code.
 refinement_stories:
   - 1-1-register-an-account
   - 1-2-sign-in-and-sign-out
@@ -20,7 +20,7 @@ capacity_assumptions:
   - Team dates, facilitator, and available planning capacity are not yet confirmed.
 constraints:
   - Planning artifacts only; no application, infrastructure, dependency, test, or runtime changes.
-  - Story lifecycle remains backlog until the draft is approved and published by the sprint integration owner.
+  - Story lifecycle remains backlog until the story package is approved and synchronized by the sprint integration owner.
 ---
 
 # Sprint 01: Trusted CV Epic Refinement
@@ -32,13 +32,13 @@ reviewed planning package that a team can implement without duplicating shared
 rules or inventing product, security, data, API, UX, or verification decisions.
 
 This planning sprint is complete only when the Epic 1 package and all eight
-story drafts have passed BMAD review; every material decision has an owner,
+story packages have passed BMAD review; every material decision has an owner,
 approved resolution, and dated approval evidence; the team has accepted the
 cross-story dependencies and coordination boundaries; and the sprint
-integration owner has published approved stories in dependency order,
+integration owner has advanced approved stories in dependency order,
 synchronized their lifecycle through BMAD, and validated the resulting tracker.
 
-Opening the draft planning PR completes the current breakdown assignment, but
+Opening the planning PR completes the current breakdown assignment, but
 does not complete this sprint or authorize implementation.
 
 ## Readiness blockers
@@ -46,7 +46,7 @@ does not complete this sprint or authorize implementation.
 - Sprint dates: unassigned.
 - Facilitator: unassigned.
 - Team planning capacity and absences: unconfirmed.
-- Sprint integration owner: unassigned; required before publication or
+- Sprint integration owner: unassigned; required before lifecycle advancement or
   lifecycle synchronization.
 - Epic 1 product/security/data/contract decisions: open in the Epic decision
   register.

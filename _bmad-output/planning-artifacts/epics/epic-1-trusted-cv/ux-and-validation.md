@@ -39,6 +39,6 @@
 
 Stories 1.3 through 1.7 share Profile load/save state, nested field paths,
 concurrency handling, and unsaved-change navigation. Their tasks must reference
-`E1-COORD-PROFILE-001` in their story draft before parallel implementation.
+`E1-COORD-PROFILE-001` in their Story package before parallel implementation.
 Story 1.8 reuses the read-only Profile representation but must not snapshot
 unsaved browser state.

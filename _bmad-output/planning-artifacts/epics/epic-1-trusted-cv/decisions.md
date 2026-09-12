@@ -1,7 +1,7 @@
 # Epic 1 Decisions and Coordination
 
 Recommendations are review proposals, not approved requirements. Before a
-dependent story is published, every applicable decision needs one owner, an
+dependent story is approved as ready for development, every applicable decision needs one owner, an
 approved resolution, and evidence in the form `approver, YYYY-MM-DD`.
 
 ## Decision register

@@ -1,7 +1,6 @@
 ---
 epic_key: epic-1
 title: Create and Manage a Trusted CV
-status: draft
 created: 2026-09-10
 source: _bmad-output/planning-artifacts/epics.md
 stories:
@@ -46,8 +45,8 @@ product decisions, or authorize implementation.
   verification unless an approved decision adds a separate story.
 - Job Description, matching, Preview, Export, Patch, AI, worker, queue, or
   server-side PDF behavior.
-- Stable production contracts under `docs/contracts/`; this draft package must
-  be approved before any contract is promoted there.
+- Stable production contracts under `docs/contracts/`; this package must pass
+  review before any contract is promoted there.
 
 ## Source requirements
 
@@ -84,7 +83,24 @@ product decisions, or authorize implementation.
 | [Security and access](security-and-access.md) | Epic-specific auth, privacy, and abuse controls |
 | [UX and validation](ux-and-validation.md) | Shared form, editor, interaction, and validation behavior |
 | [Test strategy](test-strategy.md) | Cross-story verification layers and integration gates |
-| [Decisions](decisions.md) | Human-owned decisions blocking publication or implementation |
+| [Decisions](decisions.md) | Human-owned decisions blocking readiness or implementation |
+
+## Story packages
+
+Each story is one folder under this Epic. `README.md` owns intent and canonical
+acceptance criteria; the remaining files separate requirements, contract,
+tasks, and verification without creating a second story copy.
+
+| Story | Package |
+| --- | --- |
+| 1.1 Register an account | [Open](stories/1-1-register-an-account/README.md) |
+| 1.2 Sign in and sign out | [Open](stories/1-2-sign-in-and-sign-out/README.md) |
+| 1.3 Create a CV Profile | [Open](stories/1-3-create-a-cv-profile/README.md) |
+| 1.4 Manage CV summary and skills | [Open](stories/1-4-manage-cv-summary-and-skills/README.md) |
+| 1.5 Manage education and experience | [Open](stories/1-5-manage-education-and-experience/README.md) |
+| 1.6 Manage projects | [Open](stories/1-6-manage-projects/README.md) |
+| 1.7 Manage supplementary CV sections | [Open](stories/1-7-manage-supplementary-cv-sections/README.md) |
+| 1.8 Create and view an immutable CV Version | [Open](stories/1-8-create-and-view-an-immutable-cv-version/README.md) |
 
 ## Story map and ordering
 
@@ -116,13 +132,13 @@ product decisions, or authorize implementation.
   `docs/contracts/` sources before that story moves to `ready-for-dev`;
   executable fixtures reference those sources instead of redefining them.
 - Shared rule and contract IDs are accepted and referenced by all eight story
-  drafts without duplication.
+  packages without duplication.
 - Every story preserves its canonical AC intent and maps every AC to bounded,
   dependency-aware tasks.
 - Cross-story ownership, editor, auth, Profile schema, and Version snapshot
   boundaries have explicit coordination records.
-- The sprint integration owner has approved publication order and lifecycle
-  synchronization; draft artifacts remain nested until then.
+- The sprint integration owner has approved readiness order and lifecycle
+  synchronization. Story folders never move when lifecycle changes.
 
 ## Epic Definition of Done
 
