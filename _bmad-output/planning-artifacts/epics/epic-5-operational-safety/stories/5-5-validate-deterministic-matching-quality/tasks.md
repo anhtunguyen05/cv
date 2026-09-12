@@ -1,0 +1,90 @@
+# Story 5.5 — Tasks
+
+- [ ] TASK-5-5-01: Curate and approve representative synthetic matching corpus
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `none`
+  - Covers: `AC-5-5-validate-deterministic-matching-quality-01`
+  - Scope: CV/JD/Analysis/expected report cases, aliases/negation/required/optional/Weak/missing/ties/Unicode/counterexamples
+  - Coordination: `E5-COORD-QUALITY-001`, `E5-COORD-TEST-001`
+  - Blocked by: `E5-PREREQ-MATCH-001`, `E5-DEC-006`, `DISCOVERY-E2-001`
+  - Outcome: Human-approved versioned corpus that represents expected matcher usefulness.
+  - Acceptance: each fixture has rationale/source versions/expected output and no production User content.
+  - Verification: product/domain/quality/privacy review evidence.
+- [ ] TASK-5-5-02: Freeze evaluation metrics, thresholds, counter-metrics, and result fixtures
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-5-01`
+  - Covers: `AC-5-5-validate-deterministic-matching-quality-01`
+  - Scope: canonical hash/repeat runs, classification/score/order metrics, tolerances, diagnostics, exits, waiver/change
+  - Coordination: `E5-COORD-QUALITY-001`
+  - Blocked by: `E5-DEC-006`, `E5-DEC-008`
+  - Outcome: One objective versioned pass/fail contract.
+  - Acceptance: false-positive/unsupported-claim counter-metrics prevent a misleading aggregate pass.
+  - Verification: metric worked examples and approval evidence.
+- [ ] TASK-5-5-03: Implement read-only matcher evaluation runner
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-5-02`
+  - Covers: `AC-5-5-validate-deterministic-matching-quality-01`
+  - Scope: fixture/schema/version validation, in-memory matcher invocation, canonicalization/repetition/metrics/diagnostics/exits
+  - Coordination: `E5-COORD-QUALITY-001`
+  - Blocked by: approved Epic 2 matcher consumer checkpoint
+  - Outcome: Produce reproducible quality evidence without persistence capability.
+  - Acceptance: runner rejects incompatible/prohibited input and cannot update reports/User data.
+  - Verification: unit/golden/property/mutation-guard tests.
+- [ ] TASK-5-5-04: Integrate evaluation command and immutable safe artifact
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-5-03`
+  - Covers: `AC-5-5-validate-deterministic-matching-quality-01`
+  - Scope: local/CI entry, pinned versions, artifact schema/name/access/retention, failure exit and regression diff
+  - Coordination: `E5-COORD-QUALITY-001`, `E5-COORD-TEST-001`
+  - Blocked by: `none`
+  - Outcome: Make matching regression visible and reviewable.
+  - Acceptance: failing threshold fails the command and baseline cannot update implicitly.
+  - Verification: clean/failing/infrastructure CI simulation and artifact validation.
+- [ ] TASK-5-5-05: Verify repeatability, quality, performance, and no mutation
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-5-04`
+  - Covers: `AC-5-5-validate-deterministic-matching-quality-01`
+  - Scope: repeated runs, shuffled order, version changes, threshold/counter-metric failures, database write trap, performance budget
+  - Coordination: `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`
+  - Outcome: Prove deterministic useful evaluation and strict read-only behavior.
+  - Acceptance: same inputs match exactly; seeded regressions fail; User/report state hash remains unchanged.
+  - Verification: approved evaluator/MySQL write-trap/performance command evidence.
+- [ ] TASK-5-5-06: Document regression triage and controlled baseline-change workflow
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-5-04`
+  - Covers: `AC-5-5-validate-deterministic-matching-quality-01`
+  - Scope: owner, diagnostic review, matcher/rule/corpus/threshold version changes, approval, waiver/expiry, rollback
+  - Coordination: `E5-COORD-QUALITY-001`
+  - Blocked by: `none`
+  - Outcome: Prevent silent expected-output or threshold laundering.
+  - Acceptance: every baseline change requires reason, separate version, reviewer, evidence and rollback.
+  - Verification: dry-run seeded regression walkthrough and reviewer sign-off.
+- [ ] TASK-5-5-07: Verify deterministic quality gate end to end
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-5-05`, `TASK-5-5-06`
+  - Covers: `AC-5-5-validate-deterministic-matching-quality-01`
+  - Scope: clean run/repeat/seed regression/version mismatch/waiver/no-mutation/artifact scenarios
+  - Coordination: `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`
+  - Outcome: Verify the MVP matching quality baseline and review workflow.
+  - Acceptance: independent runs produce safe exact artifacts and expected exit/verdict.
+  - Verification: approved local/CI command transcript and immutable artifact references.
+
+## Dependency map
+
+`01 -> 02 -> 03 -> 04`; `04 -> 05,06`; `05 + 06 -> 07`.
