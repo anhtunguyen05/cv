@@ -1,0 +1,92 @@
+# Story 4.6: Regenerate a rejected or invalid Patch — Tasks
+
+- [ ] TASK-4-6-01: Freeze regeneration eligibility, lineage, stale, and failure fixtures
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `none`
+  - Covers: `AC-4-6-regenerate-a-rejected-or-invalid-patch-01`, `AC-4-6-regenerate-a-rejected-or-invalid-patch-02`
+  - Scope: predecessor/context/feedback/provider/result/lineage/dedupe/conflict/next-action payloads
+  - Coordination: `E4-COORD-INTERVIEW-001`, `E4-COORD-PROVIDER-001`, `E4-COORD-PATCH-001`, `E4-COORD-TEST-001`
+  - Blocked by: approved Interview/Evidence, provider, and Patch review checkpoints from Stories 4.2–4.4; `E4-DEC-001` through `E4-DEC-009`, `DISCOVERY-E4-001`, `DISCOVERY-E4-002`
+  - Outcome: Freeze one safe lineage-preserving regeneration contract.
+  - Acceptance: fixtures distinguish eligible, stale, unavailable, retryable, terminal, and reconciled outcomes.
+  - Verification: schema/fixture and product/architecture/security/UX approval evidence.
+- [ ] TASK-4-6-02: Implement regeneration eligibility and context validator
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-6-01`
+  - Covers: `AC-4-6-regenerate-a-rejected-or-invalid-patch-01`, `AC-4-6-regenerate-a-rejected-or-invalid-patch-02`
+  - Scope: owner/status, source Version/old value, Interview/questions/Evidence availability, target, allowed feedback
+  - Coordination: `E4-COORD-INTERVIEW-001`, `E4-COORD-PATCH-001`
+  - Blocked by: `none`
+  - Outcome: Permit generation only from a complete still-valid historical context.
+  - Acceptance: stale/missing/negative/foreign/changed states fail before provider disclosure.
+  - Verification: domain/application/adversarial unit tests.
+- [ ] TASK-4-6-03: Implement idempotent lineage generation service
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-6-02`
+  - Covers: `AC-4-6-regenerate-a-rejected-or-invalid-patch-01`, `AC-4-6-regenerate-a-rejected-or-invalid-patch-02`
+  - Scope: provider adapter/validator reuse, predecessor key, lease/dedupe, late/lost/failure, new Patch persistence transaction
+  - Coordination: `E4-COORD-PROVIDER-001`, `E4-COORD-PATCH-001`
+  - Blocked by: `E4-PREREQ-OPS-001`
+  - Outcome: Produce at most one validated new lineage result without rewriting history.
+  - Acceptance: predecessor/source never mutate and invalid/provider failure creates no pending Patch.
+  - Verification: provider contract, application/MySQL concurrency/rollback/idempotency tests.
+- [ ] TASK-4-6-04: Expose regeneration and reconciliation API
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-6-03`
+  - Covers: `AC-4-6-regenerate-a-rejected-or-invalid-patch-01`, `AC-4-6-regenerate-a-rejected-or-invalid-patch-02`
+  - Scope: Form Request, policy, controller/resource/route, feedback/precondition/idempotency, status/error/next-action mapping
+  - Coordination: `E4-COORD-PATCH-001`
+  - Blocked by: `none`
+  - Outcome: Serve a non-disclosing reconcilable regeneration contract.
+  - Acceptance: eligible/stale/status/provider/invalid/lost/foreign cases match fixtures.
+  - Verification: Laravel feature/contract tests with two Users and provider fake.
+- [ ] TASK-4-6-05: Build accessible regeneration and stale-context UI
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-6-01`
+  - Covers: `AC-4-6-regenerate-a-rejected-or-invalid-patch-01`, `AC-4-6-regenerate-a-rejected-or-invalid-patch-02`
+  - Scope: adapter/mutation, predecessor reason/context, optional bounded feedback, confirm/progress/stale/failure/retry/new link/focus
+  - Coordination: `E4-COORD-PATCH-001`
+  - Blocked by: `none`
+  - Outcome: Explain why regeneration is or is not possible while preserving prior decisions.
+  - Acceptance: controls follow allowed actions, repeated click guarded, and next action is accessible/actionable.
+  - Verification: type-check, adapter/component, keyboard, and accessibility tests.
+- [ ] TASK-4-6-06: Verify lineage, provider safety, isolation, and races
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-6-04`, `TASK-4-6-05`
+  - Covers: `AC-4-6-regenerate-a-rejected-or-invalid-patch-01`, `AC-4-6-regenerate-a-rejected-or-invalid-patch-02`
+  - Scope: two-User, predecessor/source immutability, stale contexts, minimum disclosure, injection, repeat/concurrent/late/lost outcomes
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: `E4-DEC-008`, `E4-DEC-009`, `DISCOVERY-E4-002`
+  - Outcome: Prove regeneration is safe, grounded, and history-preserving.
+  - Acceptance: one lineage result at most and no stale/foreign context reaches provider or pending state.
+  - Verification: approved provider/security/MySQL/evaluation/Vitest commands and evidence.
+- [ ] TASK-4-6-07: Verify Patch regeneration journey end to end
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-6-06`
+  - Covers: `AC-4-6-regenerate-a-rejected-or-invalid-patch-01`, `AC-4-6-regenerate-a-rejected-or-invalid-patch-02`
+  - Scope: browser rejected/invalid/new-pending/stale/unavailable/provider-failure/retry/foreign/keyboard scenarios
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: `E4-DEC-009`
+  - Outcome: Verify the complete historical Patch regeneration loop.
+  - Acceptance: disposable scenarios preserve predecessor/source and navigate only to a separately identified valid proposal.
+  - Verification: approved Playwright/provider-fake command and fixture/reset evidence.
+
+## Dependency map
+
+`01 -> 02 -> 03 -> 04`; `01 -> 05`; `04 + 05 -> 06 -> 07`.
+Frontend may proceed after fixtures; provider and Patch shared files remain under
+their single coordination owners.
