@@ -120,6 +120,12 @@ AI integrations, retention, and monitoring are introduced.
 Users can create an account, build a structured CV Profile, and preserve named
 immutable CV Versions.
 
+**Shared planning package:**
+[`epics/epic-1-trusted-cv/README.md`](epics/epic-1-trusted-cv/README.md)
+owns Epic 1 overview, shared rules, contracts, data/lifecycle, security,
+UX/validation, test strategy, decisions, and cross-story coordination. The
+canonical story intent and acceptance criteria remain in this file.
+
 **FRs covered:** FR1, FR2, FR3, FR4, FR5
 
 **Relevant architecture requirements:** Laravel owns authentication,

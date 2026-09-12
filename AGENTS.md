@@ -1,5 +1,5 @@
 <!-- bmad:context -->
-<!-- Verified 2026-09-08 against b24c67415e196bc340513abb2651a40f033fec64. Managed by bmad-project-context; edits inside this block are replaced on refresh. -->
+<!-- Updated 2026-09-12 for the nested Epic/Story package hierarchy. Managed by bmad-project-context; edits inside this block are replaced on refresh. -->
 
 ## CareerFitCV
 
@@ -12,7 +12,7 @@ CareerFitCV is a Vue 3/Vite frontend, Laravel 13 API, and minimal Python worker 
 - Treat `_bmad-output/planning-artifacts/epics.md` as the canonical story definition and `_bmad-output/implementation-artifacts/sprint-status.yaml` as the only epic/story lifecycle tracker.
 - Plan delivery through sprint charters under `_bmad-output/implementation-artifacts/sprints/`; do not recreate phase-based plans.
 - Sprint charters own sprint goal, dates, capacity assumptions, constraints, and committed story keys; they must not duplicate story or task status.
-- Keep unapproved story breakdowns under `_bmad-output/implementation-artifacts/story-drafts/`. Publish an approved story to `_bmad-output/implementation-artifacts/<story-key>.md` before using `bmad-sprint-planning` to move it to `ready-for-dev`.
+- Keep each Story as one permanent folder under `_bmad-output/planning-artifacts/epics/<epic-key>/stories/<story-key>/`; do not create separate draft and published copies. Use `bmad-sprint-planning` to advance an approved Story to `ready-for-dev` explicitly.
 - Multiple stories and tasks may be active concurrently. Every task with status `doing` must identify one owner, its story, dependencies, branch or worktree, and declared scope in the BMAD story artifact.
 - Coordinate before starting tasks whose file, contract, persistence, or domain scope overlaps; independent tasks with satisfied dependencies may proceed in parallel.
 - Do not mark a story `ready-for-dev` until its behavior, contracts, backend rules, security, validation, frontend, integration, acceptance criteria, dependencies, and verification coverage are explicit.
@@ -27,8 +27,8 @@ CareerFitCV is a Vue 3/Vite frontend, Laravel 13 API, and minimal Python worker 
 - Epic and story lifecycle tracker: `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - Sprint workflow: `docs/sprint-workflow.md`
 - Sprint charters: `_bmad-output/implementation-artifacts/sprints/`
-- Draft story breakdowns: `_bmad-output/implementation-artifacts/story-drafts/`
-- Approved story contracts: `_bmad-output/implementation-artifacts/<story-key>.md`
+- Epic packages: `_bmad-output/planning-artifacts/epics/<epic-key>/`
+- Story packages: `_bmad-output/planning-artifacts/epics/<epic-key>/stories/<story-key>/`
 - Story breakdown protocol: `docs/story-execution.md`
 - Frontend work and conventions: `apps/web/src/`, `apps/web/package.json`, and `docs/frontend-architecture.md`
 - Laravel API work: `apps/api/`; read `apps/api/AGENTS.md` before changing files under `apps/api/`
@@ -53,7 +53,7 @@ CareerFitCV is a Vue 3/Vite frontend, Laravel 13 API, and minimal Python worker 
 ## Known pitfalls
 
 - Do not recreate phase-based planning folders; organize current work through BMAD sprint charters and story artifacts.
-- Do not place draft story files directly under `_bmad-output/implementation-artifacts/`; BMAD treats matching files there as `ready-for-dev`.
+- Do not create root-level Story Markdown files under `_bmad-output/implementation-artifacts/`; lifecycle is explicit in `sprint-status.yaml`, not inferred from duplicate Story files.
 - Do not document or test Laravel health as `GET /health`; the current Laravel route is `GET /api/health`.
 - Do not assume README target directories such as `packages/`, `infra/`, or root Docker files exist.
 - Do not install Laravel Boost for planning-only or documentation-only work.

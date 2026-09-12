@@ -1,34 +1,34 @@
 # BMAD Sprint Workflow
 
-This workflow organizes CareerFitCV planning and delivery by sprint. It keeps
-sprint scope, story lifecycle, and task coordination in separate BMAD artifacts
-so a team can work concurrently without creating competing status trackers.
+This workflow organizes CareerFitCV planning and delivery by sprint while
+keeping Epic/Story content, lifecycle, sprint membership, and task coordination
+in separate sources of truth.
 
 ## Usage boundary
 
-For a story-breakdown assignment, stop after the relevant draft stories have
+For a Story-breakdown assignment, stop after the selected Story packages have
 been reviewed and the planning PR has been opened. Do not implement product
-code, start implementation branches, publish an unapproved root story artifact,
-or record implementation evidence during the planning workflow.
+code, start implementation branches, advance lifecycle, or record
+implementation evidence during planning.
 
 ## Artifact ownership
 
 | Artifact | Owns | Must not own |
 | --- | --- | --- |
-| `_bmad-output/planning-artifacts/epics.md` | Canonical stories and acceptance intent | Sprint assignment or implementation status |
-| `_bmad-output/implementation-artifacts/sprint-status.yaml` | Epic and story lifecycle | Sprint membership or task status |
-| `_bmad-output/implementation-artifacts/sprints/<sprint-id>.md` | Sprint goal, dates, capacity assumptions, constraints, refinement story keys, and committed story keys | Story or task status |
-| `_bmad-output/implementation-artifacts/story-drafts/<story-key>.md` | Unapproved story analysis and task breakdown | Ready-for-development state |
-| `_bmad-output/implementation-artifacts/<story-key>.md` | Approved story contract, tasks, ownership, coordination, and evidence | Sprint membership |
+| `_bmad-output/planning-artifacts/epics.md` | Canonical Epic, Story, and AC intent | Sprint assignment or implementation status |
+| `_bmad-output/planning-artifacts/epics/<epic-key>/` | Shared Epic planning and nested Story packages | Lifecycle or sprint membership |
+| `_bmad-output/planning-artifacts/epics/<epic-key>/stories/<story-key>/` | One permanent Story content/task/evidence package | A duplicate Story lifecycle status |
+| `_bmad-output/implementation-artifacts/sprint-status.yaml` | Epic and Story lifecycle | Sprint membership or task status |
+| `_bmad-output/implementation-artifacts/sprints/<sprint-id>.md` | Sprint goal, dates, capacity, constraints, refinement keys, and committed keys | Story or task status |
 
-Current story status is always read from `sprint-status.yaml`. Current task
-status is always read from the approved story artifact. A sprint charter links
-those sources by story key; it does not copy their values.
+Current Story status is always read from `sprint-status.yaml`. Current task
+status is always read from the Story's `tasks.md`. A sprint charter links those
+sources by Story key; it does not copy their values.
 
 ## Sprint charter
 
 Create one charter per sprint under
-`_bmad-output/implementation-artifacts/sprints/`. Use this frontmatter:
+`_bmad-output/implementation-artifacts/sprints/`:
 
 ```yaml
 ---
@@ -45,136 +45,137 @@ capacity_assumptions: []
 ---
 ```
 
-Sprint status is local to the charter and uses
+Sprint lifecycle is separate from Story lifecycle and uses
 `draft -> committed -> active -> review -> closed`. A sprint in `draft`,
-`committed`, or `active` may instead move to the terminal state `cancelled` when
-the charter records the reason and decision owner. Do not reopen `closed` or
-`cancelled` charters; create a new charter that references the earlier sprint.
-Sprint status does not belong under `development_status` in
-`sprint-status.yaml`.
+`committed`, or `active` may become `cancelled` with a recorded reason and
+decision owner. Do not reopen `closed` or `cancelled` charters.
 
-Frontmatter is the sole source for sprint membership. `refinement_stories`
-contains story keys selected for planning but not committed for implementation.
-`committed_stories` contains only approved story keys with matching root story
-artifacts. The body may explain the selection rationale by referencing those
-keys, but it must not maintain another membership list.
+Frontmatter is the only sprint membership source:
 
-The charter body records:
+- `refinement_stories` contains canonical Story keys selected for planning.
+- `committed_stories` contains only reviewed Story packages explicitly moved
+  to `ready-for-dev` in the tracker.
+- The body may explain selection and dependencies but does not maintain a
+  second membership list.
 
-- a measurable sprint goal and done signal;
-- why each frontmatter story key supports the goal;
-- capacity assumptions and planned absences;
-- cross-story dependencies and integration checkpoints;
-- shared file, contract, persistence, or domain boundaries that need
-  coordination;
-- accepted scope changes, removed work, and carry-over destinations; and
-- sprint review and retrospective outcomes.
-
-Every planning or delivery operation must name its `sprint_id`; do not infer a
-"current" sprint from file order or modification time. A story key may appear
-in at most one non-closed, non-cancelled charter across both membership fields.
+Every operation names its `sprint_id`; never infer a current sprint by file
+order or modification time. A Story may occur in at most one non-closed,
+non-cancelled charter across both membership fields.
 
 ## 1. Prepare the sprint
 
-1. Read `epics.md`, `sprint-status.yaml`, open action items, and relevant
-   architecture or product decisions.
-2. Define one sprint goal before selecting stories.
-3. Record sprint dates, facilitator, capacity assumptions, and constraints.
-4. Select candidate story keys from the canonical backlog. A story may be
-   selected for refinement before it is `ready-for-dev`.
-5. Add accepted planning candidates to `refinement_stories`; do not add them to
-   `committed_stories` yet.
-6. Reject a candidate when its dependency, product decision, or expected scope
-   makes the sprint goal or capacity assumption unrealistic.
+1. Read `epics.md`, `sprint-status.yaml`, open action items, relevant
+   architecture/product decisions, and existing Epic packages.
+2. Define one measurable sprint goal before selecting Stories.
+3. Record dates, facilitator, capacity assumptions, absences, and constraints.
+4. Select canonical backlog keys. A Story may enter refinement while still at
+   `backlog`.
+5. Add accepted planning candidates to `refinement_stories`, not
+   `committed_stories`.
+6. Reject candidates whose dependencies, decisions, or expected scope make the
+   goal unrealistic.
 
-No story status changes during candidate selection.
+Candidate selection does not change Story lifecycle.
 
-## 2. Break down stories
+## 2. Break down Stories
 
-1. For the explicitly supplied `sprint_id`, select a story key from
-   `refinement_stories` and create its unapproved file only under
-   `story-drafts/`.
-2. Follow [`story-execution.md`](story-execution.md) for behavior analysis,
-   acceptance criteria, tasks, dependencies, ownership, and verification plans.
-3. Refine different stories concurrently when their planning scopes do not
-   conflict.
-4. Run `bmad-review` on every draft. Keep material unresolved decisions in the
-   draft and keep the tracker entry at `backlog`.
-5. Obtain human approval before publishing a story contract.
+1. For the supplied `sprint_id`, select one cohesive Story batch from
+   `refinement_stories`.
+2. Create or update each permanent package under its owning Epic:
 
-The BMAD sprint generator scans for Markdown files only in the implementation
-artifact root. Keeping drafts in the nested directory prevents an incomplete
-story from being inferred as `ready-for-dev`.
+   ```text
+   epics/<epic-key>/stories/<story-key>/
+   ├── README.md
+   ├── requirements.md
+   ├── contract.md
+   ├── tasks.md
+   └── verification.md
+   ```
+
+3. Follow [story-execution.md](story-execution.md) for behavior, contracts,
+   tasks, dependencies, ownership, and verification.
+4. Refine Stories concurrently when planning scopes do not conflict.
+5. Run `bmad-review` on the complete Epic/Story package.
+6. Keep unresolved material decisions explicit and leave tracker state at
+   `backlog` until human approval.
+
+There is no draft/published file move. Story content is edited in place; only
+the lifecycle tracker advances.
 
 ## 3. Commit sprint scope
 
-1. Set each approved draft selected for delivery to `ready-for-dev`, then
-   publish it to `_bmad-output/implementation-artifacts/<story-key>.md`.
-2. Verify that the published file has valid BMAD frontmatter and complete
-   readiness coverage. File existence alone is not approval, even though the
-   generator uses it as a `ready-for-dev` floor.
-3. Run `bmad-sprint-planning` as a dry run first. Resolve warnings, illegal
-   states, and orphans before writing.
-4. Run the normal BMAD generation and validation workflow. Do not hand-edit
-   generated lifecycle entries.
-5. Move the approved key from `refinement_stories` to `committed_stories`.
-   Leave planning-only or unapproved keys under `refinement_stories`; they are
-   not implementation commitments.
-6. Confirm that the sprint goal, capacity, dependencies, and coordination
-   boundaries are accepted; then set the charter to `committed`.
+1. Confirm every selected Story package covers behavior, contract, backend,
+   security, validation, frontend, integration, ACs, dependencies, and
+   verification.
+2. Confirm every material decision has an owner, approved resolution, and
+   dated evidence.
+3. Promote approved stable contract subsets into `docs/contracts/`; Story task
+   fixtures consume them instead of redefining them.
+4. Run `bmad-sprint-planning` as a dry run from the latest base. Resolve
+   warnings, illegal states, and orphans.
+5. The sprint integration owner explicitly sets approved Story keys to
+   `ready-for-dev`, generates, and validates `sprint-status.yaml`.
+6. Move the same keys from `refinement_stories` to `committed_stories`.
+7. Confirm goal, capacity, dependencies, and coordination boundaries; then set
+   the charter to `committed`.
 
-One sprint integration owner serializes publication, charter membership
-changes, and `sprint-status.yaml` regeneration. Parallel story-breakdown PRs
-change draft artifacts only; after their approval, the integration owner
-publishes them and refreshes shared sprint artifacts from the latest base.
+One integration owner serializes charter membership and tracker generation.
+Nested Story-folder existence is not an automatic readiness signal, and no
+root-level Story Markdown copy is created.
 
-Sprint commitment does not require every selected story to be implemented at
-once. It defines the team's agreed scope and coordination boundary.
+Sprint commitment defines agreed scope; it does not require every committed
+Story to start at once.
 
 ## 4. Run concurrent work
 
 Set the charter to `active`, then apply the ownership, dependency,
-branch/worktree, scope, status-transition, and shared-boundary rules in
-[`story-execution.md`](story-execution.md). Record blockers and resolution
-conditions, then re-check whether the sprint goal remains achievable;
-independent work continues when its dependencies are satisfied.
+branch/worktree, task-transition, and shared-boundary rules in
+[story-execution.md](story-execution.md).
 
-Root story-file detection synchronizes only the `ready-for-dev` floor. During
-implementation, `bmad-build` owns advanced story transitions and its sprint
-sync maps story artifact `in-review` to tracker `review`. Ordinary sprint
-regeneration never infers advanced states and never downgrades progress.
+- Multiple Stories and independent tasks may be active concurrently.
+- Each `doing` task has one owner, one non-`main` branch/worktree, declared
+  scope, and satisfied dependencies.
+- Overlapping contract, file, persistence, or domain work shares an approved
+  coordination record.
+- `bmad-build` synchronizes implementation lifecycle and evidence; ordinary
+  sprint regeneration never downgrades progress.
 
 ## 5. Control sprint changes
 
 - Do not add work silently after commitment.
-- Record every added or removed story key, reason, decision owner, and impact on
-  the sprint goal or capacity.
-- Return independent discoveries to the canonical backlog rather than hiding
-  them inside a current task.
-- Replan when a dependency or scope change invalidates the sprint goal.
-- Keep the charter's story list synchronized with agreed sprint membership, but
-  continue reading lifecycle state from `sprint-status.yaml`.
-- Validate a charter before commitment: its ID is unique; `start <= end`; its
-  status transition is legal; its goal, facilitator, capacity assumptions, and
-  membership are non-empty; every story key exists in `epics.md`; every
-  committed key has exactly one approved root story artifact; and no story is
-  assigned to another non-closed, non-cancelled charter.
-- Serialize writes to `sprint-status.yaml` through the sprint integration owner
-  and regenerate from the latest base revision.
+- Record each added/removed Story, reason, decision owner, and impact on goal
+  and capacity.
+- Return independent discoveries to the canonical backlog.
+- Replan when a dependency or scope change invalidates the goal.
+- Keep charter membership synchronized with agreement while continuing to
+  read lifecycle only from `sprint-status.yaml`.
+- Serialize tracker writes through the sprint integration owner from the
+  latest base revision.
+
+Before commitment, validate that the charter ID is unique; `start <= end`;
+status transition is legal; goal, facilitator, capacity, and membership are
+complete; every key exists in `epics.md`; every committed key has one complete
+nested Story package and tracker `ready-for-dev` or later; and no key belongs
+to another open charter.
 
 ## 6. Review and close
 
-1. Set the charter to `review` when the sprint timebox ends or all committed
-   work reaches a terminal result.
-2. Combine sprint membership from the charter, story lifecycle from
-   `sprint-status.yaml`, and task evidence from approved story artifacts.
-3. Demonstrate completed outcomes against the sprint goal. Do not count planned
-   or partially verified behavior as delivered.
-4. Preserve unfinished keys in the original charter and their current lifecycle
-   state. Record each outcome as `carried-over` with a destination sprint ID;
-   the destination may not commit the key until the original charter closes.
-5. Record retrospective decisions and summaries in the charter. Track
-   actionable follow-ups only through the BMAD retrospective workflow and the
-   `action_items` section of `sprint-status.yaml`.
+1. Set the charter to `review` when the timebox ends or all committed work has
+   a terminal result.
+2. Combine membership from the charter, lifecycle from `sprint-status.yaml`,
+   and task/evidence state from each Story package.
+3. Demonstrate completed outcomes against the sprint goal; planned or partial
+   behavior is not delivered evidence.
+4. Record unfinished outcomes as `carried-over` with a destination sprint.
+5. Record retrospective outcomes and track action items through BMAD's
+   `action_items` section.
 6. Set the charter to `closed` after outcomes and carry-over destinations are
    recorded.
+
+## BMAD synchronization note
+
+The generic sprint generator scans only root-level Markdown files when it
+infers a `ready-for-dev` floor. CareerFitCV deliberately keeps Stories nested,
+so lifecycle advancement must be explicit through the approved
+`bmad-sprint-planning` flow. Do not add duplicate root files merely to trigger
+inference.
