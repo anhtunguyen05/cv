@@ -614,6 +614,12 @@ So that I can submit an application-ready copy.
 Users can answer targeted Evidence questions and review AI-generated Patch
 proposals before creating a new CV Version. This is post-MVP.
 
+**Shared planning package:**
+[`epics/epic-4-ai-revision/README.md`](epics/epic-4-ai-revision/README.md)
+owns Epic 4 overview, shared rules, contracts, data/lifecycle, security,
+UX/validation, test strategy, decisions, and cross-story coordination. The
+canonical story intent and acceptance criteria remain in this file.
+
 **FRs covered:** FR12
 
 ### Story 4.1: Start an Evidence interview
