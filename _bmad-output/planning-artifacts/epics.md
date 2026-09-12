@@ -531,6 +531,12 @@ So that I can identify an actionable CV improvement area.
 Users can select a Template, preview a saved CV Version, and Export it through
 the browser print/HTML path.
 
+**Shared planning package:**
+[`epics/epic-3-preview-export/README.md`](epics/epic-3-preview-export/README.md)
+owns Epic 3 overview, shared rules, contracts, data/lifecycle, security,
+UX/validation, test strategy, decisions, and cross-story coordination. The
+canonical story intent and acceptance criteria remain in this file.
+
 **FRs covered:** FR10, FR11
 
 ### Story 3.1: Select a Template
