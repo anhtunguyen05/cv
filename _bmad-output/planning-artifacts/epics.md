@@ -751,6 +751,12 @@ So that I can try a corrected proposal without losing the prior decision.
 Users and operators receive reliable, traceable behavior as asynchronous work,
 AI integrations, retention, and monitoring are introduced.
 
+**Shared planning package:**
+[`epics/epic-5-operational-safety/README.md`](epics/epic-5-operational-safety/README.md)
+owns Epic 5 overview, shared rules, contracts, data/lifecycle, security,
+UX/validation, test strategy, decisions, and cross-story coordination. The
+canonical story intent and acceptance criteria remain in this file.
+
 **FRs covered:** NFR1, NFR2, NFR3, NFR4, NFR5
 
 ### Story 5.1: Audit AI tool calls safely
