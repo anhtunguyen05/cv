@@ -374,6 +374,12 @@ So that I can preserve a stable CV snapshot for later comparison and Export.
 Users can save a Job Description, analyze its requirements, and compare it with
 a selected CV Version through an explainable Match Report.
 
+**Shared planning package:**
+[`epics/epic-2-job-fit/README.md`](epics/epic-2-job-fit/README.md)
+owns Epic 2 overview, shared rules, contracts, data/lifecycle, security,
+UX/validation, test strategy, decisions, and cross-story coordination. The
+canonical story intent and acceptance criteria remain in this file.
+
 **FRs covered:** FR6, FR7, FR8, FR9
 
 ### Story 2.1: Save a Job Description
