@@ -1,0 +1,91 @@
+# Story 4.1: Start an Evidence interview — Tasks
+
+- [ ] TASK-4-1-01: Freeze Interview eligibility, source, question, and API fixtures
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `none`
+  - Covers: `AC-4-1-start-an-evidence-interview-01`, `AC-4-1-start-an-evidence-interview-02`
+  - Scope: eligible/not-needed/source/session/retry/concurrency/question payloads
+  - Coordination: `E4-COORD-INTERVIEW-001`, `E4-COORD-TEST-001`
+  - Blocked by: `E4-PREREQ-VERSION-001`, `E4-PREREQ-MATCH-001`, `E4-DEC-001`, `E4-DEC-002`, `E4-DEC-009`
+  - Outcome: One accepted start/read contract for backend and frontend.
+  - Acceptance: fixtures pin full source tuple and prove no misleading empty session.
+  - Verification: schema/fixture and product/architecture/UX approval evidence.
+- [ ] TASK-4-1-02: Implement Interview aggregate and persistence constraints
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-1-01`
+  - Covers: `AC-4-1-start-an-evidence-interview-01`
+  - Scope: ULID model/migration, source/owner/area/question-set/status fields, uniqueness/indexes
+  - Coordination: `E4-COORD-INTERVIEW-001`
+  - Blocked by: `none`
+  - Outcome: Persist one identifiable session without mutable source/area drift.
+  - Acceptance: MySQL constraints reject incomplete/cross-source/duplicate trusted state.
+  - Verification: migration/model/MySQL constraint tests.
+- [ ] TASK-4-1-03: Implement Interview eligibility and atomic start service
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-1-02`
+  - Covers: `AC-4-1-start-an-evidence-interview-01`, `AC-4-1-start-an-evidence-interview-02`
+  - Scope: ownership graph, unresolved-area resolution, question snapshot, dedupe/precondition/transaction
+  - Coordination: `E4-COORD-INTERVIEW-001`
+  - Blocked by: `none`
+  - Outcome: Create/reconcile only eligible sessions and leave sources unchanged.
+  - Acceptance: no-area, foreign, stale, concurrent, rollback, and lost-response cases match fixtures.
+  - Verification: domain/application/MySQL concurrency and rollback tests.
+- [ ] TASK-4-1-04: Expose Interview start/read APIs
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-1-03`
+  - Covers: `AC-4-1-start-an-evidence-interview-01`, `AC-4-1-start-an-evidence-interview-02`
+  - Scope: Form Request, policy, resource/controller/routes, envelope/error/allowed-action mapping
+  - Coordination: `E4-COORD-INTERVIEW-001`
+  - Blocked by: `none`
+  - Outcome: Serve approved non-disclosing start/read behavior.
+  - Acceptance: transport/auth/eligibility/idempotency responses match canonical fixtures.
+  - Verification: Laravel feature/contract tests with two Users.
+- [ ] TASK-4-1-05: Build Interview start and not-needed frontend states
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-1-01`
+  - Covers: `AC-4-1-start-an-evidence-interview-01`, `AC-4-1-start-an-evidence-interview-02`
+  - Scope: schema/adapter/query/mutation, start control, areas, loading/not-needed/conflict/error/recovery/focus
+  - Coordination: `E4-COORD-INTERVIEW-001`
+  - Blocked by: `none`
+  - Outcome: Explain eligibility and enter the exact session accessibly.
+  - Acceptance: duplicate clicks are guarded and no-area state cannot imply an interview exists.
+  - Verification: type-check, adapter, component, keyboard, and accessibility tests.
+- [ ] TASK-4-1-06: Verify source integrity, ownership, and start races
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-1-04`, `TASK-4-1-05`
+  - Covers: `AC-4-1-start-an-evidence-interview-01`, `AC-4-1-start-an-evidence-interview-02`
+  - Scope: two-User, source mutation assertions, active duplicate, concurrency, rollback, safe errors
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: `E4-DEC-009`
+  - Outcome: Prove start is isolated, atomic, and source-preserving.
+  - Acceptance: exact fixture markers remain unchanged and only one approved session outcome exists.
+  - Verification: approved PHPUnit/MySQL/Vitest commands and evidence.
+- [ ] TASK-4-1-07: Verify Interview start journey end to end
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-1-06`
+  - Covers: `AC-4-1-start-an-evidence-interview-01`, `AC-4-1-start-an-evidence-interview-02`
+  - Scope: browser eligible/not-needed/reload/retry/foreign/keyboard scenarios
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: approved `E4-COORD-INTERVIEW-001` answer-entry checkpoint from Story 4.2; `E4-DEC-009`
+  - Outcome: Verify the complete Match Report-to-Interview handoff.
+  - Acceptance: scenarios pass independently with disposable synthetic source data.
+  - Verification: approved Playwright command and fixture/reset evidence.
+
+## Dependency map
+
+`01 -> 02 -> 03 -> 04`; `01 -> 05`; `04 + 05 -> 06 -> 07`.
+Tasks 02–04 and 05 may use separate worktrees after the fixture checkpoint.

@@ -1,0 +1,91 @@
+# Story 4.2: Answer Evidence questions — Tasks
+
+- [ ] TASK-4-2-01: Freeze Evidence answer, provenance, progression, and error fixtures
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `none`
+  - Covers: `AC-4-2-answer-evidence-questions-01` through `AC-4-2-answer-evidence-questions-03`
+  - Scope: valid/invalid/cannot-provide/stale/retry/correction/provenance/progress payloads
+  - Coordination: `E4-COORD-INTERVIEW-001`, `E4-COORD-TEST-001`
+  - Blocked by: approved `E4-COORD-INTERVIEW-001` session/question checkpoint from Story 4.1; `E4-DEC-001` through `E4-DEC-003`, `E4-DEC-009`
+  - Outcome: Freeze one answer/progress contract shared across layers.
+  - Acceptance: fixtures distinguish User text, non-supporting outcome, and system content.
+  - Verification: schema/fixture and product/architecture/UX approval evidence.
+- [ ] TASK-4-2-02: Implement Evidence Answer persistence and provenance
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-2-01`
+  - Covers: `AC-4-2-answer-evidence-questions-01`, `AC-4-2-answer-evidence-questions-03`
+  - Scope: ULID/model/migration, raw/normalized data, mode, question/session/source, timestamp, provenance, indexes
+  - Coordination: `E4-COORD-INTERVIEW-001`
+  - Blocked by: `none`
+  - Outcome: Persist attributable Evidence without erasing original answers.
+  - Acceptance: constraints reject ambiguous mode/source/provenance and preserve correction history as approved.
+  - Verification: migration/model/MySQL constraint tests.
+- [ ] TASK-4-2-03: Implement answer validation and atomic session transition
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-2-02`
+  - Covers: `AC-4-2-answer-evidence-questions-01` through `AC-4-2-answer-evidence-questions-03`
+  - Scope: active/current question, mode/text rules, stale/dedupe/concurrency, next/completion transition
+  - Coordination: `E4-COORD-INTERVIEW-001`
+  - Blocked by: `none`
+  - Outcome: Accept exactly one valid User outcome and advance consistently.
+  - Acceptance: invalid/negative/retry/race cases never become false supporting Evidence.
+  - Verification: domain/application/MySQL concurrency/rollback tests.
+- [ ] TASK-4-2-04: Expose Evidence answer/progress APIs
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-2-03`
+  - Covers: `AC-4-2-answer-evidence-questions-01` through `AC-4-2-answer-evidence-questions-03`
+  - Scope: Form Request, policy, resources/controllers/routes, envelope/error/allowed-action mapping
+  - Coordination: `E4-COORD-INTERVIEW-001`
+  - Blocked by: `none`
+  - Outcome: Serve safe answer and current progress contracts.
+  - Acceptance: auth, validation, stale, duplicate, malformed, and success match fixtures.
+  - Verification: Laravel feature/contract tests with two Users.
+- [ ] TASK-4-2-05: Build accessible Evidence question and answer flow
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-2-01`
+  - Covers: `AC-4-2-answer-evidence-questions-01` through `AC-4-2-answer-evidence-questions-03`
+  - Scope: adapter/state/form, answer/cannot-provide, draft, limits, submit/progress/conflict/reload/focus
+  - Coordination: `E4-COORD-INTERVIEW-001`
+  - Blocked by: `none`
+  - Outcome: Let Users provide or decline Evidence with clear provenance and recovery.
+  - Acceptance: no mode ambiguity, errors preserve input, and progress/status is accessible.
+  - Verification: type-check, adapter/component, keyboard, and accessibility tests.
+- [ ] TASK-4-2-06: Verify Evidence integrity, isolation, and races
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-2-04`, `TASK-4-2-05`
+  - Covers: `AC-4-2-answer-evidence-questions-01` through `AC-4-2-answer-evidence-questions-03`
+  - Scope: two-User, raw/provenance, non-supporting, stale/out-of-order, duplicate/lost/concurrent, logs
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: `E4-DEC-009`
+  - Outcome: Prove answers remain attributable, safe, and transactionally consistent.
+  - Acceptance: exact markers and timestamps prove no invented/foreign/ambiguous Evidence.
+  - Verification: approved PHPUnit/MySQL/Vitest/security commands and evidence.
+- [ ] TASK-4-2-07: Verify Evidence answering journey end to end
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-2-06`
+  - Covers: `AC-4-2-answer-evidence-questions-01` through `AC-4-2-answer-evidence-questions-03`
+  - Scope: browser answer/invalid/decline/reload/conflict/retry/foreign/keyboard scenarios
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: `E4-DEC-009`
+  - Outcome: Verify the complete Evidence collection journey.
+  - Acceptance: independent disposable-data scenarios preserve User versus system provenance.
+  - Verification: approved Playwright command and fixture/reset evidence.
+
+## Dependency map
+
+`01 -> 02 -> 03 -> 04`; `01 -> 05`; `04 + 05 -> 06 -> 07`.
+Persistence/API and frontend may proceed in separate worktrees after fixtures.

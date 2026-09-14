@@ -1,0 +1,117 @@
+# Story 4.3: Generate a Patch proposal — Tasks
+
+- [ ] TASK-4-3-01: Freeze provider, Patch, failure, and adversarial fixtures
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `none`
+  - Covers: `AC-4-3-generate-a-patch-proposal-01`, `AC-4-3-generate-a-patch-proposal-02`
+  - Scope: eligible/minimum-data/result/schema/grounding/injection/retry/audit/pending payloads
+  - Coordination: `E4-COORD-PROVIDER-001`, `E4-COORD-PATCH-001`, `E4-COORD-TEST-001`
+  - Blocked by: approved `E4-COORD-INTERVIEW-001` Evidence-context checkpoint; `E4-DEC-001` through `E4-DEC-006`, `E4-DEC-008`, `E4-DEC-009`, `DISCOVERY-E4-001`, `DISCOVERY-E4-002`
+  - Outcome: Freeze one provider-to-validated-Patch boundary and quality gate.
+  - Acceptance: fixtures prove only grounded allowlisted output can become pending.
+  - Verification: schema/adversarial/evaluation review and approval evidence.
+- [ ] TASK-4-3-02: Implement strict Patch candidate validator
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-3-01`
+  - Covers: `AC-4-3-generate-a-patch-proposal-01`, `AC-4-3-generate-a-patch-proposal-02`
+  - Scope: schema/version, allowlist, types/limits, old value/source, Evidence citations, safety, canonicalization
+  - Coordination: `E4-COORD-PATCH-001`
+  - Blocked by: `none`
+  - Outcome: Reject every unsupported or ungrounded candidate deterministically.
+  - Acceptance: adversarial fixtures fail closed with stable reasons and no mutation.
+  - Verification: domain/property/adversarial unit tests.
+- [ ] TASK-4-3-03: Implement provider-neutral orchestrator contract and fake
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-3-01`
+  - Covers: `AC-4-3-generate-a-patch-proposal-01`, `AC-4-3-generate-a-patch-proposal-02`
+  - Scope: provider interface, minimum-data mapper, prompt/tool versions, fake, correlation/redaction contract
+  - Coordination: `E4-COORD-PROVIDER-001`
+  - Blocked by: `none`
+  - Outcome: Define one provider-independent untrusted DTO boundary testable without real traffic.
+  - Acceptance: fake proves minimum input, no persistence authority, version pinning, and deterministic failure injection.
+  - Verification: provider contract/fake/minimum-data/redaction unit tests.
+- [ ] TASK-4-3-04: Implement approved provider adapter and execution controls
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-3-03`
+  - Covers: `AC-4-3-generate-a-patch-proposal-01`, `AC-4-3-generate-a-patch-proposal-02`
+  - Scope: selected provider/model adapter, secrets, timeout/rate/retry/cancel/late result, cost/latency telemetry
+  - Coordination: `E4-COORD-PROVIDER-001`
+  - Blocked by: `E4-PREREQ-OPS-001`, `E4-DEC-005`, `E4-DEC-006`, `DISCOVERY-E4-001`
+  - Outcome: Connect one approved provider without changing the trusted domain boundary.
+  - Acceptance: network behavior, secrets, retry/cancel, and telemetry match approved provider/ops fixtures.
+  - Verification: provider sandbox/contract/network/redaction/failure tests with no production User data.
+- [ ] TASK-4-3-05: Implement generation service and pending Patch persistence
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-3-02`, `TASK-4-3-03`, `TASK-4-3-04`
+  - Covers: `AC-4-3-generate-a-patch-proposal-01`, `AC-4-3-generate-a-patch-proposal-02`
+  - Scope: ownership/eligibility, dedupe/lease, provider call, validation, Patch model/migration, sanitized outcome transaction
+  - Coordination: `E4-COORD-PROVIDER-001`, `E4-COORD-PATCH-001`
+  - Blocked by: `none`
+  - Outcome: Persist exactly one valid pending Patch or no misleading Patch.
+  - Acceptance: source remains unchanged and concurrency/failure/rollback produce consistent state.
+  - Verification: application/Laravel/MySQL concurrency and rollback tests.
+- [ ] TASK-4-3-06: Expose Patch generation and read APIs
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-3-05`
+  - Covers: `AC-4-3-generate-a-patch-proposal-01`, `AC-4-3-generate-a-patch-proposal-02`
+  - Scope: Form Request, policy, generation/read controller/resource/routes, idempotency, status/error mapping
+  - Coordination: `E4-COORD-PROVIDER-001`, `E4-COORD-PATCH-001`
+  - Blocked by: `none`
+  - Outcome: Serve safe generation/reconciliation and validated Patch read contracts.
+  - Acceptance: eligible/success/provider/invalid/conflict/retry/lost/foreign cases match fixtures without raw provider errors or secrets.
+  - Verification: Laravel feature/contract tests with two Users and provider fake.
+- [ ] TASK-4-3-07: Implement accessible Patch generation frontend state
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-3-01`
+  - Covers: `AC-4-3-generate-a-patch-proposal-01`, `AC-4-3-generate-a-patch-proposal-02`
+  - Scope: schema adapter, mutation/reconciliation, generate/progress/cancel/failure/retry/success state and focus
+  - Coordination: `E4-COORD-PROVIDER-001`, `E4-COORD-PATCH-001`
+  - Blocked by: `none`
+  - Outcome: Present honest generation outcomes without client-created Patch truth.
+  - Acceptance: every fixture maps to an accessible state and no raw provider error/secret reaches UI.
+  - Verification: type-check, adapter/query/component/keyboard/accessibility tests.
+- [ ] TASK-4-3-08: Verify provider security and Patch quality gate
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-3-06`, `TASK-4-3-07`
+  - Covers: `AC-4-3-generate-a-patch-proposal-01`, `AC-4-3-generate-a-patch-proposal-02`
+  - Scope: adversarial/quality/minimum-disclosure/secrets/logs/ownership/idempotency/source-mutation suite
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: `E4-DEC-008`, `E4-DEC-009`, `DISCOVERY-E4-002`
+  - Outcome: Prove the proposal is grounded, bounded, private, and never auto-applied.
+  - Acceptance: approved thresholds pass and counterexamples create no pending Patch.
+  - Verification: evaluation report plus security/provider/MySQL command evidence.
+- [ ] TASK-4-3-09: Verify Patch generation journey end to end
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-3-08`
+  - Covers: `AC-4-3-generate-a-patch-proposal-01`, `AC-4-3-generate-a-patch-proposal-02`
+  - Scope: browser generate/success/invalid/timeout/retry/lost/foreign/keyboard/provider-fake scenarios
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: approved `E4-COORD-PATCH-001` review-entry checkpoint from Story 4.4; `E4-DEC-009`
+  - Outcome: Verify complete Evidence-to-pending-Patch behavior.
+  - Acceptance: disposable scenarios expose only validated proposal data and keep source markers unchanged.
+  - Verification: approved Playwright/provider-fake command and reset evidence.
+
+## Dependency map
+
+`01 -> 02`; `01 -> 03 -> 04`; `02 + 03 + 04 -> 05 -> 06`;
+`01 -> 07`; `06 + 07 -> 08 -> 09`.
+Validator, provider-neutral contract, approved adapter, and frontend use isolated
+scopes after fixtures; real provider traffic remains blocked by operational approval.

@@ -1,0 +1,92 @@
+# Story 4.5: Approve a Patch into a new CV Version — Tasks
+
+- [ ] TASK-4-5-01: Freeze apply transaction, stale, race, and result fixtures
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `none`
+  - Covers: `AC-4-5-approve-a-patch-into-a-new-cv-version-01` through `AC-4-5-approve-a-patch-into-a-new-cv-version-03`
+  - Scope: confirmation/revalidation/transform/name/provenance/idempotency/conflict/failure payloads and states
+  - Coordination: `E4-COORD-PATCH-001`, `E4-COORD-APPLY-001`, `E4-COORD-TEST-001`
+  - Blocked by: `E4-PREREQ-VERSION-001`; approved `E4-COORD-PATCH-001` review/status checkpoint from Story 4.4; `E4-DEC-001`, `E4-DEC-004`, `E4-DEC-007` through `E4-DEC-009`
+  - Outcome: Freeze one atomic Patch-to-Version contract and race matrix.
+  - Acceptance: fixtures identify every write boundary and prove source immutability.
+  - Verification: schema/fixture and product/architecture/security/UX approval evidence.
+- [ ] TASK-4-5-02: Implement pure Patch transform and full snapshot revalidation
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-5-01`
+  - Covers: `AC-4-5-approve-a-patch-into-a-new-cv-version-01`, `AC-4-5-approve-a-patch-into-a-new-cv-version-02`
+  - Scope: allowlisted target resolution, exact old value, typed new value, Evidence/status/source, complete CV schema
+  - Coordination: `E4-COORD-PATCH-001`, `E4-COORD-APPLY-001`
+  - Blocked by: `none`
+  - Outcome: Produce a validated in-memory result or a deterministic stale/invalid failure.
+  - Acceptance: transform cannot mutate source input or touch an unapproved field/item.
+  - Verification: unit/property/golden snapshot and adversarial tests.
+- [ ] TASK-4-5-03: Implement atomic idempotent Patch application service
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-5-02`
+  - Covers: `AC-4-5-approve-a-patch-into-a-new-cv-version-01` through `AC-4-5-approve-a-patch-into-a-new-cv-version-03`
+  - Scope: owner/status locks, Version/provenance insert, Patch applied/result transition, dedupe, rollback, competing decisions
+  - Coordination: `E4-COORD-APPLY-001`
+  - Blocked by: `none`
+  - Outcome: Commit exactly one result Version and applied Patch together.
+  - Acceptance: injected failure at every write rolls back all changes; repeat returns same result.
+  - Verification: application/MySQL transaction, constraint, concurrency, and fault-injection tests.
+- [ ] TASK-4-5-04: Expose explicit Patch approval/reconciliation API
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-5-03`
+  - Covers: `AC-4-5-approve-a-patch-into-a-new-cv-version-01` through `AC-4-5-approve-a-patch-into-a-new-cv-version-03`
+  - Scope: Form Request, policy, controller/resource/route, confirmation/precondition/idempotency, error/result mapping
+  - Coordination: `E4-COORD-APPLY-001`
+  - Blocked by: `none`
+  - Outcome: Serve a non-disclosing, conflict-aware, reconcilable approval contract.
+  - Acceptance: success/stale/race/retry/lost/foreign/malformed cases match fixtures.
+  - Verification: Laravel feature/contract tests with two Users and forced failures.
+- [ ] TASK-4-5-05: Build accessible approval, conflict, retry, and result UI
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-5-01`
+  - Covers: `AC-4-5-approve-a-patch-into-a-new-cv-version-01` through `AC-4-5-approve-a-patch-into-a-new-cv-version-03`
+  - Scope: adapter/mutation, explicit confirmation, pending/disabled/stale/failure/reconcile/success states, focus/result link
+  - Coordination: `E4-COORD-APPLY-001`
+  - Blocked by: `none`
+  - Outcome: Keep the User informed and in control without duplicate approval.
+  - Acceptance: repeated click guarded, stale distinct from retryable, and success identifies source/result clearly.
+  - Verification: type-check, adapter/component, keyboard, and accessibility tests.
+- [ ] TASK-4-5-06: Verify apply atomicity, ownership, idempotency, and races
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-5-04`, `TASK-4-5-05`
+  - Covers: `AC-4-5-approve-a-patch-into-a-new-cv-version-01` through `AC-4-5-approve-a-patch-into-a-new-cv-version-03`
+  - Scope: MySQL write failures, two-User/mixed source, stale old value, approve/reject races, lost result, provenance
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: `E4-DEC-009`
+  - Outcome: Prove exactly-once consistent application and immutable history.
+  - Acceptance: no test state contains applied-without-Version or Version-without-applied/provenance.
+  - Verification: approved PHPUnit/MySQL/Vitest commands and database evidence.
+- [ ] TASK-4-5-07: Verify explicit Patch approval journey end to end
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-4-5-06`
+  - Covers: `AC-4-5-approve-a-patch-into-a-new-cv-version-01` through `AC-4-5-approve-a-patch-into-a-new-cv-version-03`
+  - Scope: browser confirm/success/stale/failure/retry/lost/race/foreign/keyboard and source/result comparison
+  - Coordination: `E4-COORD-TEST-001`
+  - Blocked by: `E4-DEC-009`
+  - Outcome: Verify complete human-approved Patch-to-Version behavior.
+  - Acceptance: disposable scenarios prove one result Version, unchanged source, and accessible recovery.
+  - Verification: approved Playwright command and fixture/reset evidence.
+
+## Dependency map
+
+`01 -> 02 -> 03 -> 04`; `01 -> 05`; `04 + 05 -> 06 -> 07`.
+Frontend may proceed separately after fixtures; application transaction files
+remain reserved to one `E4-COORD-APPLY-001` owner.
