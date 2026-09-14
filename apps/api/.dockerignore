@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker itself
+.dockerignore
+docker-compose*.yml
+Dockerfile
+
+# Storage and symlinks — public/storage is a Windows symlink incompatible with Docker tar
+public/storage
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+
+# Test artifacts
+.phpunit.result.cache
+tests/
+
+# Node / frontend
+node_modules
+npm-debug.log
+
+# IDE and OS
+.editorconfig
+.vscode
+.idea
+*.swp
+Thumbs.db
+.DS_Store
+
+# Docs (not needed in image)
+README.md
+AGENTS.md
+CLAUDE.md
+*.md

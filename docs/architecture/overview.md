@@ -19,7 +19,7 @@ design until implemented and verified.
 Vue web client
   -> Laravel /api/v1 boundary
      -> application and domain rules
-        -> MySQL trusted state
+        -> PostgreSQL trusted state
 
 Optional worker / AI provider
   -> explicit result or proposal contract
@@ -43,7 +43,7 @@ interaction state. A worker or provider never writes trusted state directly.
 
 ## Operational posture
 
-MySQL 8.4 is canonical for shared development, integration/E2E verification,
+PostgreSQL 16 is canonical for shared development, integration/E2E verification,
 and production. SQLite is local fast-test/scaffold support only. Redis, the
 worker, queue processing, and server-side PDF are optional and cannot block the
 core MVP flow.

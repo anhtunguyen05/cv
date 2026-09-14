@@ -2,7 +2,7 @@
 
 References: AD-1, AD-3, AD-4, AD-5, AD-11, AD-15, AD-16.
 
-- **DATA-STD-001:** MySQL 8.4 is the canonical production-compatible datastore. SQLite does not
+- **DATA-STD-001:** PostgreSQL 16 is the canonical production-compatible datastore. SQLite does not
   prove migration, query, collation, or constraint compatibility.
 - **DATA-STD-002:** New product aggregates use ULID string primary/public IDs. Existing Laravel
   users and system tables keep their bigint keys.

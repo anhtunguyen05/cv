@@ -43,23 +43,22 @@ services:
       - app
 
   db:
-    image: mysql:8.4
+    image: postgres:16-alpine
 
-    container_name: laravel_mysql
+    container_name: laravel_postgres
 
     restart: unless-stopped
 
     ports:
-      - "3306:3306"
+      - "5432:5432"
 
     environment:
-      MYSQL_DATABASE: laravel
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: secret
+      POSTGRES_DB: laravel
+      POSTGRES_USER: laravel
+      POSTGRES_PASSWORD: secret
 
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
 
     networks:
       - laravel_network
@@ -68,12 +67,11 @@ services:
       test:
         [
           "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-uroot",
-          "-proot"
+          "pg_isready",
+          "-U",
+          "laravel",
+          "-d",
+          "laravel"
         ]
       interval: 5s
       timeout: 5s
@@ -96,7 +94,7 @@ services:
       - laravel_network
 
 volumes:
-  mysql_data:
+  postgres_data:
   redis_data:
 
 networks:

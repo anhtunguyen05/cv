@@ -6,7 +6,7 @@ References: AD-17.
 - **TEST-STD-002:** Use PHPUnit for PHP domain/application tests and Laravel HTTP feature tests.
 - **TEST-STD-003:** Use Vitest for Vue/TypeScript unit, component, and composable tests.
 - **TEST-STD-004:** Run migration, persistence, authorization-policy, and API-contract integration
-  tests against MySQL 8.4.
+  tests against PostgreSQL 16.
 - **TEST-STD-005:** Use Playwright for critical browser journeys: authenticated account access,
   CV Version, Job Description analysis, Match Report, Preview, and Export.
 - **TEST-STD-006:** Deterministic analysis/matching requires versioned fixtures and repeatability
