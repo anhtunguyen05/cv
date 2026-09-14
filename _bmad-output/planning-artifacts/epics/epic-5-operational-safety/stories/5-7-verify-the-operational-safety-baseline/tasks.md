@@ -1,0 +1,90 @@
+# Story 5.7 — Tasks
+
+- [ ] TASK-5-7-01: Freeze committed scope, evidence manifest, verdict, freshness, and waiver fixtures
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `none`
+  - Covers: `AC-5-7-verify-the-operational-safety-baseline-01`
+  - Scope: included/excluded controls, source/evidence/gap/ADR/verdict/supersession schema and required matrix
+  - Coordination: `E5-COORD-BASELINE-001`, `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`, `E5-DEC-009`; committed Story owners identified
+  - Outcome: One objective fail-closed operational verdict contract.
+  - Acceptance: missing/failed/stale/inaccessible/leaking evidence cannot map to pass.
+  - Verification: architecture/security/ops/product/release review evidence.
+- [ ] TASK-5-7-02: Implement read-only evidence manifest validator
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-7-01`
+  - Covers: `AC-5-7-verify-the-operational-safety-baseline-01`
+  - Scope: schema/source/version/result/integrity/freshness/access/canary/gap/waiver/ADR checks and exit codes
+  - Coordination: `E5-COORD-BASELINE-001`
+  - Blocked by: `none`
+  - Outcome: Reject incomplete or unsafe evidence without changing Story artifacts.
+  - Acceptance: seeded omission/failure/stale/tamper/canary/expired waiver cases fail deterministically.
+  - Verification: unit/property/golden/negative tests.
+- [ ] TASK-5-7-03: Assemble Story-owned operational evidence manifest
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-7-01`
+  - Covers: `AC-5-7-verify-the-operational-safety-baseline-01`
+  - Scope: audit/failure/retention/deletion/telemetry/matching/ADR artifacts and explicit unresolved decision inventory
+  - Coordination: `E5-COORD-BASELINE-001`
+  - Blocked by: accepted evidence checkpoints from all committed Stories 5.1–5.6
+  - Outcome: Reference exact safe evidence without copying or rewriting it.
+  - Acceptance: every committed control maps to owner/result/artifact/version/time and every exclusion is explicit.
+  - Verification: manifest schema/link/access/integrity/freshness validation.
+- [ ] TASK-5-7-04: Run approved cross-control operational scenarios
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-7-02`, `TASK-5-7-03`
+  - Covers: `AC-5-7-verify-the-operational-safety-baseline-01`
+  - Scope: provider failure/no partial Patch, redaction canaries, deletion isolation/recovery, telemetry alert/runbook, match regression, ADR availability
+  - Coordination: `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`
+  - Outcome: Prove controls compose correctly in the approved environment.
+  - Acceptance: exact source versions pass; any required failed scenario remains failed in evidence.
+  - Verification: approved staging-like/disposable commands and immutable artifacts.
+- [ ] TASK-5-7-05: Triage failures, gaps, decisions, and expiring waivers
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-7-04`
+  - Covers: `AC-5-7-verify-the-operational-safety-baseline-01`
+  - Scope: classify required/optional/out-of-scope, owner/risk/remediation/dependency/expiry/trigger, no silent waiver
+  - Coordination: `E5-COORD-BASELINE-001`
+  - Blocked by: `none`
+  - Outcome: Make unresolved production work explicit and accountable.
+  - Acceptance: each gap has owner/status/risk/next action and cannot disappear between manifest/verdict.
+  - Verification: independent gap-to-source reconciliation review.
+- [ ] TASK-5-7-06: Conduct human operational readiness review and record verdict
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-7-05`
+  - Covers: `AC-5-7-verify-the-operational-safety-baseline-01`
+  - Scope: security/ops/product/architecture/release review, pass/pass-with-gaps/fail, release/kill implications, approvals/date
+  - Coordination: `E5-COORD-BASELINE-001`
+  - Blocked by: `E5-DEC-009`
+  - Outcome: Produce one scoped accountable verdict grounded in immutable evidence.
+  - Acceptance: approvers resolve findings and accept or reject every waiver explicitly.
+  - Verification: dated review record and signed verdict references.
+- [ ] TASK-5-7-07: Verify baseline reproducibility, privacy, and supersession
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-7-06`
+  - Covers: `AC-5-7-verify-the-operational-safety-baseline-01`
+  - Scope: rerun sample/full policy, canary scan, manifest validator, links/integrity, prior-run preservation, supersedes chain
+  - Coordination: `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`
+  - Outcome: Prove the verdict can be audited safely and prior evidence is immutable.
+  - Acceptance: rerun is consistent, zero forbidden canaries, and new manifests never rewrite history.
+  - Verification: independent rerun/privacy/integrity/supersession evidence.
+
+## Dependency map
+
+`01 -> 02`; `01 -> 03`; `02 + 03 -> 04 -> 05 -> 06 -> 07`.

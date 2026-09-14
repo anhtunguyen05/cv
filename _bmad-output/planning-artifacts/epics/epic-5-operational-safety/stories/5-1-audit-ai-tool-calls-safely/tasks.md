@@ -1,0 +1,103 @@
+# Story 5.1 — Tasks
+
+- [ ] TASK-5-1-01: Freeze audit, redaction, operator-query, and canary fixtures
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `none`
+  - Covers: `AC-5-1-audit-ai-tool-calls-safely-01`, `AC-5-1-audit-ai-tool-calls-safely-02`
+  - Scope: event fields/outcomes/failures/canaries/query/RBAC/retention/export matrices
+  - Coordination: `E5-COORD-AUDIT-001`, `E5-COORD-TEST-001`
+  - Blocked by: `E5-PREREQ-AI-001`, `E5-DEC-001`, `E5-DEC-002`, `E5-DEC-004`, `E5-DEC-008`, `DISCOVERY-E5-001`
+  - Outcome: One approved safe audit contract and forbidden-content corpus.
+  - Acceptance: every field has source/classification/cardinality/redaction/retention rule.
+  - Verification: schema/threat/privacy/operator review evidence.
+- [ ] TASK-5-1-02: Implement versioned audit event builder and redactor
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-1-01`
+  - Covers: `AC-5-1-audit-ai-tool-calls-safely-01`
+  - Scope: allowlist mapper, outcome/category/version/correlation, nested redaction, reject/fallback behavior
+  - Coordination: `E5-COORD-AUDIT-001`
+  - Blocked by: `none`
+  - Outcome: Produce safe normalized events from provider outcomes.
+  - Acceptance: all canaries and malformed/unbounded input fail closed from sinks.
+  - Verification: unit/property/fuzz/canary tests.
+- [ ] TASK-5-1-03: Implement append-only audit persistence and retention hooks
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-1-02`
+  - Covers: `AC-5-1-audit-ai-tool-calls-safely-01`, `AC-5-1-audit-ai-tool-calls-safely-02`
+  - Scope: model/migration/store, uniqueness/indexes, fail policy, retention classification, no product mutation
+  - Coordination: `E5-COORD-AUDIT-001`, `E5-COORD-RETENTION-001`
+  - Blocked by: `none`
+  - Outcome: Store immutable operational metadata separately from trusted state.
+  - Acceptance: updates/product foreign keys cannot turn an event into a write path.
+  - Verification: MySQL constraint, append-only, outage, and retention-hook tests.
+- [ ] TASK-5-1-04: Integrate provider/tool outcome audit emission
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-1-03`
+  - Covers: `AC-5-1-audit-ai-tool-calls-safely-01`
+  - Scope: success/failure/cancel/timeout correlation around approved orchestrator boundary
+  - Coordination: `E5-COORD-AUDIT-001`
+  - Blocked by: `none`
+  - Outcome: Emit exactly one reconciled safe outcome per approved attempt.
+  - Acceptance: no raw request/response/secret crosses the event boundary.
+  - Verification: provider-fake integration and sink-canary scans.
+- [ ] TASK-5-1-05: Expose authorized read-only audit query API
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-1-03`
+  - Covers: `AC-5-1-audit-ai-tool-calls-safely-02`
+  - Scope: operator policy, access audit, bounded filters/pagination, resource/controller/routes and safe export guard
+  - Coordination: `E5-COORD-AUDIT-001`
+  - Blocked by: `E5-DEC-001`, `DISCOVERY-E5-001`
+  - Outcome: Serve non-authoritative audit metadata only to approved operators.
+  - Acceptance: access is audited; no raw search/export or product mutation endpoint exists.
+  - Verification: RBAC/Laravel API/query/export-guard tests.
+- [ ] TASK-5-1-06: Build accessible read-only operator audit experience
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-1-01`
+  - Covers: `AC-5-1-audit-ai-tool-calls-safely-02`
+  - Scope: schema adapter, filters/pagination, loading/empty/error/denied/detail, operational label, keyboard/readability
+  - Coordination: `E5-COORD-AUDIT-001`
+  - Blocked by: `E5-DEC-001`, `DISCOVERY-E5-001`
+  - Outcome: Let approved operators understand safe audit data without a write path.
+  - Acceptance: every fixture is accessible, clearly non-authoritative, and contains no product mutation action.
+  - Verification: type-check, adapter/component, keyboard, and accessibility tests.
+- [ ] TASK-5-1-07: Verify redaction, isolation, append-only, and access controls
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-1-04`, `TASK-5-1-05`, `TASK-5-1-06`
+  - Covers: `AC-5-1-audit-ai-tool-calls-safely-01`, `AC-5-1-audit-ai-tool-calls-safely-02`
+  - Scope: all sinks/exports, canaries, two Users/operators/roles/environments, failure/idempotency/retention
+  - Coordination: `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`
+  - Outcome: Prove useful audit without sensitive leakage or trusted writes.
+  - Acceptance: forbidden-canary count is zero and unauthorized access/mutation fails.
+  - Verification: approved security/MySQL/Laravel/Vitest commands and scan artifact.
+- [ ] TASK-5-1-08: Verify operator audit journey end to end
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-1-07`
+  - Covers: `AC-5-1-audit-ai-tool-calls-safely-01`, `AC-5-1-audit-ai-tool-calls-safely-02`
+  - Scope: provider outcome-to-audit query/filter/denial/safe-detail/keyboard scenarios
+  - Coordination: `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`
+  - Outcome: Verify the complete safe read-only operational audit flow.
+  - Acceptance: synthetic scenarios show required metadata and no forbidden content/write capability.
+  - Verification: approved Playwright/provider-fake/canary command and evidence.
+
+## Dependency map
+
+`01 -> 02 -> 03 -> 04`; `03 -> 05`; `01 -> 06`;
+`04 + 05 + 06 -> 07 -> 08`.

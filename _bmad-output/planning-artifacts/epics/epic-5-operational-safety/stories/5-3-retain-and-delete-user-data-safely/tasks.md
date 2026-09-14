@@ -1,0 +1,115 @@
+# Story 5.3 — Tasks
+
+- [ ] TASK-5-3-01: Inventory and classify User, derived, operational, cache, backup, and external data
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `none`
+  - Covers: `AC-5-3-retain-and-delete-user-data-safely-01`, `AC-5-3-retain-and-delete-user-data-safely-02`
+  - Scope: data classes/stores/owners/links/authority/clock/action/holds/backups/processors/verification map
+  - Coordination: `E5-COORD-RETENTION-001`
+  - Blocked by: `E5-DEC-004`
+  - Outcome: Complete approved dependency inventory before destructive design.
+  - Acceptance: every known source/derived/operational copy has one disposition and proof method.
+  - Verification: architecture/security/legal/data-owner review evidence.
+- [ ] TASK-5-3-02: Freeze retention/deletion policy, API, dry-run, and failure fixtures
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-3-01`
+  - Covers: `AC-5-3-retain-and-delete-user-data-safely-01`, `AC-5-3-retain-and-delete-user-data-safely-02`
+  - Scope: cutoff/action/order/hold/request/confirm/status/batch/partial/rerun/audit/isolation payloads
+  - Coordination: `E5-COORD-RETENTION-001`, `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-001`, `E5-DEC-002`, `E5-DEC-004`, `E5-DEC-008`, `DISCOVERY-E5-001`
+  - Outcome: One approved executable policy and safe state contract.
+  - Acceptance: fixtures cover every inventory row and destructive control.
+  - Verification: policy/schema/threat/legal/UX approval evidence.
+- [ ] TASK-5-3-03: Implement policy evaluator, dry-run, and scoped request lifecycle
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-3-02`
+  - Covers: `AC-5-3-retain-and-delete-user-data-safely-01`, `AC-5-3-retain-and-delete-user-data-safely-02`
+  - Scope: cutoff/eligibility/hold/dependency plan, server-derived subject, approval hash, request/status/checkpoint persistence
+  - Coordination: `E5-COORD-RETENTION-001`
+  - Blocked by: `none`
+  - Outcome: Produce a bounded reviewable plan without mutation and track exact request state.
+  - Acceptance: stale policy/preview/environment and unauthorized scope cannot execute.
+  - Verification: unit/Laravel/MySQL policy/RBAC/idempotency tests.
+- [ ] TASK-5-3-04: Implement checkpointed retention/deletion executor and adapters
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-3-03`
+  - Covers: `AC-5-3-retain-and-delete-user-data-safely-01`, `AC-5-3-retain-and-delete-user-data-safely-02`
+  - Scope: dependency batches, locks, delete/anonymize/aggregate, caches/storage/external fakes, partial/rerun, safe audit
+  - Coordination: `E5-COORD-RETENTION-001`, `E5-COORD-AUDIT-001`
+  - Blocked by: production run separately blocked by `DISCOVERY-E5-003`
+  - Outcome: Execute approved scope consistently and resume safely after failure.
+  - Acceptance: unrelated User data and retained trusted invariants remain unchanged in every injected failure.
+  - Verification: disposable MySQL/storage/external-fake integration, race, fault, and rerun tests.
+- [ ] TASK-5-3-05: Implement controlled retention scheduler and runner
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-3-04`
+  - Covers: `AC-5-3-retain-and-delete-user-data-safely-01`
+  - Scope: approved schedule/manual trigger, environment/policy/version guard, single-run lease, dry-run/approval, batch/checkpoint/resume and safe outcome
+  - Coordination: `E5-COORD-RETENTION-001`
+  - Blocked by: production enablement separately blocked by `DISCOVERY-E5-003`
+  - Outcome: Run due policy work once under explicit environment and version controls.
+  - Acceptance: overlapping/stale/wrong-environment runs cannot execute and partial work resumes from exact checkpoint.
+  - Verification: fake-clock/scheduler/lease/disposable-runner integration tests.
+- [ ] TASK-5-3-06: Expose authorized retention/deletion request and status APIs
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-3-03`
+  - Covers: `AC-5-3-retain-and-delete-user-data-safely-01`, `AC-5-3-retain-and-delete-user-data-safely-02`
+  - Scope: Form Requests, User/operator policies, preview/request/confirm/status controllers/resources/routes/errors
+  - Coordination: `E5-COORD-RETENTION-001`
+  - Blocked by: `E5-DEC-001`, `DISCOVERY-E5-001`
+  - Outcome: Serve controlled scoped deletion/retention operations without arbitrary identifiers.
+  - Acceptance: authorization, confirmation, policy/version, partial and status responses match fixtures.
+  - Verification: Laravel feature/contract/RBAC/idempotency tests.
+- [ ] TASK-5-3-07: Build accessible retention/deletion controls and status experience
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-3-02`
+  - Covers: `AC-5-3-retain-and-delete-user-data-safely-01`, `AC-5-3-retain-and-delete-user-data-safely-02`
+  - Scope: adapter/state, meaningful confirm, dry-run/progress/partial/retained/completed/error/retry and focus
+  - Coordination: `E5-COORD-RETENTION-001`
+  - Blocked by: `E5-DEC-001`, `DISCOVERY-E5-001`
+  - Outcome: Explain destructive scope and honest outcome accessibly.
+  - Acceptance: no false completion or arbitrary scope; every retained/partial state has a clear next action.
+  - Verification: type-check, adapter/component, keyboard, and accessibility tests.
+- [ ] TASK-5-3-08: Verify isolation, consistency, recovery, and non-sensitive audit
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-3-05`, `TASK-5-3-06`, `TASK-5-3-07`
+  - Covers: `AC-5-3-retain-and-delete-user-data-safely-01`, `AC-5-3-retain-and-delete-user-data-safely-02`
+  - Scope: two Users, full dependency graph, holds, concurrent writes, partial/rerun, backup/external policy, canaries
+  - Coordination: `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`
+  - Outcome: Prove scoped deletion/retention and recovery without content retention.
+  - Acceptance: pre/post queries prove unrelated unchanged, retained consistent, target disposition, safe audit.
+  - Verification: approved disposable-environment integration/security evidence.
+- [ ] TASK-5-3-09: Verify retention and deletion journeys end to end
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-3-08`
+  - Covers: `AC-5-3-retain-and-delete-user-data-safely-01`, `AC-5-3-retain-and-delete-user-data-safely-02`
+  - Scope: scheduled cutoff and User request/confirm/status/partial/retry/hold/denial/keyboard scenarios
+  - Coordination: `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`; disposable environment only
+  - Outcome: Verify policy and User control without production risk.
+  - Acceptance: independent scenarios produce exact safe evidence and reset completely.
+  - Verification: approved Playwright/retention-runner command and fixture/reset evidence.
+
+## Dependency map
+
+`01 -> 02 -> 03 -> 04 -> 05`; `03 -> 06`; `02 -> 07`;
+`05 + 06 + 07 -> 08 -> 09`.
