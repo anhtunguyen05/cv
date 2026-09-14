@@ -209,7 +209,7 @@ Each version keeps its own:
 
 - Laravel
 - Laravel Sanctum
-- MySQL or PostgreSQL
+- PostgreSQL 16
 - Laravel Queue
 - Laravel Scheduler
 - Laravel Storage
@@ -695,7 +695,7 @@ Install:
 - npm or pnpm
 - PHP 8.3+
 - Composer
-- MySQL or PostgreSQL
+- PostgreSQL 16
 - Redis optional
 - Docker optional
 
@@ -750,12 +750,12 @@ APP_KEY=
 APP_DEBUG=true
 APP_URL=http://localhost:8000
 
-DB_CONNECTION=mysql
+DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=careerfit_ai
-DB_USERNAME=root
-DB_PASSWORD=
+DB_PORT=5432
+DB_DATABASE=laravel
+DB_USERNAME=laravel
+DB_PASSWORD=secret
 
 QUEUE_CONNECTION=database
 CACHE_STORE=database
@@ -784,7 +784,7 @@ Recommended VPS stack:
 Ubuntu
 Nginx
 PHP-FPM
-MySQL/PostgreSQL
+PostgreSQL 16
 Redis
 Supervisor
 SSL with Let's Encrypt
