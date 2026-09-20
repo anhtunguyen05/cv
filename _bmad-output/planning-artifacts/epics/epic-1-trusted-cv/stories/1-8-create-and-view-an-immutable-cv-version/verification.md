@@ -6,11 +6,11 @@ Return to the [story overview](README.md). Shared layer expectations and integra
 
 | Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-1-8-create-and-view-an-immutable-cv-version-01` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-03`, `TASK-1-8-04`, `TASK-1-8-05`, `TASK-1-8-06`, `TASK-1-8-07`, `TASK-1-8-08` |
-| `AC-1-8-create-and-view-an-immutable-cv-version-02` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-03`, `TASK-1-8-04`, `TASK-1-8-05`, `TASK-1-8-06`, `TASK-1-8-07`, `TASK-1-8-08` |
-| `AC-1-8-create-and-view-an-immutable-cv-version-03` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-04`, `TASK-1-8-05`, `TASK-1-8-06`, `TASK-1-8-07`, `TASK-1-8-08` |
-| `AC-1-8-create-and-view-an-immutable-cv-version-04` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-03`, `TASK-1-8-04`, `TASK-1-8-05`, `TASK-1-8-06`, `TASK-1-8-07`, `TASK-1-8-08` |
-| `AC-1-8-create-and-view-an-immutable-cv-version-05` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-03`, `TASK-1-8-04`, `TASK-1-8-05`, `TASK-1-8-06`, `TASK-1-8-07`, `TASK-1-8-08` |
+| `AC-1-8-create-and-view-an-immutable-cv-version-01` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-03` |
+| `AC-1-8-create-and-view-an-immutable-cv-version-02` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-03` |
+| `AC-1-8-create-and-view-an-immutable-cv-version-03` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-03` |
+| `AC-1-8-create-and-view-an-immutable-cv-version-04` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-03` |
+| `AC-1-8-create-and-view-an-immutable-cv-version-05` | `TASK-1-8-01`, `TASK-1-8-02`, `TASK-1-8-03` |
 
 ## Required evidence layers
 
@@ -29,6 +29,7 @@ Mark a layer `N/A` only with a written reason tied to an AC. Planned commands ar
 
 Consume the frozen Profile schema through `E1-COORD-PROFILE-001`, reserve all
 snapshot boundaries through `E1-COORD-VERSION-001`, and use
-`E1-COORD-TEST-001` for browser tooling. Tasks 07–08 gate all five ACs.
+`E1-COORD-TEST-001` for browser tooling. Task group `TASK-1-8-03` gates all
+five ACs.
 
 The story may leave review only when every canonical AC has passing evidence, every task is `done`, shared coordination records are resolved, and no open decision can change behavior, security, data semantics, public contracts, dependencies, or verification.

@@ -6,9 +6,9 @@ Return to the [story overview](README.md). Shared layer expectations and integra
 
 | Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-1-5-manage-education-and-experience-01` | `TASK-1-5-01`, `TASK-1-5-02`, `TASK-1-5-03`, `TASK-1-5-04`, `TASK-1-5-05`, `TASK-1-5-06` |
-| `AC-1-5-manage-education-and-experience-02` | `TASK-1-5-01`, `TASK-1-5-02`, `TASK-1-5-03`, `TASK-1-5-04`, `TASK-1-5-05`, `TASK-1-5-06` |
-| `AC-1-5-manage-education-and-experience-03` | `TASK-1-5-01`, `TASK-1-5-02`, `TASK-1-5-03`, `TASK-1-5-04`, `TASK-1-5-05`, `TASK-1-5-06` |
+| `AC-1-5-manage-education-and-experience-01` | `TASK-1-5-01`, `TASK-1-5-02`, `TASK-1-5-03` |
+| `AC-1-5-manage-education-and-experience-02` | `TASK-1-5-01`, `TASK-1-5-02`, `TASK-1-5-03` |
+| `AC-1-5-manage-education-and-experience-03` | `TASK-1-5-01`, `TASK-1-5-02`, `TASK-1-5-03` |
 
 ## Required evidence layers
 
@@ -25,8 +25,8 @@ Mark a layer `N/A` only with a written reason tied to an AC. Planned commands ar
 
 ## Exit gate
 
-Reserve shared Profile files through `E1-COORD-PROFILE-001`; task 05 waits for
-the `E1-COORD-VERSION-001` persistence fixture checkpoint; task 06 uses
-`E1-COORD-TEST-001` and gates all three ACs.
+Reserve shared Profile files through `E1-COORD-PROFILE-001`. Task group
+`TASK-1-5-03` waits for the `E1-COORD-VERSION-001` persistence fixture
+checkpoint, uses `E1-COORD-TEST-001`, and gates all three ACs.
 
 The story may leave review only when every canonical AC has passing evidence, every task is `done`, shared coordination records are resolved, and no open decision can change behavior, security, data semantics, public contracts, dependencies, or verification.

@@ -1,12 +1,12 @@
 # Story 3.3: Export a reviewed CV — Verification
 
-## AC-to-task traceability
+## Acceptance-criterion traceability
 
-| Acceptance criterion | Tasks |
+| Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-3-3-export-a-reviewed-cv-01` | `TASK-3-3-01` through `TASK-3-3-07` |
-| `AC-3-3-export-a-reviewed-cv-02` | `TASK-3-3-01` through `TASK-3-3-04`, `TASK-3-3-06`, `TASK-3-3-07` |
-| `AC-3-3-export-a-reviewed-cv-03` | `TASK-3-3-01`, `TASK-3-3-05`, `TASK-3-3-07` |
+| `AC-3-3-export-a-reviewed-cv-01` | `TASK-3-3-01`, `TASK-3-3-02`, `TASK-3-3-03` |
+| `AC-3-3-export-a-reviewed-cv-02` | `TASK-3-3-01`, `TASK-3-3-02`, `TASK-3-3-03` |
+| `AC-3-3-export-a-reviewed-cv-03` | `TASK-3-3-01`, `TASK-3-3-02`, `TASK-3-3-03` |
 
 ## Required evidence
 

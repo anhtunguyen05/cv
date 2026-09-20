@@ -6,11 +6,11 @@ Return to the [story overview](README.md). Shared layer expectations and integra
 
 | Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-1-3-create-a-cv-profile-01` | `TASK-1-3-01`, `TASK-1-3-02`, `TASK-1-3-03`, `TASK-1-3-04`, `TASK-1-3-05`, `TASK-1-3-06`, `TASK-1-3-07` |
-| `AC-1-3-create-a-cv-profile-02` | `TASK-1-3-01`, `TASK-1-3-02`, `TASK-1-3-04`, `TASK-1-3-05`, `TASK-1-3-06`, `TASK-1-3-07` |
-| `AC-1-3-create-a-cv-profile-03` | `TASK-1-3-01`, `TASK-1-3-02`, `TASK-1-3-04`, `TASK-1-3-05`, `TASK-1-3-06`, `TASK-1-3-07` |
-| `AC-1-3-create-a-cv-profile-04` | `TASK-1-3-01`, `TASK-1-3-02`, `TASK-1-3-03`, `TASK-1-3-04`, `TASK-1-3-06`, `TASK-1-3-07` |
-| `AC-1-3-create-a-cv-profile-05` | `TASK-1-3-01`, `TASK-1-3-05`, `TASK-1-3-06`, `TASK-1-3-07` |
+| `AC-1-3-create-a-cv-profile-01` | `TASK-1-3-01`, `TASK-1-3-02`, `TASK-1-3-03` |
+| `AC-1-3-create-a-cv-profile-02` | `TASK-1-3-01`, `TASK-1-3-02`, `TASK-1-3-03` |
+| `AC-1-3-create-a-cv-profile-03` | `TASK-1-3-01`, `TASK-1-3-02`, `TASK-1-3-03` |
+| `AC-1-3-create-a-cv-profile-04` | `TASK-1-3-01`, `TASK-1-3-02`, `TASK-1-3-03` |
+| `AC-1-3-create-a-cv-profile-05` | `TASK-1-3-01`, `TASK-1-3-02`, `TASK-1-3-03` |
 
 ## Required evidence layers
 
@@ -29,6 +29,7 @@ Mark a layer `N/A` only with a written reason tied to an AC. Planned commands ar
 
 Use `E1-COORD-AUTH-001` for the session boundary,
 `E1-COORD-PROFILE-001` for aggregate/API/editor files, and
-`E1-COORD-TEST-001` for browser tooling. Tasks 06–07 gate all five ACs.
+`E1-COORD-TEST-001` for browser tooling. Task group `TASK-1-3-03` gates all
+five ACs.
 
 The story may leave review only when every canonical AC has passing evidence, every task is `done`, shared coordination records are resolved, and no open decision can change behavior, security, data semantics, public contracts, dependencies, or verification.

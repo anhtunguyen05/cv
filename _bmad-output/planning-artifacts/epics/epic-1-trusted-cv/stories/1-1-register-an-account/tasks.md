@@ -6,139 +6,52 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
 
 **Execution:**
 
-- [ ] TASK-1-1-01: Add executable auth/User contract fixtures
+- [ ] TASK-1-1-01: Freeze registration and User contract fixtures
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `none`
-  - Covers: `AC-1-1-register-an-account-01` through `AC-1-1-register-an-account-05`
-  - Scope: stable auth contract docs/fixtures
+  - Covers: `AC-1-1-register-an-account-01`, `AC-1-1-register-an-account-02`, `AC-1-1-register-an-account-03`, `AC-1-1-register-an-account-04`, `AC-1-1-register-an-account-05`
+  - Scope: 01. Add executable auth/User contract fixtures: stable auth contract docs/fixtures
   - Coordination: `E1-COORD-AUTH-001`
-  - Blocked by: `E1-DEC-001`, `E1-DEC-002`, `E1-DEC-007`, `E1-DEC-009`
-  - Outcome: Add executable auth/User contract fixtures.
-  - Acceptance: one fixture set covers every approved auth matrix row.
-  - Verification: validate fixture syntax and review against Global/Epic IDs.
-- [ ] TASK-1-1-02: Configure Laravel Sanctum SPA authentication
+  - Blocked by: `E1-DEC-001`; `E1-DEC-002`; `E1-DEC-007`; `E1-DEC-009`
+  - Outcome: 01. Add executable auth/User contract fixtures: Add executable auth/User contract fixtures.
+  - Acceptance: 01. Add executable auth/User contract fixtures: one fixture set covers every approved auth matrix row.
+  - Verification: 01. Add executable auth/User contract fixtures: validate fixture syntax and review against Global/Epic IDs.
+
+- [ ] TASK-1-1-02: Deliver registration and account backend
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `TASK-1-1-01`
-  - Covers: `AC-1-1-register-an-account-01`, `AC-1-1-register-an-account-05`
-  - Scope: dependency, auth/session/CORS/CSRF config
-  - Coordination: `E1-COORD-AUTH-001`
-  - Blocked by: `E1-DEC-001`
-  - Outcome: Configure Laravel Sanctum SPA authentication.
-  - Acceptance: approved origins and session transitions work without browser tokens.
-  - Verification: focused feature tests for bootstrap, regeneration, expiry and redaction.
-- [ ] TASK-1-1-03: Implement registration identity and persistence rules
+  - Covers: `AC-1-1-register-an-account-01`, `AC-1-1-register-an-account-02`, `AC-1-1-register-an-account-03`, `AC-1-1-register-an-account-04`, `AC-1-1-register-an-account-05`
+  - Scope: 01. Configure Laravel Sanctum SPA authentication: dependency, auth/session/CORS/CSRF config | 02. Implement registration identity and persistence rules: registration application/domain service, User migration/model/repository | 03. Expose register and current-account API operations: Form Requests, controllers, resources, routes, error mapping | 04. Enforce registration abuse and privacy controls: limiter, trusted proxy/store, duplicate privacy, safe logs | 05. Verify registration backend contract: API unit/feature/MySQL integration suites
+  - Coordination: `E1-COORD-AUTH-001`; one backend integration owner coordinates independent auth/session setup and User persistence after the shared fixtures, then integrates API/privacy controls and the complete backend evidence set
+  - Blocked by: `E1-DEC-001` gates auth/session configuration; `E1-DEC-002` gates identity and abuse/privacy clauses; API exposure and backend verification need the approved fixture checkpoint only
+  - Outcome: 01. Configure Laravel Sanctum SPA authentication: Configure Laravel Sanctum SPA authentication. | 02. Implement registration identity and persistence rules: Implement registration identity and persistence rules. | 03. Expose register and current-account API operations: Expose register and current-account API operations. | 04. Enforce registration abuse and privacy controls: Enforce registration abuse and privacy controls. | 05. Verify registration backend contract: Verify registration backend contract.
+  - Acceptance: 01. Configure Laravel Sanctum SPA authentication: approved origins and session transitions work without browser tokens. | 02. Implement registration identity and persistence rules: atomic unique User creation with approved normalization and hashing. | 03. Expose register and current-account API operations: all approved responses match fixtures and exclude credentials. | 04. Enforce registration abuse and privacy controls: approved keys/outcomes/windows and safe `429` behavior apply consistently. | 05. Verify registration backend contract: full backend behavior, transaction, concurrency and sensitive-data checks pass.
+  - Verification: 01. Configure Laravel Sanctum SPA authentication: focused feature tests for bootstrap, regeneration, expiry and redaction. | 02. Implement registration identity and persistence rules: PHPUnit plus MySQL duplicate/concurrency/rollback checks. | 03. Expose register and current-account API operations: Laravel feature/contract tests including malformed and authenticated-caller paths. | 04. Enforce registration abuse and privacy controls: feature tests for limits, expiry, spoofing, duplicate timing/content and redaction. | 05. Verify registration backend contract: focused and complete PHPUnit suites against declared databases.
+
+- [ ] TASK-1-1-03: Deliver and verify registration journey
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `TASK-1-1-01`
-  - Covers: `AC-1-1-register-an-account-01` through `AC-1-1-register-an-account-04`
-  - Scope: registration application/domain service, User migration/model/repository
-  - Coordination: `E1-COORD-AUTH-001`
-  - Blocked by: `E1-DEC-002`
-  - Outcome: Implement registration identity and persistence rules.
-  - Acceptance: atomic unique User creation with approved normalization and hashing.
-  - Verification: PHPUnit plus MySQL duplicate/concurrency/rollback checks.
-- [ ] TASK-1-1-04: Expose register and current-account API operations
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-1-02`, `TASK-1-1-03`
-  - Covers: `AC-1-1-register-an-account-01` through `AC-1-1-register-an-account-05`
-  - Scope: Form Requests, controllers, resources, routes, error mapping
-  - Coordination: `E1-COORD-AUTH-001`
-  - Blocked by: `none`
-  - Outcome: Expose register and current-account API operations.
-  - Acceptance: all approved responses match fixtures and exclude credentials.
-  - Verification: Laravel feature/contract tests including malformed and authenticated-caller paths.
-- [ ] TASK-1-1-05: Enforce registration abuse and privacy controls
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-1-04`
-  - Covers: `AC-1-1-register-an-account-02`, `AC-1-1-register-an-account-03`
-  - Scope: limiter, trusted proxy/store, duplicate privacy, safe logs
-  - Coordination: `E1-COORD-AUTH-001`
-  - Blocked by: `E1-DEC-002`
-  - Outcome: Enforce registration abuse and privacy controls.
-  - Acceptance: approved keys/outcomes/windows and safe `429` behavior apply consistently.
-  - Verification: feature tests for limits, expiry, spoofing, duplicate timing/content and redaction.
-- [ ] TASK-1-1-06: Implement frontend auth transport and registration adapter
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-1-01`
-  - Covers: `AC-1-1-register-an-account-01` through `AC-1-1-register-an-account-05`
-  - Scope: shared API client and auth API/schema/error mapping
-  - Coordination: `E1-COORD-AUTH-001`
-  - Blocked by: `E1-DEC-001`, `E1-DEC-007`
-  - Outcome: Implement frontend auth transport and registration adapter.
-  - Acceptance: browser sends only approved fields/credentials and maps every fixture.
-  - Verification: type-check and adapter/transport tests.
-- [ ] TASK-1-1-07: Build registration state and accessible page
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-1-06`
-  - Covers: `AC-1-1-register-an-account-01` through `AC-1-1-register-an-account-05`
-  - Scope: auth mutation/state, form, route and error presentation
-  - Coordination: `E1-COORD-AUTH-001`
-  - Blocked by: `E1-DEC-002`, `E1-DEC-007`
-  - Outcome: Build registration state and accessible page.
-  - Acceptance: keyboard-usable flow handles pending, validation, throttle, lost success and navigation safely.
-  - Verification: manual keyboard review until component tooling is available.
-- [ ] TASK-1-1-08: Verify registration backend contract
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-1-03`, `TASK-1-1-04`, `TASK-1-1-05`
-  - Covers: `AC-1-1-register-an-account-01` through `AC-1-1-register-an-account-05`
-  - Scope: API unit/feature/MySQL integration suites
-  - Coordination: `E1-COORD-AUTH-001`
-  - Blocked by: `none`
-  - Outcome: Verify registration backend contract.
-  - Acceptance: full backend behavior, transaction, concurrency and sensitive-data checks pass.
-  - Verification: focused and complete PHPUnit suites against declared databases.
-- [ ] TASK-1-1-09: Verify registration components
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-1-07`
-  - Covers: `AC-1-1-register-an-account-01` through `AC-1-1-register-an-account-05`
-  - Scope: registration component/state tests
-  - Coordination: `E1-COORD-TEST-001`
-  - Blocked by: `E1-DEC-008`
-  - Outcome: Verify registration components.
-  - Acceptance: known-bad UI/error/retry/accessibility states are pinned by tests.
-  - Verification: approved Vitest command plus type-check/lint/build.
-- [ ] TASK-1-1-10: Verify registration end to end
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-1-08`, `TASK-1-1-09`
-  - Covers: `AC-1-1-register-an-account-01` through `AC-1-1-register-an-account-05`
-  - Scope: registration/current-account browser scenarios
-  - Coordination: `E1-COORD-TEST-001`
-  - Blocked by: `E1-DEC-008`
-  - Outcome: Verify registration end to end.
-  - Acceptance: happy path and meaningful failures pass without test-order dependence.
-  - Verification: approved Playwright command against disposable MySQL data.
+  - Covers: `AC-1-1-register-an-account-01`, `AC-1-1-register-an-account-02`, `AC-1-1-register-an-account-03`, `AC-1-1-register-an-account-04`, `AC-1-1-register-an-account-05`
+  - Scope: 01. Implement frontend auth transport and registration adapter: shared API client and auth API/schema/error mapping | 02. Build registration state and accessible page: auth mutation/state, form, route and error presentation | 03. Verify registration components: registration component/state tests | 04. Verify registration end to end: registration/current-account browser scenarios
+  - Coordination: `E1-COORD-AUTH-001`, `E1-COORD-TEST-001`
+  - Blocked by: `E1-DEC-001`; `E1-DEC-007`; `E1-DEC-002`; `E1-DEC-008`
+  - Outcome: 01. Implement frontend auth transport and registration adapter: Implement frontend auth transport and registration adapter. | 02. Build registration state and accessible page: Build registration state and accessible page. | 03. Verify registration components: Verify registration components. | 04. Verify registration end to end: Verify registration end to end.
+  - Acceptance: 01. Implement frontend auth transport and registration adapter: browser sends only approved fields/credentials and maps every fixture. | 02. Build registration state and accessible page: keyboard-usable flow handles pending, validation, throttle, lost success and navigation safely. | 03. Verify registration components: known-bad UI/error/retry/accessibility states are pinned by tests. | 04. Verify registration end to end: happy path and meaningful failures pass without test-order dependence. | Integrated journey acceptance closes only after `TASK-1-1-02` is done with backend evidence.
+  - Verification: 01. Implement frontend auth transport and registration adapter: type-check and adapter/transport tests. | 02. Build registration state and accessible page: manual keyboard review until component tooling is available. | 03. Verify registration components: approved Vitest command plus type-check/lint/build. | 04. Verify registration end to end: approved Playwright command against disposable MySQL data. | Run the cross-layer journey check after `TASK-1-1-02` passes its backend acceptance.
 
 ## Dependency and concurrency map
+- `TASK-1-1-01` depends on `none`.
+- `TASK-1-1-02` depends on `TASK-1-1-01`; auth/session configuration and User identity/persistence can proceed independently after the shared fixtures, followed by integrated API/privacy controls and backend verification.
+- `TASK-1-1-03` depends on `TASK-1-1-01`; its frontend or evidence work can proceed alongside `TASK-1-1-02`, and integrated acceptance closes after `TASK-1-1-02` is done.
 
-```text
-01 -> {02,03,06}; {02,03} -> 04 -> 05; 06 -> 07
-{03,04,05} -> 08; 07 -> 09; {08,09} -> 10
-```
 
-Backend tasks 02/03 and frontend task 06 may run in parallel after task 01.
 Shared auth and test files remain reserved by the Epic coordination records.
 
 ## Coordination and verification gate
-
-Use `E1-COORD-AUTH-001` for every shared auth/User file and
-`E1-COORD-TEST-001` for reusable test tooling. Story acceptance requires tasks
-08–10 and evidence for every canonical AC; local contract variants are rejected.
+Use `E1-COORD-AUTH-001` for every shared auth/User file and `E1-COORD-TEST-001` for reusable test tooling. Task group 03 is the acceptance gate and requires evidence for every canonical AC; local contract variants are rejected.

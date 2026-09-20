@@ -6,10 +6,10 @@ Return to the [Story overview](README.md) and [Epic test strategy](../../test-st
 
 | Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-2-5-review-an-explainable-match-report-01` | `TASK-2-5-01` through `TASK-2-5-07` |
-| `AC-2-5-review-an-explainable-match-report-02` | `TASK-2-5-01` through `TASK-2-5-07` |
-| `AC-2-5-review-an-explainable-match-report-03` | `TASK-2-5-01` through `TASK-2-5-07` |
-| `AC-2-5-review-an-explainable-match-report-04` | `TASK-2-5-01`, `TASK-2-5-03`, `TASK-2-5-04`, `TASK-2-5-06`, `TASK-2-5-07` |
+| `AC-2-5-review-an-explainable-match-report-01` | `TASK-2-5-01`, `TASK-2-5-02`, `TASK-2-5-03` |
+| `AC-2-5-review-an-explainable-match-report-02` | `TASK-2-5-01`, `TASK-2-5-02`, `TASK-2-5-03` |
+| `AC-2-5-review-an-explainable-match-report-03` | `TASK-2-5-01`, `TASK-2-5-02`, `TASK-2-5-03` |
+| `AC-2-5-review-an-explainable-match-report-04` | `TASK-2-5-01`, `TASK-2-5-03` |
 
 ## Required evidence
 

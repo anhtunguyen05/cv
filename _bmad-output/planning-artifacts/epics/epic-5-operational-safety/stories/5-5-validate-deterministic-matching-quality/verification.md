@@ -1,8 +1,10 @@
 # Story 5.5 — Verification
 
-| AC | Tasks |
+## Acceptance-criterion traceability
+
+| Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-5-5-validate-deterministic-matching-quality-01` | `TASK-5-5-01` through `TASK-5-5-07` |
+| `AC-5-5-validate-deterministic-matching-quality-01` | `TASK-5-5-01`, `TASK-5-5-02`, `TASK-5-5-03` |
 
 Completion requires approved synthetic corpus, exact rule/schema/engine/metric/
 tool versions, identical reruns, quality and counter-metric thresholds, seeded

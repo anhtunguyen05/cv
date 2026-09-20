@@ -7,9 +7,9 @@ Return to the [Story overview](README.md). Shared expectations come from the
 
 | Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-2-1-save-a-job-description-01` | `TASK-2-1-01` through `TASK-2-1-08` |
-| `AC-2-1-save-a-job-description-02` | `TASK-2-1-01` through `TASK-2-1-08` |
-| `AC-2-1-save-a-job-description-03` | `TASK-2-1-01`, `TASK-2-1-03`, `TASK-2-1-04`, `TASK-2-1-05`, `TASK-2-1-07`, `TASK-2-1-08` |
+| `AC-2-1-save-a-job-description-01` | `TASK-2-1-01`, `TASK-2-1-02`, `TASK-2-1-03` |
+| `AC-2-1-save-a-job-description-02` | `TASK-2-1-01`, `TASK-2-1-02`, `TASK-2-1-03` |
+| `AC-2-1-save-a-job-description-03` | `TASK-2-1-01`, `TASK-2-1-02`, `TASK-2-1-03` |
 
 ## Required evidence
 

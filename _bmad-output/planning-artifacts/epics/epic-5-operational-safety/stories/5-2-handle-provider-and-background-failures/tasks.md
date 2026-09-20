@@ -1,127 +1,49 @@
 # Story 5.2 — Tasks
 
-- [ ] TASK-5-2-01: Freeze provider failure and conditional job lifecycle fixtures
+## Tasks & Acceptance
+
+**Execution:**
+
+- [ ] TASK-5-2-01: Freeze provider failure and async job fixtures
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `none`
   - Covers: `AC-5-2-handle-provider-and-background-failures-01`, `AC-5-2-handle-provider-and-background-failures-02`
-  - Scope: taxonomy/retry/job/lease/cancel/late/lost/result/status/audit/metric/User-state matrix
+  - Scope: 01. Freeze provider failure and conditional job lifecycle fixtures: taxonomy/retry/job/lease/cancel/late/lost/result/status/audit/metric/User-state matrix
   - Coordination: `E5-COORD-AUDIT-001`, `E5-COORD-JOB-001`, `E5-COORD-TELEMETRY-001`, `E5-COORD-TEST-001`
-  - Blocked by: `E5-PREREQ-AI-001`; async rows require `E5-PREREQ-ASYNC-001`; `E5-DEC-002`, `E5-DEC-003`, `E5-DEC-005`, `E5-DEC-008`
-  - Outcome: One approved failure/lifecycle contract without implicit queue scope.
-  - Acceptance: every state/category has retry/terminal/allowed action and trusted-write rule.
-  - Verification: architecture/product/ops/security schema review evidence.
-- [ ] TASK-5-2-02: Implement provider failure classifier and bounded retry policy
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-2-01`
-  - Covers: `AC-5-2-handle-provider-and-background-failures-01`
-  - Scope: timeout/rate/transport/malformed categories, retry/backoff/budget/idempotency/cancel and safe errors
-  - Coordination: `E5-COORD-JOB-001`
-  - Blocked by: `none`
-  - Outcome: Produce consistent bounded outcomes across provider callers.
-  - Acceptance: malformed terminal output is never retried into trusted state.
-  - Verification: unit/property/provider-fake/fake-clock tests.
-- [ ] TASK-5-2-03: Implement named async job state and persistence conditionally
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-2-01`
-  - Covers: `AC-5-2-handle-provider-and-background-failures-02`
-  - Scope: one approved operation job model/migration, lease/attempt/deadline/status/result/idempotency constraints
-  - Coordination: `E5-COORD-JOB-001`
-  - Blocked by: `E5-PREREQ-ASYNC-001`, `DISCOVERY-E5-004`
-  - Outcome: Persist an honest versioned lifecycle for one real async consumer.
-  - Acceptance: no generic/unused queue abstraction and no success without valid result.
-  - Verification: MySQL constraint/lease/duplicate/late/cancel tests.
-- [ ] TASK-5-2-04: Implement provider failure application mapping and API
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-2-02`
-  - Covers: `AC-5-2-handle-provider-and-background-failures-01`
-  - Scope: provider caller integration, validated result boundary, retry/idempotency, Form Request/controller/resource/error/allowed action
-  - Coordination: `E5-COORD-JOB-001`
-  - Blocked by: `none`
-  - Outcome: Map provider outcomes consistently without requiring async infrastructure.
-  - Acceptance: timeout/rate/transport/malformed/retry/lost cases create no unvalidated Patch or partial trusted state.
-  - Verification: Laravel/provider-fake/application/MySQL rollback tests.
-- [ ] TASK-5-2-05: Implement named async job result and status APIs conditionally
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-2-03`
-  - Covers: `AC-5-2-handle-provider-and-background-failures-02`
-  - Scope: result transaction, status/retry/cancel policies/services/controllers/resources/routes/errors/allowed actions
-  - Coordination: `E5-COORD-JOB-001`
-  - Blocked by: `E5-PREREQ-ASYNC-001`, `DISCOVERY-E5-004`
-  - Outcome: Serve exact job state and atomically commit a validated named-operation result.
-  - Acceptance: crash/lease/duplicate/late/cancel/race cases yield one terminal truth and no false success.
-  - Verification: Laravel/MySQL feature, concurrency, rollback, and worker-fake fault tests.
-- [ ] TASK-5-2-06: Build accessible provider/job failure and recovery states
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-2-01`
-  - Covers: `AC-5-2-handle-provider-and-background-failures-01`, `AC-5-2-handle-provider-and-background-failures-02`
-  - Scope: adapters, current state/allowed actions, progress/retry/cancel/terminal/refresh/lost/error/focus
-  - Coordination: `E5-COORD-JOB-001`
-  - Blocked by: `none`
-  - Outcome: Give honest actionable User states without provider internals.
-  - Acceptance: UI never treats queued/running/retryable/unknown as success.
-  - Verification: type-check, adapter/component/fake-clock/keyboard/accessibility tests.
-- [ ] TASK-5-2-07: Integrate provider failure audit, metrics, and runbook signals
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-2-04`
-  - Covers: `AC-5-2-handle-provider-and-background-failures-01`
-  - Scope: provider attempt/operation status/duration/failure/retry/terminal events, bounded labels, correlation/runbook hooks
-  - Coordination: `E5-COORD-AUDIT-001`, `E5-COORD-TELEMETRY-001`
-  - Blocked by: approved audit/telemetry checkpoints from Stories 5.1/5.4
-  - Outcome: Make provider failures diagnosable without User content.
-  - Acceptance: provider categories correlate across safe audit/metrics and link approved runbook.
-  - Verification: canary/cardinality/metric/event integration tests.
-- [ ] TASK-5-2-08: Integrate async job audit, metrics, and runbook signals conditionally
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-2-05`
-  - Covers: `AC-5-2-handle-provider-and-background-failures-02`
-  - Scope: job attempts/status/duration/failure/retry/cancel/terminal events, bounded labels, correlation/runbook hooks
-  - Coordination: `E5-COORD-AUDIT-001`, `E5-COORD-TELEMETRY-001`
-  - Blocked by: `E5-PREREQ-ASYNC-001`; approved audit/telemetry checkpoints from Stories 5.1/5.4
-  - Outcome: Make named background failures diagnosable without User content.
-  - Acceptance: job categories correlate across safe audit/metrics and link approved runbook.
-  - Verification: canary/cardinality/metric/event integration tests with worker fake.
-- [ ] TASK-5-2-09: Verify provider failure journey end to end
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-2-04`, `TASK-5-2-06`, `TASK-5-2-07`
-  - Covers: `AC-5-2-handle-provider-and-background-failures-01`
-  - Scope: timeout/rate/malformed/retry/lost/foreign/keyboard/audit/metric scenarios
-  - Coordination: `E5-COORD-TEST-001`
-  - Blocked by: `E5-DEC-008`
-  - Outcome: Prove provider failure honesty and no partial trusted state end to end.
-  - Acceptance: disposable provider scenarios pass with bounded retry and zero forbidden canaries.
-  - Verification: approved Playwright/provider-fake/MySQL command and evidence.
-- [ ] TASK-5-2-10: Verify named background failure journey end to end
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-2-05`, `TASK-5-2-06`, `TASK-5-2-08`
-  - Covers: `AC-5-2-handle-provider-and-background-failures-02`
-  - Scope: crash/lease/retry/cancel/duplicate/late/lost/status/foreign/keyboard/audit/metric scenarios
-  - Coordination: `E5-COORD-TEST-001`
-  - Blocked by: `E5-PREREQ-ASYNC-001`, `E5-DEC-008`
-  - Outcome: Prove named async failure honesty and one terminal result end to end.
-  - Acceptance: disposable job scenarios never remain or appear falsely successful and contain zero forbidden canaries.
-  - Verification: approved Playwright/worker-fake/MySQL command and evidence.
+  - Blocked by: `E5-PREREQ-AI-001`; `E5-DEC-002`; `E5-DEC-003`; `E5-DEC-005`; `E5-DEC-008`
+  - Outcome: 01. Freeze provider failure and conditional job lifecycle fixtures: One approved failure/lifecycle contract without implicit queue scope.
+  - Acceptance: 01. Freeze provider failure and conditional job lifecycle fixtures: every state/category has retry/terminal/allowed action and trusted-write rule. Async-job fixtures are included only when the async prerequisite and discovery are approved.
+  - Verification: 01. Freeze provider failure and conditional job lifecycle fixtures: architecture/product/ops/security schema review evidence.
 
-## Dependency map
+- [ ] TASK-5-2-02: Deliver and verify the provider failure recovery journey
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-2-01`
+  - Covers: `AC-5-2-handle-provider-and-background-failures-01`
+  - Scope: 01. Implement provider failure policy and bounded retry: timeout/rate/transport/malformed categories, safe retry/backoff/budget/idempotency/cancel rules and terminal errors | 02. Apply provider outcomes through the API and privacy-safe operations signals: caller integration, validated result boundary, allowed actions, safe audit/metrics, correlation and runbook hooks | 03. Deliver the accessible provider recovery experience: actionable retry/failure states and browser journey across timeout/rate/malformed/retry/lost/foreign cases
+  - Coordination: `E5-COORD-AUDIT-001`, `E5-COORD-TELEMETRY-001`, `E5-COORD-TEST-001`
+  - Blocked by: `E5-DEC-008`; approved audit and telemetry checkpoints from Stories 5.1/5.4 gate only their signal-integration clauses
+  - Outcome: 01. Implement provider failure policy and bounded retry: Produce bounded, repeatable outcomes across provider callers. | 02. Apply provider outcomes through the API and privacy-safe operations signals: Map failures consistently without trusting malformed output or logging User content. | 03. Deliver the accessible provider recovery experience: Prove an actionable, truthful provider-failure journey with no partial trusted state.
+  - Acceptance: 01. Implement provider failure policy and bounded retry: malformed terminal output is never retried into trusted state and retry budgets/cancellation are bounded. | 02. Apply provider outcomes through the API and privacy-safe operations signals: timeout/rate/transport/malformed/retry/lost cases create no unvalidated Patch or partial trusted state, and safe signals correlate without User content. | 03. Deliver the accessible provider recovery experience: keyboard-usable errors explain allowed actions without exposing provider internals, and disposable end-to-end scenarios pass with zero forbidden canaries.
+  - Verification: 01. Implement provider failure policy and bounded retry: unit/property/provider-fake/fake-clock tests. | 02. Apply provider outcomes through the API and privacy-safe operations signals: Laravel/provider-fake/MySQL rollback, audit/metric canary and cardinality tests. | 03. Deliver the accessible provider recovery experience: adapter/component/fake-clock/keyboard/accessibility tests and approved Playwright/provider-fake/MySQL journey evidence.
 
-`01 -> 02 -> 04 -> 07 -> 09`; `01 -> 03 -> 05 -> 08 -> 10`;
-`01 -> 06`, consumed by 09 and 10. Async branch remains blocked until named scope exists.
+- [ ] TASK-5-2-03: Deliver and verify the approved async job failure lifecycle
+  - Status: `todo`
+  - Owner: `unassigned`
+  - Branch/worktree: `unassigned`
+  - Depends on: `TASK-5-2-01`
+  - Covers: `AC-5-2-handle-provider-and-background-failures-02`
+  - Scope: 01. Implement the named async operation lifecycle and persistence conditionally: one approved job model, lease/attempt/deadline/status/result/idempotency rules, no generic queue | 02. Expose atomic result/status/retry/cancel behavior with audit, telemetry, and runbook correlation: only validated named-operation results can succeed | 03. Deliver accessible async status/recovery and verify crash/lease/retry/cancel/duplicate/late/lost/foreign journeys end to end
+  - Coordination: `E5-COORD-JOB-001`, `E5-COORD-AUDIT-001`, `E5-COORD-TELEMETRY-001`, `E5-COORD-TEST-001`
+  - Blocked by: approved audit and telemetry checkpoints from Stories 5.1/5.4; async implementation requires `E5-PREREQ-ASYNC-001` and `DISCOVERY-E5-004`; without an approved consumer, leave this task blocked and AC2 open
+  - Outcome: 01. Implement the named async operation lifecycle and persistence conditionally: Persist one honest, versioned job lifecycle only for an approved consumer. | 02. Expose atomic result/status/recovery behavior with safe operations signals: Commit one validated result and expose truthful status/actions. | 03. Deliver accessible async status/recovery and verify the failure lifecycle: Prove one terminal truth and no false success across the approved journey.
+  - Acceptance: 01. Implement the named async operation lifecycle and persistence conditionally: lease expiry, retries, duplicate and late attempts cannot create multiple results or false success. | 02. Expose atomic result/status/recovery behavior with safe operations signals: invalid results never commit and failure signals contain no User content. | 03. Deliver accessible async status/recovery and verify the failure lifecycle: approved disposable job scenarios pass; without an approved consumer, this task remains blocked and AC2 is not marked complete.
+  - Verification: 01. Implement the named async operation lifecycle and persistence conditionally: MySQL constraint/lease/duplicate/late/cancel and worker-fake fault tests. | 02. Expose atomic result/status/recovery behavior with safe operations signals: Laravel/MySQL concurrency/rollback, audit/metric canary/cardinality tests. | 03. Deliver accessible async status/recovery and verify the failure lifecycle: adapter/component/keyboard/accessibility tests plus approved Playwright/worker-fake/MySQL evidence.
+
+## Dependency and concurrency map
+- `TASK-5-2-01` depends on `none`.
+- `TASK-5-2-02` depends on `TASK-5-2-01`; retry-policy and provider outcome work can proceed after fixtures, while audit/telemetry wiring waits for its approved checkpoints.
+- `TASK-5-2-03` depends on `TASK-5-2-01`; named async lifecycle work can proceed after async approval, while audit/telemetry wiring waits for its approved checkpoints. AC1 and AC2 close only with their own evidence; AC2 stays open while async is unapproved.

@@ -1,10 +1,12 @@
 # Story 4.5: Approve a Patch into a new CV Version — Verification
 
-| Acceptance criterion | Tasks |
+## Acceptance-criterion traceability
+
+| Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-4-5-approve-a-patch-into-a-new-cv-version-01` | `TASK-4-5-01` through `TASK-4-5-07` |
-| `AC-4-5-approve-a-patch-into-a-new-cv-version-02` | `TASK-4-5-01` through `TASK-4-5-07` |
-| `AC-4-5-approve-a-patch-into-a-new-cv-version-03` | `TASK-4-5-01`, `TASK-4-5-03` through `TASK-4-5-07` |
+| `AC-4-5-approve-a-patch-into-a-new-cv-version-01` | `TASK-4-5-01`, `TASK-4-5-02`, `TASK-4-5-03` |
+| `AC-4-5-approve-a-patch-into-a-new-cv-version-02` | `TASK-4-5-01`, `TASK-4-5-02`, `TASK-4-5-03` |
+| `AC-4-5-approve-a-patch-into-a-new-cv-version-03` | `TASK-4-5-01`, `TASK-4-5-02`, `TASK-4-5-03` |
 
 Evidence must prove explicit human approval, ownership, complete revalidation,
 pure transform, stale old-value conflict, full snapshot validity, exactly-one
