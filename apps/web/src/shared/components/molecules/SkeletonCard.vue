@@ -17,7 +17,7 @@ withDefaults(defineProps<Props>(), {
     <div
       v-for="i in rows"
       :key="i"
-      class="flex gap-3 items-start p-4 border border-[#e2e8f0] rounded-lg bg-white"
+      class="flex gap-3 items-start p-4 border border-border rounded-lg bg-white"
     >
       <Skeleton v-if="showAvatar" class="w-9 h-9 rounded-full flex-shrink-0" />
       <div class="flex-1 space-y-2">

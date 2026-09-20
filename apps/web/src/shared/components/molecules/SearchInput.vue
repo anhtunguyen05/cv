@@ -37,24 +37,24 @@ function clear() {
 <template>
   <div class="relative flex items-center">
     <Search
-      class="absolute left-3 text-[#94a3b8] pointer-events-none"
-      :size="16"
+      class="absolute left-3.5 text-text-subtle pointer-events-none"
+      :size="18"
       :stroke-width="1.5"
     />
     <input
       v-model="inputValue"
       type="search"
       :placeholder="placeholder"
-      class="w-full h-9 pl-9 pr-8 text-sm rounded-md border border-[#e2e8f0] bg-white placeholder:text-[#94a3b8] focus:outline-none focus:border-[#6366f1] focus:ring-2 focus:ring-[#6366f1]/20 transition-colors"
+      class="w-full h-10 sm:h-11 pl-10 pr-9 text-sm rounded-xl border border-border bg-white placeholder:text-text-subtle focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all"
     />
     <button
       v-if="inputValue"
       type="button"
-      class="absolute right-3 text-[#94a3b8] hover:text-[#64748b] transition-colors"
+      class="absolute right-3.5 text-text-subtle hover:text-text-muted transition-colors p-1"
       aria-label="Clear search"
       @click="clear"
     >
-      <X :size="14" :stroke-width="1.5" />
+      <X :size="15" :stroke-width="1.5" />
     </button>
   </div>
 </template>

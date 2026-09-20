@@ -46,15 +46,15 @@ const emit = defineEmits<{
     @update:model-value="emit('update:modelValue', $event as string)"
   >
     <SelectTrigger
-      class="inline-flex items-center justify-between gap-2 h-9 px-3 w-full rounded-md border border-[#e2e8f0] bg-white text-sm text-[#0f172a] hover:bg-[#f8fafc] focus:outline-hidden focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+      class="inline-flex items-center justify-between gap-2 h-9 px-3 w-full rounded-md border border-border bg-white text-sm text-text hover:bg-surface focus:outline-hidden focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
     >
       <SelectValue :placeholder="placeholder" />
-      <ChevronDown :size="14" :stroke-width="1.5" class="text-[#64748b]" />
+      <ChevronDown :size="14" :stroke-width="1.5" class="text-text-muted" />
     </SelectTrigger>
 
     <SelectPortal>
       <SelectContent
-        class="z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#e2e8f0] bg-white shadow-md animate-in fade-in-80"
+        class="z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-white shadow-md animate-in fade-in-80"
         position="popper"
         :side-offset="4"
       >
@@ -64,10 +64,10 @@ const emit = defineEmits<{
             :key="opt.value"
             :value="opt.value"
             :disabled="opt.disabled"
-            class="relative flex items-center justify-between px-3 py-1.5 text-sm text-[#0f172a] rounded-sm select-none cursor-pointer data-[highlighted]:bg-[#eef2ff] data-[highlighted]:text-[#4338ca] data-[disabled]:opacity-50 data-[disabled]:pointer-events-none outline-hidden"
+            class="relative flex items-center justify-between px-3 py-1.5 text-sm text-text rounded-sm select-none cursor-pointer data-[highlighted]:bg-primary-muted data-[highlighted]:text-primary-dark data-[disabled]:opacity-50 data-[disabled]:pointer-events-none outline-hidden"
           >
             <SelectItemText>{{ opt.label }}</SelectItemText>
-            <SelectItemIndicator class="ml-2 text-[#6366f1]">
+            <SelectItemIndicator class="ml-2 text-primary">
               <Check :size="14" :stroke-width="1.5" />
             </SelectItemIndicator>
           </SelectItem>

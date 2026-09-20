@@ -2,43 +2,59 @@
 import { useRoute, RouterLink } from 'vue-router'
 import MatchScoreRing from '@/features/match/components/MatchScoreRing.vue'
 import SkillGapList from '@/features/match/components/SkillGapList.vue'
-import SectionHeader from '@/shared/components/molecules/SectionHeader.vue'
 import Card from '@/shared/components/ui/card/Card.vue'
 import Progress from '@/shared/components/ui/progress/Progress.vue'
 import AppBadge from '@/shared/components/atoms/AppBadge.vue'
-import { ArrowLeft, ArrowRight } from 'lucide-vue-next'
+import AppButton from '@/shared/components/atoms/AppButton.vue'
+import {
+  ArrowLeft,
+  ArrowRight,
+  Sparkles,
+  CheckCircle2,
+} from 'lucide-vue-next'
 
 const route = useRoute()
 const matchId = Number(route.params.matchId)
 
-// Stub data for when API is not available
+// Sample report
 const stubReport = {
   id: matchId || 1,
   cv_version_id: 1,
   job_description_id: 1,
-  score: 72,
+  company_name: 'TechCorp Vietnam',
+  job_title: 'Frontend Engineer (Vue 3 / TypeScript)',
+  score: 82,
   matched_skills_json: [
-    { skill: 'Vue 3', status: 'matched' as const, evidence: 'CareerFitCV project' },
-    { skill: 'TypeScript', status: 'matched' as const, evidence: 'Multiple projects' },
-    { skill: 'REST API', status: 'matched' as const, evidence: 'Laravel backend' },
+    { skill: 'Vue 3 Composition API', status: 'matched' as const, evidence: 'CareerFitCV & Edura projects' },
+    { skill: 'TypeScript & Typings', status: 'matched' as const, evidence: 'All recent repository work' },
+    { skill: 'RESTful API & HTTP', status: 'matched' as const, evidence: 'Laravel backend integration' },
+    { skill: 'Tailwind CSS', status: 'matched' as const, evidence: 'Modern styling setup' },
   ],
   missing_skills_json: [
-    { skill: 'Redux / Pinia', status: 'missing' as const },
-    { skill: 'Unit Testing', status: 'missing' as const },
+    { skill: 'Pinia State Management', status: 'missing' as const },
+    { skill: 'Unit Testing (Vitest/Jest)', status: 'missing' as const },
   ],
   weak_sections_json: [
-    { skill: 'Docker', status: 'weak' as const, evidence: 'Mentioned once in tools' },
+    { skill: 'Docker Containerization', status: 'weak' as const, evidence: 'Only listed in tools list, missing project bullets' },
   ],
   recommendations_json: [
     {
       section: 'Projects',
-      recommendation: 'Add a TypeScript-specific callout in the Edura project — mention type safety improvements.',
+      recommendation: 'Add a bullet in CareerFitCV highlighting Pinia state architecture — it directly addresses the JD keyword requirements.',
       priority: 'high' as const,
+      impact: '+6 pts',
     },
     {
       section: 'Skills',
-      recommendation: 'List Pinia explicitly (not just state management) — it matches the JD keyword exactly.',
+      recommendation: 'Include Vitest or unit test experience in technical skills section to satisfy the testing requirement.',
+      priority: 'high' as const,
+      impact: '+5 pts',
+    },
+    {
+      section: 'Summary',
+      recommendation: 'Mention "TypeScript" and "RESTful API" within your professional summary for higher front-loaded keyword frequency.',
       priority: 'medium' as const,
+      impact: '+3 pts',
     },
   ],
   created_at: new Date().toISOString(),
@@ -46,62 +62,104 @@ const stubReport = {
 }
 
 const priorityColors = {
-  high: { variant: 'danger' as const, label: 'High priority' },
+  high: { variant: 'danger' as const, label: 'High Priority' },
   medium: { variant: 'warning' as const, label: 'Medium' },
-  low: { variant: 'muted' as const, label: 'Low' },
+  low: { variant: 'muted' as const, label: 'Optional' },
 }
 </script>
 
 <template>
   <div class="space-y-6">
-    <!-- Nav breadcrumb -->
-    <RouterLink
-      to="/dashboard"
-      class="inline-flex items-center gap-1.5 text-sm text-[#64748b] hover:text-[#0f172a] transition-colors"
-    >
-      <ArrowLeft :size="14" :stroke-width="1.5" />
-      Dashboard
-    </RouterLink>
+    <!-- Top breadcrumb & Header -->
+    <div class="space-y-2.5 pb-4 border-b border-border/80">
+      <RouterLink
+        to="/dashboard"
+        class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-text-muted hover:text-text transition-colors"
+      >
+        <ArrowLeft :size="15" />
+        <span>Back to Dashboard</span>
+      </RouterLink>
 
-    <SectionHeader
-      title="Match Report"
-      description="Skill gap analysis between your CV and the job description."
-      level="h1"
-    />
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-0.5">
+        <div>
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="text-xs font-bold text-primary uppercase tracking-wider">Evaluation Result</span>
+            <span class="text-xs text-border-hover">•</span>
+            <span class="text-xs font-semibold text-text-quiet bg-surface-muted px-2.5 py-0.5 rounded-full border border-border">{{ stubReport.company_name }}</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">
+            {{ stubReport.job_title }}
+          </h1>
+        </div>
 
-    <!-- Main grid: score ring + skill list + recommendations -->
-    <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-      <!-- Left: Score panel -->
-      <div class="space-y-4">
-        <Card>
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <RouterLink to="/cv/1/edit">
+            <AppButton size="md">
+              <span>Apply Fixes in Editor</span>
+              <ArrowRight :size="15" />
+            </AppButton>
+          </RouterLink>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid: Left Score Panel (4 cols) + Right Skill Details (8 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+      <!-- Left Column: Overall score + Section Breakdown -->
+      <div class="lg:col-span-4 space-y-5">
+        <!-- Overall Score Ring Card -->
+        <Card class="bg-gradient-to-b from-white to-surface space-y-4">
           <MatchScoreRing :score="stubReport.score" />
-        </Card>
 
-        <!-- Section scores -->
-        <Card>
-          <p class="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-4">Section scores</p>
-          <div class="space-y-4">
-            <Progress label="Technical Skills" :value="78" color="primary" />
-            <Progress label="Projects" :value="65" color="primary" />
-            <Progress label="Summary" :value="50" color="warning" />
-            <Progress label="Education" :value="90" color="success" />
+          <div class="p-3 rounded-xl bg-success-muted border border-success-border flex items-center justify-center gap-2 text-xs sm:text-sm text-success-text">
+            <CheckCircle2 :size="16" class="flex-shrink-0 text-success" />
+            <span class="font-medium">Passed ATS qualification threshold</span>
           </div>
         </Card>
 
-        <!-- Actions -->
-        <RouterLink :to="`/cv/1/edit`">
-          <button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-[#e2e8f0] bg-white text-sm font-medium text-[#0f172a] hover:bg-[#f8fafc] hover:border-[#c7d2fe] transition-colors">
-            Improve CV
-            <ArrowRight :size="14" :stroke-width="1.5" />
-          </button>
-        </RouterLink>
+        <!-- Section breakdown scores -->
+        <Card class="space-y-4">
+          <span class="text-xs font-bold text-text-muted uppercase tracking-wider block">
+            Section Breakdown
+          </span>
+
+          <div class="space-y-3.5">
+            <Progress label="Hard Skills" :value="84" color="primary" />
+            <Progress label="Project Evidence" :value="78" color="primary" />
+            <Progress label="Education & Degree" :value="95" color="success" />
+            <Progress label="Summary Keyword Alignment" :value="60" color="warning" />
+          </div>
+        </Card>
+
+        <!-- Quick improvement CTA: Dark Card with High Contrast -->
+        <Card variant="dark" class="space-y-3.5">
+          <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-primary-light">
+            <Sparkles :size="15" />
+            <span>Predicted Score Boost</span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Applying the top 2 suggestions will raise your compatibility score from
+            <strong class="text-white font-mono font-bold">{{ stubReport.score }}%</strong>
+            to
+            <strong class="text-success-light font-mono font-bold">93%</strong>.
+          </p>
+          <RouterLink to="/cv/1/edit" class="block pt-1">
+            <AppButton size="sm" variant="glass" class="w-full">
+              Open CV Editor
+            </AppButton>
+          </RouterLink>
+        </Card>
       </div>
 
-      <!-- Right: Skill gap + recommendations -->
-      <div class="space-y-6">
-        <!-- Skill gap list -->
-        <Card>
-          <p class="text-sm font-semibold text-[#0f172a] mb-5">Skill coverage</p>
+      <!-- Right Column: Skills Coverage + Actionable AI Suggestions -->
+      <div class="lg:col-span-8 space-y-6">
+        <!-- Skill Coverage -->
+        <Card class="space-y-4">
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">Keyword Coverage & Evidence</h2>
+            <p class="text-xs sm:text-sm text-text-muted mt-0.5 leading-relaxed">Audited cross-reference between your project bullets and the target job description.</p>
+          </div>
+
           <SkillGapList
             :matched="stubReport.matched_skills_json"
             :missing="stubReport.missing_skills_json"
@@ -109,23 +167,32 @@ const priorityColors = {
           />
         </Card>
 
-        <!-- Recommendations -->
-        <Card>
-          <p class="text-sm font-semibold text-[#0f172a] mb-5">Recommendations</p>
-          <div class="space-y-4">
+        <!-- Actionable Recommendations -->
+        <Card class="space-y-4">
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">Targeted Recommendations</h2>
+            <p class="text-xs sm:text-sm text-text-muted mt-0.5 leading-relaxed">Evidence-backed suggestions to close missing keyword gaps.</p>
+          </div>
+
+          <div class="space-y-3">
             <div
               v-for="(rec, i) in stubReport.recommendations_json"
               :key="i"
-              class="flex gap-3 pb-4 border-b border-[#f1f5f9] last:border-0 last:pb-0"
+              class="p-4 sm:p-5 rounded-xl border border-border bg-white hover:border-border-hover hover:shadow-2xs transition-all space-y-2"
             >
-              <div class="w-1 rounded-full flex-shrink-0 mt-1" :class="rec.priority === 'high' ? 'bg-[#ef4444]' : rec.priority === 'medium' ? 'bg-[#f59e0b]' : 'bg-[#e2e8f0]'" style="min-height: 40px;" />
-              <div class="flex-1">
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="text-xs font-semibold text-[#0f172a]">{{ rec.section }}</span>
-                  <AppBadge :variant="priorityColors[rec.priority].variant" :label="priorityColors[rec.priority].label" />
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs sm:text-sm font-bold text-text uppercase tracking-wider">{{ rec.section }} Section</span>
+                  <AppBadge :variant="priorityColors[rec.priority].variant" :label="priorityColors[rec.priority].label" size="sm" />
                 </div>
-                <p class="text-sm text-[#334155] leading-relaxed">{{ rec.recommendation }}</p>
+                <span class="text-xs font-mono font-bold text-success-hover bg-success-muted px-2.5 py-0.5 rounded-full border border-success-border">
+                  {{ rec.impact }}
+                </span>
               </div>
+
+              <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+                {{ rec.recommendation }}
+              </p>
             </div>
           </div>
         </Card>

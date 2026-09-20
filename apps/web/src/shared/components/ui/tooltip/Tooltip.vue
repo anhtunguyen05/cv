@@ -30,10 +30,10 @@ withDefaults(defineProps<Props>(), {
         <TooltipContent
           :side="side"
           :side-offset="5"
-          class="z-50 overflow-hidden rounded-md bg-[#1e293b] px-3 py-1.5 text-xs text-white shadow-md animate-in fade-in-50"
+          class="z-50 overflow-hidden rounded-md bg-dark-surface px-3 py-1.5 text-xs text-white shadow-md animate-in fade-in-50"
         >
           {{ content }}
-          <TooltipArrow class="fill-[#1e293b]" />
+          <TooltipArrow class="fill-dark-surface" />
         </TooltipContent>
       </TooltipPortal>
     </TooltipRoot>

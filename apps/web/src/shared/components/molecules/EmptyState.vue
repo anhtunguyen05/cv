@@ -18,26 +18,32 @@ const emit = defineEmits<{ action: [] }>()
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center text-center py-16 px-6 gap-4">
+  <div class="flex flex-col items-center justify-center text-center py-12 px-6">
+    <!-- Concentric icon wrapper -->
     <div
       v-if="icon"
-      class="w-12 h-12 rounded-xl bg-[#f1f5f9] flex items-center justify-center text-[#64748b]"
+      class="relative mb-5 flex items-center justify-center"
     >
-      <component :is="icon" :size="22" :stroke-width="1.5" />
+      <div class="w-16 h-16 rounded-2xl bg-primary-muted border border-primary-border/60 flex items-center justify-center text-primary shadow-empty-state">
+        <component :is="icon" :size="28" :stroke-width="1.5" />
+      </div>
     </div>
 
-    <div class="max-w-sm">
-      <h3 class="text-base font-semibold text-[#0f172a]">{{ title }}</h3>
-      <p v-if="description" class="mt-1 text-sm text-[#64748b]">{{ description }}</p>
+    <div class="max-w-md">
+      <h3 class="text-base font-semibold text-text tracking-tight">{{ title }}</h3>
+      <p v-if="description" class="mt-1.5 text-sm text-text-muted leading-relaxed">{{ description }}</p>
     </div>
 
-    <AppButton
-      v-if="actionLabel"
-      size="sm"
-      @click="emit('action')"
-    >
-      {{ actionLabel }}
-    </AppButton>
+    <div v-if="actionLabel || $slots.action" class="mt-6 flex items-center gap-3">
+      <AppButton
+        v-if="actionLabel"
+        size="sm"
+        @click="emit('action')"
+      >
+        {{ actionLabel }}
+      </AppButton>
+      <slot name="action" />
+    </div>
 
     <slot />
   </div>

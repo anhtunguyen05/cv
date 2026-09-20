@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 
 interface Props {
-  variant?: 'default' | 'outline' | 'ghost' | 'destructive'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary' | 'glass'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   disabled?: boolean
   loading?: boolean
   type?: 'button' | 'submit' | 'reset'
@@ -21,25 +21,33 @@ const props = withDefaults(defineProps<Props>(), {
 
 const classes = computed(() => {
   const base = [
-    'inline-flex items-center justify-center gap-2 font-medium rounded-md',
-    'transition-all duration-150 ease-out',
+    'inline-flex shrink-0 items-center justify-center whitespace-nowrap font-medium select-none',
+    'transition-colors duration-150 ease-out cursor-pointer',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-    'active:scale-[0.98] active:translate-y-px',
-    'disabled:opacity-50 disabled:pointer-events-none select-none',
+    'active:scale-[0.98] active:translate-y-[0.5px]',
+    'disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed',
   ]
 
   const sizes: Record<string, string> = {
-    sm: 'h-8 px-3 text-sm',
-    md: 'h-9 px-4 text-sm',
-    lg: 'h-11 px-6 text-base',
+    xs: 'h-8 px-2.5 text-xs font-medium rounded-md gap-1.5',
+    sm: 'h-9 px-3 text-sm font-medium rounded-lg gap-1.5',
+    md: 'h-10 px-4 text-sm font-medium rounded-lg gap-2',
+    lg: 'h-11 px-5 sm:px-6 text-base font-semibold rounded-lg gap-2.5',
   }
 
   const variants: Record<string, string> = {
-    default: 'bg-[#6366f1] text-white hover:bg-[#4f46e5] focus-visible:ring-[#6366f1]',
+    default:
+      'bg-primary text-white hover:bg-primary-hover shadow-control focus-visible:ring-primary',
+    secondary:
+      'bg-surface-muted text-text hover:bg-border focus-visible:ring-primary',
     outline:
-      'border border-[#e2e8f0] bg-white text-[#0f172a] hover:bg-[#f8fafc] hover:border-[#6366f1] focus-visible:ring-[#6366f1]',
-    ghost: 'text-[#0f172a] hover:bg-[#f1f5f9] focus-visible:ring-[#6366f1]',
-    destructive: 'bg-[#ef4444] text-white hover:bg-[#dc2626] focus-visible:ring-[#ef4444]',
+      'border border-border bg-white text-text hover:bg-surface hover:border-border-hover hover:text-primary-dark shadow-control-outline focus-visible:ring-primary',
+    ghost:
+      'text-text-quiet hover:bg-surface-muted hover:text-text focus-visible:ring-primary',
+    destructive:
+      'bg-danger text-white hover:bg-danger-hover shadow-control focus-visible:ring-danger',
+    glass:
+      'bg-white/10 text-white border border-white/15 hover:bg-white/20 backdrop-blur-md focus-visible:ring-white/40',
   }
 
   return [...base, sizes[props.size], variants[props.variant]].join(' ')
@@ -53,7 +61,12 @@ const classes = computed(() => {
     :disabled="disabled || loading"
     :class="classes"
   >
-    <span v-if="loading" class="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+    <span
+      v-if="loading"
+      class="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+      aria-hidden="true"
+    />
+    <span v-if="loading" class="sr-only">Loading</span>
     <slot />
   </component>
 </template>
