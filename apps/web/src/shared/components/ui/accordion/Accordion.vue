@@ -33,7 +33,7 @@ withDefaults(defineProps<Props>(), {
     :type="type as any"
     :collapsible="collapsible"
     :default-value="defaultValue as any"
-    class="w-full divide-y divide-[#e2e8f0] border border-[#e2e8f0] rounded-lg overflow-hidden bg-white"
+    class="w-full divide-y divide-border border border-border rounded-lg overflow-hidden bg-white"
   >
     <AccordionItem
       v-for="item in items"
@@ -43,18 +43,18 @@ withDefaults(defineProps<Props>(), {
     >
       <AccordionHeader class="flex">
         <AccordionTrigger
-          class="flex flex-1 items-center justify-between py-3.5 px-4 text-sm font-medium text-[#0f172a] hover:bg-[#f8fafc] transition-all group-data-[state=open]:text-[#6366f1] cursor-pointer"
+          class="flex flex-1 items-center justify-between py-3.5 px-4 text-sm font-medium text-text hover:bg-surface transition-all group-data-[state=open]:text-primary cursor-pointer"
         >
           <span>{{ item.title }}</span>
           <ChevronDown
             :size="16"
             :stroke-width="1.5"
-            class="text-[#64748b] transition-transform duration-200 group-data-[state=open]:rotate-180"
+            class="text-text-muted transition-transform duration-200 group-data-[state=open]:rotate-180"
           />
         </AccordionTrigger>
       </AccordionHeader>
       <AccordionContent
-        class="overflow-hidden px-4 pb-4 pt-1 text-sm text-[#64748b] transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+        class="overflow-hidden px-4 pb-4 pt-1 text-sm text-text-muted transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
       >
         <slot :name="item.value">
           <p>{{ item.content }}</p>

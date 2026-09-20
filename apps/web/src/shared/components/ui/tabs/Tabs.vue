@@ -32,13 +32,13 @@ const emit = defineEmits<{
     class="w-full flex flex-col"
     @update:model-value="emit('update:modelValue', $event as string)"
   >
-    <TabsList class="flex items-center gap-2 border-b border-[#e2e8f0] pb-px">
+    <TabsList class="flex items-center gap-2 border-b border-border pb-px">
       <TabsTrigger
         v-for="item in items"
         :key="item.value"
         :value="item.value"
         :disabled="item.disabled"
-        class="px-3.5 py-2 text-sm font-medium text-[#64748b] border-b-2 border-transparent transition-all hover:text-[#0f172a] data-[state=active]:text-[#6366f1] data-[state=active]:border-[#6366f1] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        class="px-3.5 py-2 text-sm font-medium text-text-muted border-b-2 border-transparent transition-all hover:text-text data-[state=active]:text-primary data-[state=active]:border-primary disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {{ item.label }}
       </TabsTrigger>

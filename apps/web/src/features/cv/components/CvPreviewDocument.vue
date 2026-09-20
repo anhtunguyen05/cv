@@ -12,64 +12,112 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <!-- White A4 paper surface — real document feel -->
-  <div
-    class="cv-document bg-white text-[#0f172a] mx-auto"
+  <!-- Genuine A4 paper document canvas -->
+  <article
+    class="cv-document bg-white text-text paper-shadow rounded-sm mx-auto transition-all selection:bg-primary/20"
     style="width: 794px; min-height: 1123px; padding: 48px 56px; font-family: 'Outfit', sans-serif;"
   >
-    <!-- Personal Info -->
-    <header class="border-b border-[#e2e8f0] pb-5 mb-5">
-      <h1 class="text-2xl font-bold tracking-tight text-[#0f172a]">
+    <!-- Header: Personal Info -->
+    <header class="border-b-2 border-text pb-4 mb-6">
+      <h1 class="text-3xl font-extrabold tracking-tight text-text">
         {{ data.personal_info.full_name }}
       </h1>
-      <div class="mt-1.5 flex flex-wrap gap-3 text-sm text-[#64748b]">
-        <span v-if="data.personal_info.email">{{ data.personal_info.email }}</span>
-        <span v-if="data.personal_info.phone">{{ data.personal_info.phone }}</span>
-        <span v-if="data.personal_info.location">{{ data.personal_info.location }}</span>
-        <a v-if="data.personal_info.github" :href="data.personal_info.github" class="text-[#6366f1]">GitHub</a>
-        <a v-if="data.personal_info.linkedin" :href="data.personal_info.linkedin" class="text-[#6366f1]">LinkedIn</a>
-        <a v-if="data.personal_info.portfolio" :href="data.personal_info.portfolio" class="text-[#6366f1]">Portfolio</a>
+
+      <!-- Contact and links row -->
+      <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-quiet">
+        <span v-if="data.personal_info.email" class="font-medium text-text">{{ data.personal_info.email }}</span>
+        <span v-if="data.personal_info.phone">• {{ data.personal_info.phone }}</span>
+        <span v-if="data.personal_info.location">• {{ data.personal_info.location }}</span>
+        <a
+          v-if="data.personal_info.github"
+          :href="data.personal_info.github"
+          target="_blank"
+          rel="noopener"
+          class="text-primary-dark hover:underline font-medium"
+        >
+          • GitHub
+        </a>
+        <a
+          v-if="data.personal_info.linkedin"
+          :href="data.personal_info.linkedin"
+          target="_blank"
+          rel="noopener"
+          class="text-primary-dark hover:underline font-medium"
+        >
+          • LinkedIn
+        </a>
+        <a
+          v-if="data.personal_info.portfolio"
+          :href="data.personal_info.portfolio"
+          target="_blank"
+          rel="noopener"
+          class="text-primary-dark hover:underline font-medium"
+        >
+          • Portfolio
+        </a>
       </div>
     </header>
 
-    <!-- Summary -->
-    <section v-if="data.summary" class="mb-5">
-      <h2 class="text-xs font-semibold uppercase tracking-widest text-[#6366f1] mb-2">Summary</h2>
-      <p class="text-sm leading-relaxed text-[#334155]">{{ data.summary }}</p>
+    <!-- Professional Summary -->
+    <section v-if="data.summary" class="mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2">
+        Professional Summary
+      </h2>
+      <p class="text-xs sm:text-[13px] leading-relaxed text-text-secondary">
+        {{ data.summary }}
+      </p>
     </section>
 
-    <!-- Skills -->
-    <section v-if="data.skills && Object.keys(data.skills).length" class="mb-5">
-      <h2 class="text-xs font-semibold uppercase tracking-widest text-[#6366f1] mb-2">Skills</h2>
-      <div class="space-y-1">
-        <div v-for="(skills, category) in data.skills" :key="category" class="flex gap-2 text-sm">
-          <span class="font-medium text-[#0f172a] capitalize w-20 flex-shrink-0">{{ category }}:</span>
-          <span class="text-[#334155]">{{ skills?.join(', ') }}</span>
+    <!-- Technical Skills -->
+    <section v-if="data.skills && Object.keys(data.skills).length" class="mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2">
+        Technical Skills
+      </h2>
+      <div class="space-y-1.5 text-xs sm:text-[13px]">
+        <div
+          v-for="(skills, category) in data.skills"
+          :key="category"
+          class="flex items-baseline gap-2"
+        >
+          <span class="font-semibold text-text capitalize w-24 flex-shrink-0">
+            {{ category }}:
+          </span>
+          <span class="text-text-secondary leading-relaxed">
+            {{ skills?.join(', ') }}
+          </span>
         </div>
       </div>
     </section>
 
-    <!-- Projects -->
-    <section v-if="data.projects?.length" class="mb-5">
-      <h2 class="text-xs font-semibold uppercase tracking-widest text-[#6366f1] mb-3">Projects</h2>
+    <!-- Projects & Evidence -->
+    <section v-if="data.projects?.length" class="mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-3">
+        Key Projects
+      </h2>
       <div class="space-y-4">
-        <div v-for="project in data.projects" :key="project.id">
-          <div class="flex items-start justify-between">
+        <div v-for="project in data.projects" :key="project.id" class="space-y-1">
+          <div class="flex items-baseline justify-between text-xs sm:text-[13px]">
             <div>
-              <span class="font-semibold text-sm text-[#0f172a]">{{ project.name }}</span>
-              <span class="text-[#64748b] text-sm"> — {{ project.role }}</span>
+              <span class="font-bold text-text">{{ project.name }}</span>
+              <span class="text-text-muted"> — {{ project.role }}</span>
             </div>
-            <span v-if="project.period" class="text-xs text-[#64748b] flex-shrink-0">{{ project.period }}</span>
+            <span v-if="project.period" class="text-xs text-text-muted font-medium flex-shrink-0">
+              {{ project.period }}
+            </span>
           </div>
-          <p class="text-xs text-[#94a3b8] mt-0.5">{{ project.tech_stack.join(' · ') }}</p>
-          <ul class="mt-1.5 space-y-1">
+
+          <p v-if="project.tech_stack?.length" class="text-xs font-mono text-primary">
+            Tech Stack: {{ project.tech_stack.join(' · ') }}
+          </p>
+
+          <ul class="mt-1 space-y-1 text-xs sm:text-[13px] text-text-secondary">
             <li
               v-for="(bullet, i) in project.bullets"
               :key="i"
-              class="text-sm text-[#334155] flex gap-2"
+              class="flex items-start gap-2 leading-relaxed"
             >
-              <span class="text-[#94a3b8] flex-shrink-0">—</span>
-              {{ bullet }}
+              <span class="text-text-subtle flex-shrink-0 select-none">•</span>
+              <span>{{ bullet }}</span>
             </li>
           </ul>
         </div>
@@ -77,28 +125,44 @@ withDefaults(defineProps<Props>(), {
     </section>
 
     <!-- Education -->
-    <section v-if="data.education?.length" class="mb-5">
-      <h2 class="text-xs font-semibold uppercase tracking-widest text-[#6366f1] mb-3">Education</h2>
+    <section v-if="data.education?.length" class="mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2">
+        Education
+      </h2>
       <div class="space-y-2">
-        <div v-for="(edu, i) in data.education" :key="i" class="flex justify-between">
+        <div
+          v-for="(edu, i) in data.education"
+          :key="i"
+          class="flex items-baseline justify-between text-xs sm:text-[13px]"
+        >
           <div>
-            <p class="text-sm font-semibold text-[#0f172a]">{{ edu.school }}</p>
-            <p class="text-sm text-[#64748b]">{{ edu.major }}<span v-if="edu.gpa"> · GPA {{ edu.gpa }}</span></p>
+            <p class="font-bold text-text">{{ edu.school }}</p>
+            <p class="text-xs text-text-quiet">
+              {{ edu.major }}<span v-if="edu.gpa" class="font-semibold"> · GPA: {{ edu.gpa }}</span>
+            </p>
           </div>
-          <span class="text-sm text-[#64748b] flex-shrink-0">{{ edu.period }}</span>
+          <span class="text-xs text-text-muted font-medium flex-shrink-0">{{ edu.period }}</span>
         </div>
       </div>
     </section>
 
     <!-- Certificates -->
-    <section v-if="data.certificates?.length" class="mb-5">
-      <h2 class="text-xs font-semibold uppercase tracking-widest text-[#6366f1] mb-3">Certificates</h2>
-      <ul class="space-y-1">
-        <li v-for="cert in data.certificates" :key="cert.name" class="flex justify-between text-sm">
-          <span class="text-[#0f172a]">{{ cert.name }} <span class="text-[#64748b]">· {{ cert.issuer }}</span></span>
-          <span class="text-[#64748b]">{{ cert.date }}</span>
+    <section v-if="data.certificates?.length" class="mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2">
+        Certifications & Awards
+      </h2>
+      <ul class="space-y-1 text-xs sm:text-[13px]">
+        <li
+          v-for="cert in data.certificates"
+          :key="cert.name"
+          class="flex justify-between items-baseline"
+        >
+          <span class="text-text">
+            <strong>{{ cert.name }}</strong> <span class="text-text-muted">· {{ cert.issuer }}</span>
+          </span>
+          <span class="text-xs text-text-muted font-medium">{{ cert.date }}</span>
         </li>
       </ul>
     </section>
-  </div>
+  </article>
 </template>

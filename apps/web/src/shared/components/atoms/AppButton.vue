@@ -2,8 +2,8 @@
 import Button from '../ui/button/Button.vue'
 
 interface Props {
-  variant?: 'default' | 'outline' | 'ghost' | 'destructive'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary' | 'glass'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   disabled?: boolean
   loading?: boolean
   type?: 'button' | 'submit' | 'reset'

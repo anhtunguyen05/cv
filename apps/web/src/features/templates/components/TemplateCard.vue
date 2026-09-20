@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { CvTemplate } from '../types/template.types'
-import { Check } from 'lucide-vue-next'
+import { Check, ShieldCheck } from 'lucide-vue-next'
 import AppButton from '@/shared/components/atoms/AppButton.vue'
 
 interface Props {
@@ -15,7 +15,7 @@ withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{ select: [template: CvTemplate] }>()
 
-// Spotlight border effect — track mouse position relative to card
+// Spotlight border effect
 const cardRef = ref<HTMLDivElement | null>(null)
 const spotlight = ref({ x: 0, y: 0, opacity: 0 })
 
@@ -35,72 +35,102 @@ function onMouseLeave() {
 </script>
 
 <template>
-  <div
-    ref="cardRef"
-    :class="[
-      'relative rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-200 group',
-      selected
-        ? 'border-[#6366f1] shadow-[0_0_0_3px_rgba(99,102,241,0.15)]'
-        : 'border-[#e2e8f0] hover:border-[#c7d2fe]',
-    ]"
-    @mousemove="onMouseMove"
-    @mouseleave="onMouseLeave"
-    @click="emit('select', template)"
-  >
-    <!-- Spotlight overlay -->
+  <div class="flex flex-col h-full group">
     <div
-      class="pointer-events-none absolute inset-0 z-10 transition-opacity duration-300 rounded-lg"
-      :style="{
-        opacity: spotlight.opacity,
-        background: `radial-gradient(200px circle at ${spotlight.x}px ${spotlight.y}px, rgba(99,102,241,0.08), transparent 70%)`,
-      }"
-    />
-
-    <!-- Preview image -->
-    <div class="bg-[#f8fafc] aspect-[3/4] flex items-center justify-center overflow-hidden">
-      <img
-        v-if="template.preview_image"
-        :src="template.preview_image"
-        :alt="`${template.name} template preview`"
-        class="w-full h-full object-cover object-top"
+      ref="cardRef"
+      :class="[
+        'relative rounded-xl overflow-hidden border-2 cursor-pointer transition-all duration-200 bg-white flex flex-col flex-1',
+        selected
+          ? 'border-primary shadow-card-selected'
+          : 'border-border hover:border-primary-border hover:shadow-card-lift hover:-translate-y-1',
+      ]"
+      @mousemove="onMouseMove"
+      @mouseleave="onMouseLeave"
+      @click="emit('select', template)"
+    >
+      <!-- Spotlight overlay -->
+      <div
+        class="pointer-events-none absolute inset-0 z-10 transition-opacity duration-300 rounded-xl"
+        :style="{
+          opacity: spotlight.opacity,
+          background: `radial-gradient(250px circle at ${spotlight.x}px ${spotlight.y}px, rgba(99,102,241,0.09), transparent 70%)`,
+        }"
       />
-      <div v-else class="w-full h-full flex items-center justify-center">
-        <!-- Placeholder document mockup -->
-        <div class="w-24 h-32 bg-white rounded shadow-sm p-2 space-y-1.5">
-          <div class="h-2 bg-[#6366f1]/40 rounded w-3/4" />
-          <div class="h-1 bg-[#e2e8f0] rounded w-full" />
-          <div class="h-1 bg-[#e2e8f0] rounded w-5/6" />
-          <div class="h-1 bg-[#e2e8f0] rounded w-4/6 mt-2" />
-          <div class="h-1 bg-[#e2e8f0] rounded w-full" />
-          <div class="h-1 bg-[#e2e8f0] rounded w-5/6" />
+
+      <!-- Template preview document mockup -->
+      <div class="bg-surface aspect-[3/4] p-4 flex items-center justify-center overflow-hidden relative border-b border-border">
+        <!-- Top ATS tag -->
+        <div class="absolute top-3 left-3 z-20 flex items-center gap-1.5 text-xs font-semibold text-success-text bg-success-muted border border-success-border px-2.5 py-0.5 rounded-full shadow-2xs">
+          <ShieldCheck :size="12" />
+          <span>98% ATS Score</span>
+        </div>
+
+        <!-- Selected indicator pill -->
+        <div
+          v-if="selected"
+          class="absolute top-3 right-3 z-20 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-md animate-in zoom-in-50 duration-150"
+        >
+          <Check :size="14" :stroke-width="3" class="text-white" />
+        </div>
+
+        <!-- Realistic Document Silhouette Graphic -->
+        <div class="w-40 h-56 bg-white rounded-md shadow-paper-preview border border-border p-3 space-y-2 select-none group-hover:scale-[1.02] transition-transform duration-200">
+          <!-- Document Header -->
+          <div class="space-y-1.5 pb-2 border-b border-border">
+            <div class="h-2.5 bg-text rounded-sm w-3/5" />
+            <div class="flex gap-1.5">
+              <div class="h-1 bg-text-subtle rounded-xs w-1/4" />
+              <div class="h-1 bg-text-subtle rounded-xs w-1/4" />
+              <div class="h-1 bg-text-subtle rounded-xs w-1/4" />
+            </div>
+          </div>
+
+          <!-- Summary section -->
+          <div class="space-y-1.5">
+            <div class="h-1 bg-primary rounded-xs w-1/3" />
+            <div class="h-1 bg-border-hover rounded-xs w-full" />
+            <div class="h-1 bg-border-hover rounded-xs w-5/6" />
+          </div>
+
+          <!-- Skills section -->
+          <div class="space-y-1.5 pt-1">
+            <div class="h-1 bg-primary rounded-xs w-1/4" />
+            <div class="flex gap-1.5 flex-wrap">
+              <div class="h-2 bg-surface-muted border border-border rounded-xs w-7" />
+              <div class="h-2 bg-surface-muted border border-border rounded-xs w-9" />
+              <div class="h-2 bg-surface-muted border border-border rounded-xs w-6" />
+              <div class="h-2 bg-surface-muted border border-border rounded-xs w-8" />
+            </div>
+          </div>
+
+          <!-- Projects section -->
+          <div class="space-y-1.5 pt-1">
+            <div class="h-1 bg-primary rounded-xs w-1/4" />
+            <div class="h-2 bg-text/70 rounded-xs w-1/2" />
+            <div class="h-1 bg-border-hover rounded-xs w-full" />
+            <div class="h-1 bg-border-hover rounded-xs w-4/5" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Details Footer -->
+      <div class="p-4 bg-white space-y-1 flex-1 flex flex-col justify-between">
+        <div>
+          <h3 class="text-sm sm:text-base font-bold text-text">{{ template.name }}</h3>
+          <p class="text-xs text-text-muted mt-0.5">{{ template.type }}</p>
+        </div>
+
+        <div class="pt-3">
+          <AppButton
+            :variant="selected ? 'default' : 'outline'"
+            size="sm"
+            class="w-full"
+            @click.stop="emit('select', template)"
+          >
+            {{ selected ? 'Selected' : 'Use Template' }}
+          </AppButton>
         </div>
       </div>
     </div>
-
-    <!-- Selected indicator -->
-    <div
-      v-if="selected"
-      class="absolute top-2.5 right-2.5 z-20 w-6 h-6 bg-[#6366f1] rounded-full flex items-center justify-center"
-    >
-      <Check :size="13" :stroke-width="2.5" class="text-white" />
-    </div>
-
-    <!-- Footer -->
-    <div class="p-3 bg-white border-t border-[#e2e8f0]">
-      <p class="text-sm font-medium text-[#0f172a]">{{ template.name }}</p>
-      <p class="text-xs text-[#64748b] mt-0.5">{{ template.type }}</p>
-    </div>
-  </div>
-
-  <!-- Select button below card (outside card click area) -->
-  <div class="mt-2">
-    <AppButton
-      :variant="selected ? 'default' : 'outline'"
-      size="sm"
-      class="w-full"
-      @click="emit('select', template)"
-    >
-      {{ selected ? 'Selected' : 'Use template' }}
-    </AppButton>
   </div>
 </template>

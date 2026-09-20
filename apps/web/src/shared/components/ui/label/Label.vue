@@ -9,8 +9,8 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <label class="block text-sm font-medium text-[#0f172a]">
+  <label class="block text-sm font-medium text-text">
     <slot />
-    <span v-if="required" class="text-[#ef4444] ml-0.5" aria-hidden="true">*</span>
+    <span v-if="required" class="text-danger ml-0.5" aria-hidden="true">*</span>
   </label>
 </template>

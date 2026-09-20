@@ -6,6 +6,7 @@ import { registerSchema } from '../schemas/auth.schema'
 import { useRegisterMutation } from '../api/auth.mutations'
 import FormField from '@/shared/components/molecules/FormField.vue'
 import AppButton from '@/shared/components/atoms/AppButton.vue'
+import { User, Mail, Lock, ArrowRight } from 'lucide-vue-next'
 
 const { handleSubmit, defineField, errors, values } = useForm({
   validationSchema: toTypedSchema(registerSchema),
@@ -20,7 +21,7 @@ const { mutate: register, isPending, error: mutationError } = useRegisterMutatio
 
 const onSubmit = handleSubmit((vals) => register(vals))
 
-// Password strength
+// Password strength computation
 const passwordStrength = computed(() => {
   const pw = values.password ?? ''
   if (!pw) return 0
@@ -32,63 +33,132 @@ const passwordStrength = computed(() => {
   return score
 })
 
-const strengthColors = ['bg-[#e2e8f0]', 'bg-[#ef4444]', 'bg-[#f59e0b]', 'bg-[#6366f1]', 'bg-[#10b981]']
+const strengthColors = ['bg-border', 'bg-danger', 'bg-warning', 'bg-primary', 'bg-success']
 const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
 </script>
 
 <template>
-  <div>
-    <h1 class="text-2xl font-semibold tracking-tight text-[#0f172a]">Create account</h1>
-    <p class="mt-1 text-sm text-[#64748b]">Start tailoring your CV to every job.</p>
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">Create your account</h1>
+      <p class="mt-1.5 text-sm text-text-muted">Get started tailoring your CV for every job application.</p>
+    </div>
 
-    <form class="mt-8 space-y-5" novalidate @submit="onSubmit">
-      <div v-if="mutationError" class="px-4 py-3 rounded-md bg-[#fef2f2] border border-[#fecaca] text-sm text-[#dc2626]" role="alert">
+    <form class="space-y-4" novalidate @submit="onSubmit">
+      <!-- Server error -->
+      <div
+        v-if="mutationError"
+        class="px-4 py-3 rounded-xl bg-danger-muted border border-danger-border text-sm text-danger-hover"
+        role="alert"
+      >
         {{ (mutationError as Error).message || 'Registration failed. Please try again.' }}
       </div>
 
-      <FormField label="Full name" :error="errors.name" html-for="name" required>
-        <input id="name" v-model="name" v-bind="nameAttrs" type="text" autocomplete="name" placeholder="Nguyen Anh Tu"
-          :class="['w-full h-9 px-3 rounded-md text-sm border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0', errors.name ? 'border-[#ef4444] focus:ring-[#ef4444]/30 bg-[#fef2f2]' : 'border-[#e2e8f0] bg-white focus:border-[#6366f1] focus:ring-[#6366f1]/20']"
-        />
+      <FormField label="Full Name" :error="errors.name" html-for="name" required>
+        <div class="relative flex items-center">
+          <User :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
+          <input
+            id="name"
+            v-model="name"
+            v-bind="nameAttrs"
+            type="text"
+            autocomplete="name"
+            placeholder="Nguyen Anh Tu"
+            :class="[
+              'w-full h-10 sm:h-11 pl-10 pr-3.5 rounded-xl text-sm border transition-all text-text focus:outline-none focus:ring-2 focus:ring-offset-0',
+              errors.name
+                ? 'border-danger focus:ring-danger/20 bg-danger-muted'
+                : 'border-border bg-white focus:border-primary focus:ring-primary/20 hover:border-border-hover',
+            ]"
+          />
+        </div>
       </FormField>
 
-      <FormField label="Email address" :error="errors.email" html-for="reg-email" required>
-        <input id="reg-email" v-model="email" v-bind="emailAttrs" type="email" autocomplete="email" placeholder="you@example.com"
-          :class="['w-full h-9 px-3 rounded-md text-sm border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0', errors.email ? 'border-[#ef4444] focus:ring-[#ef4444]/30 bg-[#fef2f2]' : 'border-[#e2e8f0] bg-white focus:border-[#6366f1] focus:ring-[#6366f1]/20']"
-        />
+      <FormField label="Email Address" :error="errors.email" html-for="reg-email" required>
+        <div class="relative flex items-center">
+          <Mail :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
+          <input
+            id="reg-email"
+            v-model="email"
+            v-bind="emailAttrs"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            :class="[
+              'w-full h-10 sm:h-11 pl-10 pr-3.5 rounded-xl text-sm border transition-all text-text focus:outline-none focus:ring-2 focus:ring-offset-0',
+              errors.email
+                ? 'border-danger focus:ring-danger/20 bg-danger-muted'
+                : 'border-border bg-white focus:border-primary focus:ring-primary/20 hover:border-border-hover',
+            ]"
+          />
+        </div>
       </FormField>
 
       <FormField label="Password" :error="errors.password" html-for="reg-password" required>
-        <input id="reg-password" v-model="password" v-bind="passwordAttrs" type="password" autocomplete="new-password" placeholder="••••••••"
-          :class="['w-full h-9 px-3 rounded-md text-sm border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0', errors.password ? 'border-[#ef4444] focus:ring-[#ef4444]/30 bg-[#fef2f2]' : 'border-[#e2e8f0] bg-white focus:border-[#6366f1] focus:ring-[#6366f1]/20']"
-        />
-        <!-- Password strength meter -->
-        <div v-if="password" class="mt-2 flex gap-1">
+        <div class="relative flex items-center">
+          <Lock :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
+          <input
+            id="reg-password"
+            v-model="password"
+            v-bind="passwordAttrs"
+            type="password"
+            autocomplete="new-password"
+            placeholder="••••••••"
+            :class="[
+              'w-full h-10 sm:h-11 pl-10 pr-3.5 rounded-xl text-sm border transition-all text-text focus:outline-none focus:ring-2 focus:ring-offset-0',
+              errors.password
+                ? 'border-danger focus:ring-danger/20 bg-danger-muted'
+                : 'border-border bg-white focus:border-primary focus:ring-primary/20 hover:border-border-hover',
+            ]"
+          />
+        </div>
+        <!-- Password strength bar -->
+        <div v-if="password" class="mt-2.5 flex gap-1.5">
           <div
             v-for="i in 4"
             :key="i"
-            :class="['h-1 flex-1 rounded-full transition-colors duration-300', i <= passwordStrength ? strengthColors[passwordStrength] : 'bg-[#e2e8f0]']"
+            :class="[
+              'h-1.5 flex-1 rounded-full transition-all duration-300',
+              i <= passwordStrength ? strengthColors[passwordStrength] : 'bg-border',
+            ]"
           />
         </div>
-        <p v-if="password && passwordStrength > 0" class="mt-1 text-xs text-[#64748b]">
-          {{ strengthLabels[passwordStrength] }} password
+        <p v-if="password && passwordStrength > 0" class="mt-1 text-xs text-text-muted">
+          {{ strengthLabels[passwordStrength] }} password strength
         </p>
       </FormField>
 
-      <FormField label="Confirm password" :error="errors.password_confirmation" html-for="password-confirm" required>
-        <input id="password-confirm" v-model="passwordConfirmation" v-bind="passwordConfirmationAttrs" type="password" autocomplete="new-password" placeholder="••••••••"
-          :class="['w-full h-9 px-3 rounded-md text-sm border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0', errors.password_confirmation ? 'border-[#ef4444] focus:ring-[#ef4444]/30 bg-[#fef2f2]' : 'border-[#e2e8f0] bg-white focus:border-[#6366f1] focus:ring-[#6366f1]/20']"
-        />
+      <FormField label="Confirm Password" :error="errors.password_confirmation" html-for="password-confirm" required>
+        <div class="relative flex items-center">
+          <Lock :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
+          <input
+            id="password-confirm"
+            v-model="passwordConfirmation"
+            v-bind="passwordConfirmationAttrs"
+            type="password"
+            autocomplete="new-password"
+            placeholder="••••••••"
+            :class="[
+              'w-full h-10 sm:h-11 pl-10 pr-3.5 rounded-xl text-sm border transition-all text-text focus:outline-none focus:ring-2 focus:ring-offset-0',
+              errors.password_confirmation
+                ? 'border-danger focus:ring-danger/20 bg-danger-muted'
+                : 'border-border bg-white focus:border-primary focus:ring-primary/20 hover:border-border-hover',
+            ]"
+          />
+        </div>
       </FormField>
 
-      <AppButton type="submit" class="w-full" :loading="isPending">
-        Create account
-      </AppButton>
+      <div class="pt-2">
+        <AppButton size="lg" type="submit" class="w-full shadow-xs" :loading="isPending">
+          <span>Create account</span>
+          <ArrowRight :size="16" />
+        </AppButton>
+      </div>
     </form>
 
-    <p class="mt-6 text-center text-sm text-[#64748b]">
+    <p class="text-center text-sm text-text-muted">
       Already have an account?
-      <RouterLink to="/login" class="text-[#6366f1] hover:text-[#4f46e5] font-medium transition-colors">
+      <RouterLink to="/login" class="text-primary hover:text-primary-hover font-semibold ml-1 transition-colors">
         Sign in
       </RouterLink>
     </p>

@@ -20,15 +20,15 @@ withDefaults(defineProps<Props>(), {
   <div class="flex flex-col gap-1.5">
     <label
       :for="htmlFor"
-      class="block text-sm font-medium text-[#0f172a]"
+      class="block text-sm font-medium text-text"
     >
       {{ label }}
-      <span v-if="required" class="text-[#ef4444] ml-0.5" aria-hidden="true">*</span>
+      <span v-if="required" class="text-danger ml-0.5" aria-hidden="true">*</span>
     </label>
 
     <slot />
 
-    <p v-if="hint && !error" class="text-xs text-[#64748b]">{{ hint }}</p>
-    <p v-if="error" class="text-xs text-[#ef4444]" role="alert">{{ error }}</p>
+    <p v-if="hint && !error" class="text-xs text-text-muted">{{ hint }}</p>
+    <p v-if="error" class="text-xs text-danger" role="alert">{{ error }}</p>
   </div>
 </template>
