@@ -1,9 +1,11 @@
 # Story 4.1: Start an Evidence interview — Verification
 
-| Acceptance criterion | Tasks |
+## Acceptance-criterion traceability
+
+| Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-4-1-start-an-evidence-interview-01` | `TASK-4-1-01` through `TASK-4-1-07` |
-| `AC-4-1-start-an-evidence-interview-02` | `TASK-4-1-01`, `TASK-4-1-03` through `TASK-4-1-07` |
+| `AC-4-1-start-an-evidence-interview-01` | `TASK-4-1-01`, `TASK-4-1-02`, `TASK-4-1-03` |
+| `AC-4-1-start-an-evidence-interview-02` | `TASK-4-1-01`, `TASK-4-1-02`, `TASK-4-1-03` |
 
 Required evidence covers eligibility/question rules, exact source persistence,
 ownership/non-disclosure, transaction/idempotency/concurrency, API/FE fixture

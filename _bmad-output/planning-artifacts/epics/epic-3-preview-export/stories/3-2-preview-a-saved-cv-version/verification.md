@@ -1,13 +1,13 @@
 # Story 3.2: Preview a saved CV Version — Verification
 
-## AC-to-task traceability
+## Acceptance-criterion traceability
 
-| Acceptance criterion | Tasks |
+| Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-3-2-preview-a-saved-cv-version-01` | `TASK-3-2-01` through `TASK-3-2-08` |
-| `AC-3-2-preview-a-saved-cv-version-02` | `TASK-3-2-01` through `TASK-3-2-04`, `TASK-3-2-06`, `TASK-3-2-08` |
-| `AC-3-2-preview-a-saved-cv-version-03` | `TASK-3-2-01` through `TASK-3-2-08` |
-| `AC-3-2-preview-a-saved-cv-version-04` | `TASK-3-2-01`, `TASK-3-2-03` through `TASK-3-2-05`, `TASK-3-2-07`, `TASK-3-2-08` |
+| `AC-3-2-preview-a-saved-cv-version-01` | `TASK-3-2-01`, `TASK-3-2-02`, `TASK-3-2-03` |
+| `AC-3-2-preview-a-saved-cv-version-02` | `TASK-3-2-01`, `TASK-3-2-02`, `TASK-3-2-03` |
+| `AC-3-2-preview-a-saved-cv-version-03` | `TASK-3-2-01`, `TASK-3-2-02`, `TASK-3-2-03` |
+| `AC-3-2-preview-a-saved-cv-version-04` | `TASK-3-2-01`, `TASK-3-2-03` |
 
 ## Required evidence
 

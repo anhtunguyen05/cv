@@ -6,12 +6,12 @@ Return to the [Story overview](README.md) and [Epic test strategy](../../test-st
 
 | Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-2-4-generate-a-match-report-01` | `TASK-2-4-01` through `TASK-2-4-08` |
-| `AC-2-4-generate-a-match-report-02` | `TASK-2-4-01`, `TASK-2-4-03` through `TASK-2-4-08` |
-| `AC-2-4-generate-a-match-report-03` | `TASK-2-4-01`, `TASK-2-4-03` through `TASK-2-4-08` |
-| `AC-2-4-generate-a-match-report-04` | `TASK-2-4-01`, `TASK-2-4-03` through `TASK-2-4-08` |
-| `AC-2-4-generate-a-match-report-05` | `TASK-2-4-01`, `TASK-2-4-03` through `TASK-2-4-08` |
-| `AC-2-4-generate-a-match-report-06` | `TASK-2-4-01` through `TASK-2-4-05`, `TASK-2-4-07`, `TASK-2-4-08` |
+| `AC-2-4-generate-a-match-report-01` | `TASK-2-4-01`, `TASK-2-4-02`, `TASK-2-4-03` |
+| `AC-2-4-generate-a-match-report-02` | `TASK-2-4-01`, `TASK-2-4-02`, `TASK-2-4-03` |
+| `AC-2-4-generate-a-match-report-03` | `TASK-2-4-01`, `TASK-2-4-02`, `TASK-2-4-03` |
+| `AC-2-4-generate-a-match-report-04` | `TASK-2-4-01`, `TASK-2-4-02`, `TASK-2-4-03` |
+| `AC-2-4-generate-a-match-report-05` | `TASK-2-4-01`, `TASK-2-4-02`, `TASK-2-4-03` |
+| `AC-2-4-generate-a-match-report-06` | `TASK-2-4-01`, `TASK-2-4-02`, `TASK-2-4-03` |
 
 ## Required evidence
 

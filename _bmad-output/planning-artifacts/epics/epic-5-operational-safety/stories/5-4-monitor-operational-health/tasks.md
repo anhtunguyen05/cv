@@ -1,90 +1,49 @@
 # Story 5.4 — Tasks
 
-- [ ] TASK-5-4-01: Inventory supported operation boundaries and freeze metric fixtures
+## Tasks & Acceptance
+
+**Execution:**
+
+- [ ] TASK-5-4-01: Inventory telemetry boundaries and freeze metric fixtures
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `none`
   - Covers: `AC-5-4-monitor-operational-health-01`
-  - Scope: matching/provider/Patch/Export/job/system operation/status/failure/duration/version/label matrices
+  - Scope: 01. Inventory supported operation boundaries and freeze metric fixtures: matching/provider/Patch/Export/job/system operation/status/failure/duration/version/label matrices
   - Coordination: `E5-COORD-AUDIT-001`, `E5-COORD-JOB-001`, `E5-COORD-TELEMETRY-001`, `E5-COORD-TEST-001`
-  - Blocked by: approved producer checkpoints; `E5-DEC-001` through `E5-DEC-003`, `E5-DEC-005`, `E5-DEC-008`, `DISCOVERY-E5-001`, `DISCOVERY-E5-002`
-  - Outcome: One approved content-free versioned metric taxonomy.
-  - Acceptance: every metric has boundary/unit/type/labels/cardinality/privacy/owner and no-data semantics.
-  - Verification: architecture/ops/security/product review evidence.
-- [ ] TASK-5-4-02: Implement telemetry schema, bounded labels, and privacy guard
+  - Blocked by: `E5-DEC-001`; `E5-DEC-002`; `E5-DEC-003`; `E5-DEC-005`; `E5-DEC-008`; `DISCOVERY-E5-001`; `DISCOVERY-E5-002`; approved producer checkpoints
+  - Outcome: 01. Inventory supported operation boundaries and freeze metric fixtures: One approved content-free versioned metric taxonomy.
+  - Acceptance: 01. Inventory supported operation boundaries and freeze metric fixtures: every metric has boundary/unit/type/labels/cardinality/privacy/owner and no-data semantics.
+  - Verification: 01. Inventory supported operation boundaries and freeze metric fixtures: architecture/ops/security/product review evidence.
+
+- [ ] TASK-5-4-02: Deliver privacy-safe telemetry instrumentation
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `TASK-5-4-01`
   - Covers: `AC-5-4-monitor-operational-health-01`
-  - Scope: typed metric helpers, allowlisted versions/categories, canary rejection, cardinality budget, outage behavior
-  - Coordination: `E5-COORD-TELEMETRY-001`
-  - Blocked by: `none`
-  - Outcome: Make safe metric emission the reusable boundary.
-  - Acceptance: arbitrary/content labels cannot be emitted and telemetry failure cannot change product truth.
-  - Verification: unit/property/fuzz/canary/cardinality tests.
-- [ ] TASK-5-4-03: Instrument approved product and dependency lifecycle boundaries
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-4-02`
-  - Covers: `AC-5-4-monitor-operational-health-01`
-  - Scope: supported matching/provider/Patch/Export/job/system success/failure/duration/retry emission
-  - Coordination: `E5-COORD-TELEMETRY-001`
-  - Blocked by: only implemented approved operations are instrumented
-  - Outcome: Count exact lifecycle truth without duplicates or premature success.
-  - Acceptance: fake-clock/failure/retry/late/lost cases match metric fixtures.
-  - Verification: integration and metric-sink tests per producer.
-- [ ] TASK-5-4-04: Define and provision dashboards, SLOs, alerts, and runbooks
+  - Scope: 01. Implement telemetry schema, bounded labels, and privacy guard: typed metric helpers, allowlisted versions/categories, canary rejection, cardinality budget, outage behavior | 02. Instrument approved product and dependency lifecycle boundaries: supported matching/provider/Patch/Export/job/system success/failure/duration/retry emission | 03. Verify privacy, cardinality, metric correctness, and alert drills: canary scan, cardinality load, lifecycle counts/durations, outage/no-data, breach/dedupe/route/recovery/runbook
+  - Coordination: `E5-COORD-TELEMETRY-001`, `E5-COORD-TEST-001`; one telemetry integration owner maintains the shared metric/privacy contract, coordinates producer-owner handoffs, and owns the complete telemetry evidence set
+  - Blocked by: `E5-DEC-008`; only implemented approved operations are instrumented
+  - Outcome: 01. Implement telemetry schema, bounded labels, and privacy guard: Make safe metric emission the reusable boundary. | 02. Instrument approved product and dependency lifecycle boundaries: Count exact lifecycle truth without duplicates or premature success. | 03. Verify privacy, cardinality, metric correctness, and alert drills: Prove signals are safe, correct, bounded, and actionable.
+  - Acceptance: 01. Implement telemetry schema, bounded labels, and privacy guard: arbitrary/content labels cannot be emitted and telemetry failure cannot change product truth. | 02. Instrument approved product and dependency lifecycle boundaries: fake-clock/failure/retry/late/lost cases match metric fixtures. | 03. Verify privacy, cardinality, metric correctness, and alert drills: zero forbidden canaries, within budget, and drills reach owner/runbook with safe payload.
+  - Verification: 01. Implement telemetry schema, bounded labels, and privacy guard: unit/property/fuzz/canary/cardinality tests. | 02. Instrument approved product and dependency lifecycle boundaries: integration and metric-sink tests per producer. | 03. Verify privacy, cardinality, metric correctness, and alert drills: approved load/privacy/integration/alert-drill artifact.
+
+- [ ] TASK-5-4-03: Deliver authorized monitoring and verify alerts
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `TASK-5-4-01`
   - Covers: `AC-5-4-monitor-operational-health-01`
-  - Scope: queries/windows/threshold/no-data, views, severity/routing/dedupe/recovery, owner/escalation/runbook
-  - Coordination: `E5-COORD-TELEMETRY-001`
-  - Blocked by: `E5-DEC-005`, `DISCOVERY-E5-002`
-  - Outcome: Turn safe telemetry into actionable operator response.
-  - Acceptance: each critical signal has owner/runbook and honest no-data/recovery behavior.
-  - Verification: configuration validation and operator/runbook review evidence.
-- [ ] TASK-5-4-05: Implement authorized accessible operational views
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-4-04`
-  - Covers: `AC-5-4-monitor-operational-health-01`
-  - Scope: approved dashboard access, labels/units/windows/delay/no-data, drill links, keyboard/readability
-  - Coordination: `E5-COORD-TELEMETRY-001`
-  - Blocked by: `E5-DEC-001`, `DISCOVERY-E5-001`
-  - Outcome: Let authorized operators understand health without User content.
-  - Acceptance: views distinguish no-data/zero and expose no forbidden labels or raw payload.
-  - Verification: RBAC/dashboard/accessibility/config tests.
-- [ ] TASK-5-4-06: Verify privacy, cardinality, metric correctness, and alert drills
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-4-03`, `TASK-5-4-04`, `TASK-5-4-05`
-  - Covers: `AC-5-4-monitor-operational-health-01`
-  - Scope: canary scan, cardinality load, lifecycle counts/durations, outage/no-data, breach/dedupe/route/recovery/runbook
-  - Coordination: `E5-COORD-TEST-001`
-  - Blocked by: `E5-DEC-008`
-  - Outcome: Prove signals are safe, correct, bounded, and actionable.
-  - Acceptance: zero forbidden canaries, within budget, and drills reach owner/runbook with safe payload.
-  - Verification: approved load/privacy/integration/alert-drill artifact.
-- [ ] TASK-5-4-07: Verify operational health flow end to end
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-5-4-06`
-  - Covers: `AC-5-4-monitor-operational-health-01`
-  - Scope: synthetic product outcomes-to-metric/dashboard/alert/ack/recovery/denial scenarios
-  - Coordination: `E5-COORD-TEST-001`
-  - Blocked by: `E5-DEC-008`
-  - Outcome: Verify complete privacy-safe detection and operator response.
-  - Acceptance: versioned evidence traces every claim without User content.
-  - Verification: approved staging-like drill and evidence manifest.
+  - Scope: 01. Define and provision dashboards, SLOs, alerts, and runbooks: queries/windows/threshold/no-data, views, severity/routing/dedupe/recovery, owner/escalation/runbook | 02. Implement authorized accessible operational views: approved dashboard access, labels/units/windows/delay/no-data, drill links, keyboard/readability | 03. Verify operational health flow end to end: synthetic product outcomes-to-metric/dashboard/alert/ack/recovery/denial scenarios
+  - Coordination: `E5-COORD-TELEMETRY-001`, `E5-COORD-TEST-001`; one monitoring integration owner coordinates dashboard/SLO/runbook configuration and authorized views, then the telemetry-backed drill and evidence
+  - Blocked by: `E5-DEC-005`; `DISCOVERY-E5-002`; `E5-DEC-001`; `DISCOVERY-E5-001`; `E5-DEC-008`
+  - Outcome: 01. Define and provision dashboards, SLOs, alerts, and runbooks: Turn safe telemetry into actionable operator response. | 02. Implement authorized accessible operational views: Let authorized operators understand health without User content. | 03. Verify operational health flow end to end: Verify complete privacy-safe detection and operator response.
+  - Acceptance: 01. Define and provision dashboards, SLOs, alerts, and runbooks: each critical signal has owner/runbook and honest no-data/recovery behavior. | 02. Implement authorized accessible operational views: views distinguish no-data/zero and expose no forbidden labels or raw payload. | 03. Verify operational health flow end to end: versioned evidence traces every claim without User content. | Integrated monitoring acceptance closes only after `TASK-5-4-02` passes instrumentation and privacy-safe metric acceptance.
+  - Verification: 01. Define and provision dashboards, SLOs, alerts, and runbooks: configuration validation and operator/runbook review evidence. | 02. Implement authorized accessible operational views: RBAC/dashboard/accessibility/config tests. | 03. Verify operational health flow end to end: approved staging-like drill and evidence manifest. | Run the monitoring flow after `TASK-5-4-02` passes instrumentation and privacy-safe metric acceptance.
 
-## Dependency map
-
-`01 -> 02 -> 03`; `01 -> 04 -> 05`; `03 + 04 + 05 -> 06 -> 07`.
+## Dependency and concurrency map
+- `TASK-5-4-01` depends on `none`.
+- `TASK-5-4-02` depends on `TASK-5-4-01`.
+- `TASK-5-4-03` depends on `TASK-5-4-01`; one monitoring integration owner is accountable for both operator-facing deliverables, which can proceed alongside `TASK-5-4-02`; integrated health-flow verification and closure wait for instrumentation acceptance.

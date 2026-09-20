@@ -6,11 +6,11 @@ Return to the [story overview](README.md). Shared layer expectations and integra
 
 | Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-1-2-sign-in-and-sign-out-01` | `TASK-1-2-01`, `TASK-1-2-02`, `TASK-1-2-04`, `TASK-1-2-05`, `TASK-1-2-06`, `TASK-1-2-07` |
-| `AC-1-2-sign-in-and-sign-out-02` | `TASK-1-2-01`, `TASK-1-2-02`, `TASK-1-2-03`, `TASK-1-2-05`, `TASK-1-2-06`, `TASK-1-2-07` |
-| `AC-1-2-sign-in-and-sign-out-03` | `TASK-1-2-01`, `TASK-1-2-02`, `TASK-1-2-04`, `TASK-1-2-06`, `TASK-1-2-07` |
-| `AC-1-2-sign-in-and-sign-out-04` | `TASK-1-2-01`, `TASK-1-2-02`, `TASK-1-2-04`, `TASK-1-2-05`, `TASK-1-2-06`, `TASK-1-2-07` |
-| `AC-1-2-sign-in-and-sign-out-05` | `TASK-1-2-01`, `TASK-1-2-03`, `TASK-1-2-04`, `TASK-1-2-05`, `TASK-1-2-06`, `TASK-1-2-07` |
+| `AC-1-2-sign-in-and-sign-out-01` | `TASK-1-2-01`, `TASK-1-2-02`, `TASK-1-2-03` |
+| `AC-1-2-sign-in-and-sign-out-02` | `TASK-1-2-01`, `TASK-1-2-02`, `TASK-1-2-03` |
+| `AC-1-2-sign-in-and-sign-out-03` | `TASK-1-2-01`, `TASK-1-2-02`, `TASK-1-2-03` |
+| `AC-1-2-sign-in-and-sign-out-04` | `TASK-1-2-01`, `TASK-1-2-02`, `TASK-1-2-03` |
+| `AC-1-2-sign-in-and-sign-out-05` | `TASK-1-2-01`, `TASK-1-2-02`, `TASK-1-2-03` |
 
 ## Required evidence layers
 
@@ -28,7 +28,7 @@ Mark a layer `N/A` only with a written reason tied to an AC. Planned commands ar
 ## Exit gate
 
 Reuse Story 1.1 current-account ownership under `E1-COORD-AUTH-001`; reserve
-shared browser tooling through `E1-COORD-TEST-001`. Tasks 06–07 must prove all
-five ACs before the story can leave review.
+shared browser tooling through `E1-COORD-TEST-001`. Task group `TASK-1-2-03`
+must prove all five ACs before the story can leave review.
 
 The story may leave review only when every canonical AC has passing evidence, every task is `done`, shared coordination records are resolved, and no open decision can change behavior, security, data semantics, public contracts, dependencies, or verification.

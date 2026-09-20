@@ -1,8 +1,10 @@
 # Story 5.4 — Verification
 
-| AC | Tasks |
+## Acceptance-criterion traceability
+
+| Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-5-4-monitor-operational-health-01` | `TASK-5-4-01` through `TASK-5-4-07` |
+| `AC-5-4-monitor-operational-health-01` | `TASK-5-4-01`, `TASK-5-4-02`, `TASK-5-4-03` |
 
 Completion requires correct implemented-boundary latency/status/failure metrics,
 bounded versioned labels, zero content canaries, cardinality budget, no-data and

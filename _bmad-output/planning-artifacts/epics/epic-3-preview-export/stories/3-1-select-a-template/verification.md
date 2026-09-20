@@ -1,11 +1,11 @@
 # Story 3.1: Select a Template — Verification
 
-## AC-to-task traceability
+## Acceptance-criterion traceability
 
-| Acceptance criterion | Tasks |
+| Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-3-1-select-a-template-01` | `TASK-3-1-01` through `TASK-3-1-07` |
-| `AC-3-1-select-a-template-02` | `TASK-3-1-01` through `TASK-3-1-07` |
+| `AC-3-1-select-a-template-01` | `TASK-3-1-01`, `TASK-3-1-02`, `TASK-3-1-03` |
+| `AC-3-1-select-a-template-02` | `TASK-3-1-01`, `TASK-3-1-02`, `TASK-3-1-03` |
 
 ## Required evidence
 

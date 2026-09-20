@@ -6,10 +6,10 @@ Return to the [Story overview](README.md) and [Epic test strategy](../../test-st
 
 | Acceptance criterion | Covering tasks |
 | --- | --- |
-| `AC-2-2-manage-saved-job-descriptions-01` | `TASK-2-2-01`, `TASK-2-2-02`, `TASK-2-2-04` through `TASK-2-2-08` |
-| `AC-2-2-manage-saved-job-descriptions-02` | `TASK-2-2-01`, `TASK-2-2-02`, `TASK-2-2-04` through `TASK-2-2-08` |
-| `AC-2-2-manage-saved-job-descriptions-03` | `TASK-2-2-01`, `TASK-2-2-03` through `TASK-2-2-08` |
-| `AC-2-2-manage-saved-job-descriptions-04` | `TASK-2-2-01`, `TASK-2-2-03` through `TASK-2-2-08` |
+| `AC-2-2-manage-saved-job-descriptions-01` | `TASK-2-2-01`, `TASK-2-2-02`, `TASK-2-2-03` |
+| `AC-2-2-manage-saved-job-descriptions-02` | `TASK-2-2-01`, `TASK-2-2-02`, `TASK-2-2-03` |
+| `AC-2-2-manage-saved-job-descriptions-03` | `TASK-2-2-01`, `TASK-2-2-02`, `TASK-2-2-03` |
+| `AC-2-2-manage-saved-job-descriptions-04` | `TASK-2-2-01`, `TASK-2-2-02`, `TASK-2-2-03` |
 
 ## Required evidence
 

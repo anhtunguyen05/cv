@@ -6,111 +6,50 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
 
 **Execution:**
 
-- [ ] TASK-1-8-01: Add executable Version snapshot fixtures
+- [ ] TASK-1-8-01: Freeze immutable Version fixtures
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `none`
-  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01` through `AC-1-8-create-and-view-an-immutable-cv-version-05`
-  - Scope: snapshot/create/detail/list/error fixtures
+  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01`, `AC-1-8-create-and-view-an-immutable-cv-version-02`, `AC-1-8-create-and-view-an-immutable-cv-version-03`, `AC-1-8-create-and-view-an-immutable-cv-version-04`, `AC-1-8-create-and-view-an-immutable-cv-version-05`
+  - Scope: 01. Add executable Version snapshot fixtures: snapshot/create/detail/list/error fixtures
   - Coordination: `E1-COORD-VERSION-001`
-  - Blocked by: `E1-DEC-003`, `E1-DEC-004`, `E1-DEC-006`
-  - Outcome: Add executable Version snapshot fixtures.
-  - Acceptance: complete schema/version, name, source, order and failures are frozen.
-  - Verification: fixture syntax, completeness and cross-Epic consumer review.
-- [ ] TASK-1-8-02: Implement Version aggregate and persistence
+  - Blocked by: `E1-DEC-003`; `E1-DEC-004`; `E1-DEC-006`
+  - Outcome: 01. Add executable Version snapshot fixtures: Add executable Version snapshot fixtures.
+  - Acceptance: 01. Add executable Version snapshot fixtures: complete schema/version, name, source, order and failures are frozen.
+  - Verification: 01. Add executable Version snapshot fixtures: fixture syntax, completeness and cross-Epic consumer review.
+
+- [ ] TASK-1-8-02: Deliver immutable Version backend
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `TASK-1-8-01`
-  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01` through `AC-1-8-create-and-view-an-immutable-cv-version-05`
-  - Scope: migration/model/repository/immutability constraints
-  - Coordination: `E1-COORD-VERSION-001`
-  - Blocked by: approved `E1-COORD-PROFILE-001` Profile schema checkpoint from Story 1.3
-  - Outcome: Implement Version aggregate and persistence.
-  - Acceptance: stored ULID snapshot and source identity cannot be updated.
-  - Verification: unit and disposable-MySQL migration/constraint tests.
-- [ ] TASK-1-8-03: Implement transactional snapshot application service
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-8-02`
-  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01`, `AC-1-8-create-and-view-an-immutable-cv-version-02`, `AC-1-8-create-and-view-an-immutable-cv-version-04`, `AC-1-8-create-and-view-an-immutable-cv-version-05`
-  - Scope: source read/ownership/versionability, transaction and snapshot mapper
-  - Coordination: `E1-COORD-PROFILE-001`, `E1-COORD-VERSION-001`
-  - Blocked by: `none`
-  - Outcome: Implement transactional snapshot application service.
-  - Acceptance: each create captures one consistent complete source or no Version.
-  - Verification: unit/MySQL concurrency, rollback and mutation-regression tests.
-- [ ] TASK-1-8-04: Expose Version create/detail/list APIs
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-8-03`
-  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01` through `AC-1-8-create-and-view-an-immutable-cv-version-05`
-  - Scope: Form Request, controllers/resources/routes/pagination/errors
-  - Coordination: `E1-COORD-VERSION-001`
-  - Blocked by: `none`
-  - Outcome: Expose Version create/detail/list APIs.
-  - Acceptance: owned contract fixtures pass with deterministic ordering and non-disclosure.
-  - Verification: Laravel feature/contract/MySQL tests.
-- [ ] TASK-1-8-05: Implement Version frontend adapter and state
+  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01`, `AC-1-8-create-and-view-an-immutable-cv-version-02`, `AC-1-8-create-and-view-an-immutable-cv-version-03`, `AC-1-8-create-and-view-an-immutable-cv-version-04`, `AC-1-8-create-and-view-an-immutable-cv-version-05`
+  - Scope: 01. Implement Version aggregate and persistence: migration/model/repository/immutability constraints | 02. Implement transactional snapshot application service: source read/ownership/versionability, transaction and snapshot mapper | 03. Expose Version create/detail/list APIs: Form Request, controllers/resources/routes/pagination/errors | 04. Verify Version backend contract and immutability: unit/feature/MySQL suite
+  - Coordination: `E1-COORD-VERSION-001`, `E1-COORD-PROFILE-001`
+  - Blocked by: approved E1-COORD-PROFILE-001 Profile schema checkpoint from Story 1.3
+  - Outcome: 01. Implement Version aggregate and persistence: Implement Version aggregate and persistence. | 02. Implement transactional snapshot application service: Implement transactional snapshot application service. | 03. Expose Version create/detail/list APIs: Expose Version create/detail/list APIs. | 04. Verify Version backend contract and immutability: Verify Version backend contract and immutability.
+  - Acceptance: 01. Implement Version aggregate and persistence: stored ULID snapshot and source identity cannot be updated. | 02. Implement transactional snapshot application service: each create captures one consistent complete source or no Version. | 03. Expose Version create/detail/list APIs: owned contract fixtures pass with deterministic ordering and non-disclosure. | 04. Verify Version backend contract and immutability: complete snapshot, concurrency, ownership, ordering and immutability evidence passes.
+  - Verification: 01. Implement Version aggregate and persistence: unit and disposable-MySQL migration/constraint tests. | 02. Implement transactional snapshot application service: unit/MySQL concurrency, rollback and mutation-regression tests. | 03. Expose Version create/detail/list APIs: Laravel feature/contract/MySQL tests. | 04. Verify Version backend contract and immutability: focused PHPUnit suites against disposable MySQL.
+
+- [ ] TASK-1-8-03: Deliver and verify Version user journey
   - Status: `todo`
   - Owner: `unassigned`
   - Branch/worktree: `unassigned`
   - Depends on: `TASK-1-8-01`
-  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01` through `AC-1-8-create-and-view-an-immutable-cv-version-05`
-  - Scope: feature API/schema/query/mutation/error/cache mapping
-  - Coordination: `E1-COORD-VERSION-001`
-  - Blocked by: `E1-DEC-007`
-  - Outcome: Implement Version frontend adapter and state.
-  - Acceptance: approved fixtures map to stable create/list/detail states without live-Profile substitution.
-  - Verification: type-check and adapter/state tests.
-- [ ] TASK-1-8-06: Build accessible Version create/list/detail UI
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-8-05`
-  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01` through `AC-1-8-create-and-view-an-immutable-cv-version-05`
-  - Scope: pages/components/routes and stale/error/empty states
-  - Coordination: `E1-COORD-VERSION-001`
-  - Blocked by: `E1-DEC-007`
-  - Outcome: Build accessible Version create/list/detail UI.
-  - Acceptance: keyboard-usable UI clearly distinguishes immutable Version from mutable Profile.
-  - Verification: component tests and manual accessibility review.
-- [ ] TASK-1-8-07: Verify Version backend contract and immutability
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-8-04`
-  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01` through `AC-1-8-create-and-view-an-immutable-cv-version-05`
-  - Scope: unit/feature/MySQL suite
-  - Coordination: `E1-COORD-VERSION-001`
-  - Blocked by: `none`
-  - Outcome: Verify Version backend contract and immutability.
-  - Acceptance: complete snapshot, concurrency, ownership, ordering and immutability evidence passes.
-  - Verification: focused PHPUnit suites against disposable MySQL.
-- [ ] TASK-1-8-08: Verify Version journey end to end
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
-  - Depends on: `TASK-1-8-06`, `TASK-1-8-07`
-  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01` through `AC-1-8-create-and-view-an-immutable-cv-version-05`
-  - Scope: browser create/reload/list/Profile-edit/reopen/foreign-access path
-  - Coordination: `E1-COORD-TEST-001`
-  - Blocked by: `E1-DEC-008`
-  - Outcome: Verify Version journey end to end.
-  - Acceptance: critical path proves snapshot remains unchanged after Profile edits.
-  - Verification: approved Playwright command on disposable MySQL data.
+  - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01`, `AC-1-8-create-and-view-an-immutable-cv-version-02`, `AC-1-8-create-and-view-an-immutable-cv-version-03`, `AC-1-8-create-and-view-an-immutable-cv-version-04`, `AC-1-8-create-and-view-an-immutable-cv-version-05`
+  - Scope: 01. Implement Version frontend adapter and state: feature API/schema/query/mutation/error/cache mapping | 02. Build accessible Version create/list/detail UI: pages/components/routes and stale/error/empty states | 03. Verify Version journey end to end: browser create/reload/list/Profile-edit/reopen/foreign-access path
+  - Coordination: `E1-COORD-VERSION-001`, `E1-COORD-TEST-001`
+  - Blocked by: `E1-DEC-007`; `E1-DEC-008`
+  - Outcome: 01. Implement Version frontend adapter and state: Implement Version frontend adapter and state. | 02. Build accessible Version create/list/detail UI: Build accessible Version create/list/detail UI. | 03. Verify Version journey end to end: Verify Version journey end to end.
+  - Acceptance: 01. Implement Version frontend adapter and state: approved fixtures map to stable create/list/detail states without live-Profile substitution. | 02. Build accessible Version create/list/detail UI: keyboard-usable UI clearly distinguishes immutable Version from mutable Profile. | 03. Verify Version journey end to end: critical path proves snapshot remains unchanged after Profile edits. | Integrated journey acceptance closes only after `TASK-1-8-02` is done with backend evidence.
+  - Verification: 01. Implement Version frontend adapter and state: type-check and adapter/state tests. | 02. Build accessible Version create/list/detail UI: component tests and manual accessibility review. | 03. Verify Version journey end to end: approved Playwright command on disposable MySQL data. | Run the cross-layer journey check after `TASK-1-8-02` passes its backend acceptance.
 
 ## Dependency and concurrency map
+- `TASK-1-8-01` depends on `none`.
+- `TASK-1-8-02` depends on `TASK-1-8-01`.
+- `TASK-1-8-03` depends on `TASK-1-8-01`; its frontend or evidence work can proceed alongside `TASK-1-8-02`, and integrated acceptance closes after `TASK-1-8-02` is done.
 
-```text
-01 -> {02,05}; 02 -> 03 -> 04 -> 07; 05 -> 06; {06,07} -> 08
-```
 
 ## Coordination and verification gate
-
-Consume the frozen Profile schema through `E1-COORD-PROFILE-001`, reserve all
-snapshot boundaries through `E1-COORD-VERSION-001`, and use
-`E1-COORD-TEST-001` for browser tooling. Tasks 07–08 gate all five ACs.
+Consume the frozen Profile schema through `E1-COORD-PROFILE-001`, reserve all snapshot boundaries through `E1-COORD-VERSION-001`, and use `E1-COORD-TEST-001` for browser tooling. Task group 03 gates all five ACs.
