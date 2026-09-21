@@ -1,7 +1,7 @@
 ---
 sprint_id: sprint-02-job-fit-refinement
 title: Job Fit Epic Refinement
-status: draft
+status: cancelled
 start: null
 end: null
 facilitator: unassigned
@@ -13,6 +13,11 @@ refinement_stories:
   - 2-4-generate-a-match-report
   - 2-5-review-an-explainable-match-report
 committed_stories: []
+cancellation_reason: Superseded by the approved ten-slice solo delivery plan in spec-solo-delivery-sprints.md.
+decision_owner: Pc
+successor_sprint_ids:
+  - sprint-10-job-description-lifecycle
+  - sprint-11-analysis-and-match-report
 capacity_assumptions:
   - This is a planning-only sprint; implementation capacity is not allocated here.
   - Team dates, facilitator, and available planning capacity are not yet confirmed.
@@ -23,6 +28,9 @@ constraints:
 ---
 
 # Sprint 02: Job Fit Epic Refinement
+
+> **Cancelled:** retained for planning history only. Current refinement scope is in the successor charter(s) listed in this file’s frontmatter.
+
 
 ## Goal and done signal
 
@@ -76,3 +84,8 @@ Epic 1 CV Version ────────────────────�
 No automatic document parsing, LLM analysis, AI rewriting, worker queue, ATS
 ranking, or application code belongs in this sprint. Independent discoveries
 must be recorded separately instead of expanding a current Story task.
+
+
+## Cancellation record
+
+This draft refinement batch was cancelled when the ten outcome-based successor charters were introduced. Its original refinement membership and body are retained as history; the successor IDs above own the current draft refinement plan. The human decision owner is Pc.
