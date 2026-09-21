@@ -1,7 +1,7 @@
 ---
 sprint_id: sprint-04-ai-revision-refinement
 title: Evidence-Based AI Revision Epic Refinement
-status: draft
+status: cancelled
 start: null
 end: null
 facilitator: unassigned
@@ -14,6 +14,11 @@ refinement_stories:
   - 4-5-approve-a-patch-into-a-new-cv-version
   - 4-6-regenerate-a-rejected-or-invalid-patch
 committed_stories: []
+cancellation_reason: Superseded by the approved ten-slice solo delivery plan in spec-solo-delivery-sprints.md.
+decision_owner: Pc
+successor_sprint_ids:
+  - sprint-13-evidence-and-proposal-contracts
+  - sprint-14-patch-decision-and-apply
 capacity_assumptions:
   - This is a planning-only sprint; implementation capacity is not allocated here.
   - Epic 4 is post-MVP and no provider, privacy, evaluation, or operational owner is assigned.
@@ -24,6 +29,9 @@ constraints:
 ---
 
 # Sprint 04: Evidence-Based AI Revision Epic Refinement
+
+> **Cancelled:** retained for planning history only. Current refinement scope is in the successor charter(s) listed in this file’s frontmatter.
+
 
 ## Outcome
 
@@ -58,3 +66,8 @@ CV Version creation into assignable, non-overlapping work.
 - Canonical ACs map to task and verification layers.
 - `bmad-review` findings are resolved or registered as human decisions.
 - `bmad-sprint-planning` remains valid with Epic 4 Stories in `backlog`.
+
+
+## Cancellation record
+
+This draft refinement batch was cancelled when the ten outcome-based successor charters were introduced. Its original refinement membership and body are retained as history; the successor IDs above own the current draft refinement plan. The human decision owner is Pc.

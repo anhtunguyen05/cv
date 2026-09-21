@@ -1,7 +1,7 @@
 ---
 sprint_id: sprint-01-trusted-cv-refinement
 title: Trusted CV Epic Refinement
-status: draft
+status: cancelled
 start: null
 end: null
 facilitator: unassigned
@@ -16,6 +16,13 @@ refinement_stories:
   - 1-7-manage-supplementary-cv-sections
   - 1-8-create-and-view-an-immutable-cv-version
 committed_stories: []
+cancellation_reason: Superseded by the approved ten-slice solo delivery plan in spec-solo-delivery-sprints.md.
+decision_owner: Pc
+successor_sprint_ids:
+  - sprint-06-account-access
+  - sprint-07-profile-core
+  - sprint-08-cv-sections
+  - sprint-09-immutable-version
 capacity_assumptions:
   - Team dates, facilitator, and available planning capacity are not yet confirmed.
 constraints:
@@ -24,6 +31,9 @@ constraints:
 ---
 
 # Sprint 01: Trusted CV Epic Refinement
+
+> **Cancelled:** retained for planning history only. Current refinement scope is in the successor charter(s) listed in this file’s frontmatter.
+
 
 ## Goal and done signal
 
@@ -83,3 +93,8 @@ assignable after the shared Profile checkpoint is approved.
   API resource, and shared editor state.
 - Immutable CV Version snapshot schema and downstream source identity.
 - Project-level frontend component and end-to-end test tooling.
+
+
+## Cancellation record
+
+This draft refinement batch was cancelled when the ten outcome-based successor charters were introduced. Its original refinement membership and body are retained as history; the successor IDs above own the current draft refinement plan. The human decision owner is Pc.

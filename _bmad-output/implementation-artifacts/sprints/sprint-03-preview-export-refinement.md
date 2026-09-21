@@ -1,7 +1,7 @@
 ---
 sprint_id: sprint-03-preview-export-refinement
 title: Preview and Export Epic Refinement
-status: draft
+status: cancelled
 start: null
 end: null
 facilitator: unassigned
@@ -11,6 +11,10 @@ refinement_stories:
   - 3-2-preview-a-saved-cv-version
   - 3-3-export-a-reviewed-cv
 committed_stories: []
+cancellation_reason: Superseded by the approved ten-slice solo delivery plan in spec-solo-delivery-sprints.md.
+decision_owner: Pc
+successor_sprint_ids:
+  - sprint-12-preview-export
 capacity_assumptions:
   - This is a planning-only sprint; implementation capacity is not allocated here.
   - Team dates, facilitator, and available planning capacity are not yet confirmed.
@@ -22,6 +26,9 @@ constraints:
 ---
 
 # Sprint 03: Preview and Export Epic Refinement
+
+> **Cancelled:** retained for planning history only. Current refinement scope is in the successor charter(s) listed in this file’s frontmatter.
+
 
 ## Outcome
 
@@ -56,3 +63,8 @@ verification ownership.
 - `bmad-review` findings are resolved or explicitly registered as decisions.
 - `bmad-sprint-planning` validates with all Epic 3 lifecycle entries unchanged
   in `backlog`.
+
+
+## Cancellation record
+
+This draft refinement batch was cancelled when the ten outcome-based successor charters were introduced. Its original refinement membership and body are retained as history; the successor IDs above own the current draft refinement plan. The human decision owner is Pc.

@@ -1,7 +1,7 @@
 ---
 sprint_id: sprint-05-operational-safety-refinement
 title: Operational Safety Epic Refinement
-status: draft
+status: cancelled
 start: null
 end: null
 facilitator: unassigned
@@ -15,6 +15,10 @@ refinement_stories:
   - 5-6-decide-whether-multi-agent-orchestration-is-justified
   - 5-7-verify-the-operational-safety-baseline
 committed_stories: []
+cancellation_reason: Superseded by the approved ten-slice solo delivery plan in spec-solo-delivery-sprints.md.
+decision_owner: Pc
+successor_sprint_ids:
+  - sprint-15-operational-safety
 capacity_assumptions:
   - This is a planning-only sprint; implementation and operator capacity are not allocated here.
   - Provider, async job, retention/legal, telemetry, and production environment owners are unassigned.
@@ -25,6 +29,9 @@ constraints:
 ---
 
 # Sprint 05: Operational Safety Epic Refinement
+
+> **Cancelled:** retained for planning history only. Current refinement scope is in the successor charter(s) listed in this file’s frontmatter.
+
 
 ## Outcome
 
@@ -57,3 +64,8 @@ evidence-based architecture decisions, and final baseline verification.
   coordination, blockers, outcome, acceptance, and verification.
 - Canonical ACs map to evidence layers; BMAD review and sprint validation pass
   without changing `backlog` lifecycle.
+
+
+## Cancellation record
+
+This draft refinement batch was cancelled when the ten outcome-based successor charters were introduced. Its original refinement membership and body are retained as history; the successor IDs above own the current draft refinement plan. The human decision owner is Pc.
