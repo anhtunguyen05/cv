@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "groups": {
+    "story-1-1": [
+      {
+        "key": "TASK-1-1-01",
+        "source": "canonical",
+        "story": "1-1-register-an-account",
+        "task_file": "_bmad-output/planning-artifacts/epics/epic-1-trusted-cv/stories/1-1-register-an-account/tasks.md",
+        "create": true,
+        "title": "Freeze registration and User contract fixtures",
+        "labels": []
+      },
+      {
+        "key": "TASK-1-1-02",
+        "source": "canonical",
+        "story": "1-1-register-an-account",
+        "task_file": "_bmad-output/planning-artifacts/epics/epic-1-trusted-cv/stories/1-1-register-an-account/tasks.md",
+        "create": true,
+        "title": "Deliver registration and account backend",
+        "labels": []
+      },
+      {
+        "key": "TASK-1-1-03",
+        "source": "canonical",
+        "story": "1-1-register-an-account",
+        "task_file": "_bmad-output/planning-artifacts/epics/epic-1-trusted-cv/stories/1-1-register-an-account/tasks.md",
+        "create": true,
+        "title": "Deliver and verify registration journey",
+        "labels": []
+      }
+    ]
+  }
+}
