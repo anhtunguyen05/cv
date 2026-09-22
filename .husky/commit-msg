@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+commit_message_file="$1"
+commit_subject=$(sed -n '1p' "$commit_message_file")
+
+# Git-generated merge and revert subjects do not follow the project format.
+case "$commit_subject" in
+  Merge\ *|Revert\ *) exit 0 ;;
+esac
+
+if ! printf '%s\n' "$commit_subject" | grep -Eq '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._/-]+\))?!?: .+$'; then
+  cat >&2 <<'EOF'
+Invalid commit subject.
+Use: <type>(<scope>): <description>
+Example: feat(github): create task issues for opened PRs
+
+Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+EOF
+  exit 1
+fi
