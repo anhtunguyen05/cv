@@ -4,19 +4,16 @@ import type { AuthUser } from '../types/auth.types'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<AuthUser | null>(null)
-  const token = ref<string | null>(null)
 
-  const isAuthenticated = computed(() => !!token.value && !!user.value)
+  const isAuthenticated = computed(() => !!user.value)
 
-  function setAuth(authUser: AuthUser, authToken: string) {
+  function setUser(authUser: AuthUser) {
     user.value = authUser
-    token.value = authToken
   }
 
   function clearAuth() {
     user.value = null
-    token.value = null
   }
 
-  return { user, token, isAuthenticated, setAuth, clearAuth }
+  return { user, isAuthenticated, setUser, clearAuth }
 })

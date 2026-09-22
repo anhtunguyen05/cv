@@ -1,13 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { getMe } from '@/features/auth/api/auth.api'
+import { useAuthStore } from '@/features/auth/stores/auth.store'
+import { pinia } from '@/app/providers/pinia'
+import { ApiRequestError } from '@/shared/api/client'
+import { ROUTES } from '@/shared/constants/routes'
 
-// Auth guard — will be wired to auth store when auth feature is ready
-function requireAuth(_to: unknown, _from: unknown, next: (arg?: string) => void) {
-  // TODO: replace with actual auth check from auth.store.ts
-  const isAuthenticated = true // optimistic for scaffold
-  if (isAuthenticated) {
-    next()
-  } else {
-    next('/login')
+// Protected routes validate the cookie-backed current account on first access.
+async function requireAuth() {
+  const authStore = useAuthStore(pinia)
+  if (authStore.isAuthenticated) return true
+
+  try {
+    authStore.setUser(await getMe())
+    return true
+  } catch (error) {
+    if (error instanceof ApiRequestError && [401, 419].includes(error.status)) {
+      authStore.clearAuth()
+      return { path: ROUTES.LOGIN }
+    }
+    return false
   }
 }
 

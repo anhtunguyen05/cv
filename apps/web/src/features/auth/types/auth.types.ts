@@ -1,8 +1,7 @@
 export interface AuthUser {
-  id: number
+  id: string
   name: string
   email: string
-  created_at: string
 }
 
 export interface LoginCredentials {
@@ -18,6 +17,7 @@ export interface RegisterCredentials {
 }
 
 export interface AuthResponse {
-  user: AuthUser
-  token: string
+  data: {
+    user: AuthUser
+  }
 }

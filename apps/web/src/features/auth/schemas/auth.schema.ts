@@ -10,7 +10,7 @@ export const registerSchema = z
   .object({
     name: requiredString('Full name'),
     email: emailSchema,
-    password: passwordSchema,
+    password: passwordSchema.max(72, 'Password must be 72 characters or fewer'),
     password_confirmation: z.string({ required_error: 'Please confirm your password' }),
   })
   .refine((data) => data.password === data.password_confirmation, {

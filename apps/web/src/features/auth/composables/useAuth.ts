@@ -4,7 +4,7 @@ import { useLoginMutation, useRegisterMutation, useLogoutMutation } from '../api
 
 export function useAuth() {
   const authStore = useAuthStore()
-  const { user, token, isAuthenticated } = storeToRefs(authStore)
+  const { user, isAuthenticated } = storeToRefs(authStore)
 
   const loginMutation = useLoginMutation()
   const registerMutation = useRegisterMutation()
@@ -12,7 +12,6 @@ export function useAuth() {
 
   return {
     user,
-    token,
     isAuthenticated,
     login: loginMutation.mutate,
     loginAsync: loginMutation.mutateAsync,

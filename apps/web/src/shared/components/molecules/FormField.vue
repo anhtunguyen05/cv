@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 // FormField: label above → input slot → optional helper → error below
 // Always use this wrapper for all form fields.
 interface Props {
@@ -9,11 +10,13 @@ interface Props {
   htmlFor?: string
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   error: '',
   hint: '',
   required: false,
 })
+
+const errorId = computed(() => (props.htmlFor && props.error ? `${props.htmlFor}-error` : undefined))
 </script>
 
 <template>
@@ -26,6 +29,6 @@ withDefaults(defineProps<Props>(), {
     <slot />
 
     <p v-if="hint && !error" class="text-xs text-text-muted">{{ hint }}</p>
-    <p v-if="error" class="text-xs text-danger" role="alert">{{ error }}</p>
+    <p v-if="error" :id="errorId" class="text-xs text-danger" role="alert">{{ error }}</p>
   </div>
 </template>
