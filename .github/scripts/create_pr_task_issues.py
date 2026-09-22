@@ -120,6 +120,8 @@ def validate_tasks(tasks: list[dict[str, Any]]) -> None:
             raise AutomationError(f"Task {key} source must be canonical or ad_hoc")
         if not isinstance(task.get("title"), str) or not task["title"].strip():
             raise AutomationError(f"Task {key} needs a non-empty title")
+        if not isinstance(task.get("description"), str) or not task["description"].strip():
+            raise AutomationError(f"Task {key} needs a non-empty description")
         if not isinstance(task.get("create", True), bool):
             raise AutomationError(f"Task {key} create must be boolean")
         labels = task.get("labels", [])
@@ -172,6 +174,8 @@ def make_issue_body(task: dict[str, Any], marker: str, pr: dict[str, Any]) -> st
     lines = [
         f"Automation key: `{task['key']}`",
         f"Source: `{task['source']}`",
+        "",
+        task["description"].strip(),
     ]
     if task["source"] == "canonical":
         lines.extend(
