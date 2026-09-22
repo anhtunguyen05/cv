@@ -9,6 +9,7 @@
         "task_file": "_bmad-output/planning-artifacts/epics/epic-1-trusted-cv/stories/1-1-register-an-account/tasks.md",
         "create": true,
         "title": "Freeze registration and User contract fixtures",
+        "description": "Add executable auth and User contract fixtures covering every approved Story 1.1 authentication matrix row.",
         "labels": []
       },
       {
@@ -18,6 +19,7 @@
         "task_file": "_bmad-output/planning-artifacts/epics/epic-1-trusted-cv/stories/1-1-register-an-account/tasks.md",
         "create": true,
         "title": "Deliver registration and account backend",
+        "description": "Implement registration identity and persistence, API operations, abuse and privacy controls, and the backend verification suite.",
         "labels": []
       },
       {
@@ -27,6 +29,7 @@
         "task_file": "_bmad-output/planning-artifacts/epics/epic-1-trusted-cv/stories/1-1-register-an-account/tasks.md",
         "create": true,
         "title": "Deliver and verify registration journey",
+        "description": "Implement the accessible registration frontend journey, transport and error mapping, component checks, and end-to-end verification.",
         "labels": []
       }
     ]

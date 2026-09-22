@@ -46,6 +46,7 @@ child issues.
         "task_file": "_bmad-output/planning-artifacts/epics/epic-1-trusted-cv/stories/1-1-register-an-account/tasks.md",
         "create": true,
         "title": "Freeze registration and User contract fixtures",
+        "description": "Add executable auth and User contract contract fixtures.",
         "labels": []
       },
       {
