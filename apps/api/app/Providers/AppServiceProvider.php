@@ -31,6 +31,16 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinutes(10, 3)->by($this->hashedKey('email', $email));
         });
+
+        RateLimiter::for('login-ip', function (Request $request): Limit {
+            return Limit::perMinutes(10, 5)->by($this->hashedKey('ip', $request->ip() ?? 'unknown'));
+        });
+
+        RateLimiter::for('login-email', function (Request $request): Limit {
+            $email = mb_strtolower(trim((string) $request->input('email', '')));
+
+            return Limit::perMinutes(10, 3)->by($this->hashedKey('email', $email));
+        });
     }
 
     private function hashedKey(string $type, string $value): string

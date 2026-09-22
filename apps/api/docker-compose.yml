@@ -12,6 +12,7 @@ services:
 
     volumes:
       - .:/var/www
+      - ../../docs:/workspace/docs:ro
 
     networks:
       - laravel_network
