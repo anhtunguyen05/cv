@@ -72,7 +72,7 @@ and skill-category fields while preserving existing immutable Versions.
 Save/reload, optional empty, invalid, stale, auth and Version-regression paths
 are covered through shared Profile contracts/rules. Backend aggregate update,
 authorization/transaction, validation limits, accessible editor states,
-frontend/API mapping and unit/feature/MySQL/component/E2E evidence are planned.
+frontend/API mapping and unit/feature/PostgreSQL/component/E2E evidence are planned.
 
 ## Code Map
 

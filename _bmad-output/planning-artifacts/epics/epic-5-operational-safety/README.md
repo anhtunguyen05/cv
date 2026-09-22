@@ -117,5 +117,5 @@ does not duplicate individual Story verification.
 - Failures never produce false success or partial trusted state.
 - Retention/deletion is scoped, isolated, idempotent, auditable, and recoverable
   under approved policy.
-- Matching evaluation, ADR, alert/runbook, security, MySQL, and baseline checks
+- Matching evaluation, ADR, alert/runbook, security, PostgreSQL, and baseline checks
   pass with immutable evidence and explicit unresolved production decisions.

@@ -25,12 +25,12 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Branch/worktree: `unassigned`
   - Depends on: `TASK-1-4-01`
   - Covers: `AC-1-4-manage-cv-summary-and-skills-01`, `AC-1-4-manage-cv-summary-and-skills-02`, `AC-1-4-manage-cv-summary-and-skills-03`
-  - Scope: 01. Implement summary/skills domain and persistence update: Profile aggregate section rules/repository mapping | 02. Expose summary/skills update contract: Profile request/resource/update use case/error mapping | 03. Verify summary/skills backend behavior: unit/feature/MySQL suite
+  - Scope: 01. Implement summary/skills domain and persistence update: Profile aggregate section rules/repository mapping | 02. Expose summary/skills update contract: Profile request/resource/update use case/error mapping | 03. Verify summary/skills backend behavior: unit/feature/PostgreSQL 16 suite
   - Coordination: `E1-COORD-PROFILE-001`
   - Blocked by: approved E1-COORD-PROFILE-001 Profile schema persistence checkpoint from Story 1.3; E1-COORD-VERSION-001 persistence fixture checkpoint
   - Outcome: 01. Implement summary/skills domain and persistence update: Implement summary/skills domain and persistence update. | 02. Expose summary/skills update contract: Expose summary/skills update contract. | 03. Verify summary/skills backend behavior: Verify summary/skills backend behavior.
   - Acceptance: 01. Implement summary/skills domain and persistence update: approved structured values update atomically with stable ownership. | 02. Expose summary/skills update contract: fixtures pass without partial writes or Version mutation. | 03. Verify summary/skills backend behavior: valid, empty, invalid, stale and Version-regression evidence passes.
-  - Verification: 01. Implement summary/skills domain and persistence update: PHPUnit plus MySQL persistence/Version-regression tests. | 02. Expose summary/skills update contract: Laravel feature/contract tests. | 03. Verify summary/skills backend behavior: focused PHPUnit suites.
+  - Verification: 01. Implement summary/skills domain and persistence update: PHPUnit plus PostgreSQL 16 persistence/Version-regression tests. | 02. Expose summary/skills update contract: Laravel feature/contract tests. | 03. Verify summary/skills backend behavior: focused PHPUnit suites.
 
 - [ ] TASK-1-4-03: Deliver and verify summary and skills editor
   - Status: `todo`

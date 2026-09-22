@@ -9,7 +9,7 @@
 - **E1-DATA-003:** Every Profile and Version persists an indexed owner
   relationship to the existing User identity. Child ownership is resolved
   through its aggregate, not accepted from the request.
-- **E1-DATA-004:** MySQL 8.4 constraints are part of the contract. SQLite-only
+- **E1-DATA-004:** PostgreSQL 16 constraints are part of the contract. SQLite-only
   success does not prove uniqueness, collation, JSON, migration, or transaction
   behavior.
 

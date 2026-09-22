@@ -9,5 +9,5 @@
 
 Completion requires bounded provider retry, terminal malformed output, named
 async lifecycle only, lease/cancel/late/duplicate/lost races, atomic valid result,
-truthful accessible state, sanitized audit/metrics/runbook, MySQL fault injection,
+truthful accessible state, sanitized audit/metrics/runbook, PostgreSQL fault injection,
 and E2E. Without an approved async consumer, AC2 remains blocked rather than simulated as done.

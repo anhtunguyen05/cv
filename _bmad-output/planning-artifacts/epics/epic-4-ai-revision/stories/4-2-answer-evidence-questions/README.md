@@ -58,7 +58,7 @@ content.
 Covers raw/provenance storage, normalization, explicit negative outcome,
 question ordering/version, stale/duplicate/lost/concurrent answers, correction,
 validation, safe rendering/logging, accessible question progress, API/FE mapping,
-MySQL, and E2E. Exact correction and session progression remain decisions.
+PostgreSQL, and E2E. Exact correction and session progression remain decisions.
 
 ## References
 

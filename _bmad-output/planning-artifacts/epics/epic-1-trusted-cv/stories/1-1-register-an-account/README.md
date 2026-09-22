@@ -85,7 +85,7 @@ CSRF, enumeration, throttling and redaction. Validation covers name, canonical
 email, password and transport boundaries. Frontend covers form, pending,
 recovery, success/navigation and accessible errors. Integration covers
 credentials, CSRF bootstrap and cache invalidation. Verification covers unit,
-feature/MySQL, component and Playwright layers. Exact policies remain blocked
+feature/PostgreSQL, component and Playwright layers. Exact policies remain blocked
 by the decision register.
 
 ## Code Map

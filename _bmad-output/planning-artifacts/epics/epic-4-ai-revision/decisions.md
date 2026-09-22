@@ -16,7 +16,7 @@ one owner, approved resolution, and evidence in the form `approver, YYYY-MM-DD`.
 | E4-DEC-006 | `open` | `unassigned` | Orchestrator execution/reliability | Freeze prompt/tool versions, token/cost/time/rate/concurrency limits, sync/async job contract, retry/cancel/dedupe, late result, fallback, and circuit behavior | `pending` | `pending` | 4.3, 4.6 |
 | E4-DEC-007 | `open` | `unassigned` | Review/edit/reject/apply concurrency | Freeze allowed edit, confirmation, stale source/value, locks/preconditions, competing decisions, Version naming/provenance, lost success, and idempotent result | `pending` | `pending` | 4.4–4.6 |
 | E4-DEC-008 | `open` | `unassigned` | AI quality and safety launch gate | Freeze groundedness/usefulness/factuality/refusal metrics, adversarial corpus, thresholds, human approver, rollout/kill switch, regression and model-change policy | `pending` | `pending` | 4.3–4.6 verification |
-| E4-DEC-009 | `open` | `unassigned` | UX/accessibility and test ownership | Assign fixture, MySQL, provider fake, accessibility, Playwright, CI, synthetic data, and evidence-retention owners | `pending` | `pending` | all verification tasks |
+| E4-DEC-009 | `open` | `unassigned` | UX/accessibility and test ownership | Assign fixture, PostgreSQL, provider fake, accessibility, Playwright, CI, synthetic data, and evidence-retention owners | `pending` | `pending` | all verification tasks |
 
 ## Cross-Epic prerequisites
 
@@ -91,7 +91,7 @@ one owner, approved resolution, and evidence in the form `approver, YYYY-MM-DD`.
 - Decision owner: `unassigned`.
 - Resolution: `pending E4-DEC-008, E4-DEC-009` and accepted Epic 1/2 harnesses.
 - Reserved boundary: synthetic source/Evidence/Patch corpus, provider fake,
-  adversarial/quality evaluation, MySQL races, Playwright, and CI evidence.
+  adversarial/quality evaluation, PostgreSQL races, Playwright, and CI evidence.
 
 ## Discovered work outside current Story scope
 

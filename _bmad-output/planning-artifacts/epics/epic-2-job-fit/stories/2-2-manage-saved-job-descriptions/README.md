@@ -77,7 +77,7 @@ or logically delete the resource while preserving pinned historical results.
 The package covers immutable revision creation, stale and competing updates,
 analysis invalidation for the new revision, logical deletion, active list,
 historical reproducibility, mixed ownership, delete/update/analyze races,
-accessible warnings, FE cache invalidation, MySQL constraints, and E2E history.
+accessible warnings, FE cache invalidation, PostgreSQL constraints, and E2E history.
 Exact concurrency, idempotency, pagination, deleted-source presentation, and
 tooling values remain open decisions.
 
@@ -87,7 +87,7 @@ tooling values remain open decisions.
 - `/api/v1` list/update/delete resources, requests, and exceptions.
 - Vue Job Description query/mutation cache, edit/list/detail UI, and deleted
   historical context consumed by report views.
-- PHPUnit/MySQL/Vitest/Playwright verification locations.
+- PHPUnit/PostgreSQL/Vitest/Playwright verification locations.
 
 ## Spec change log
 

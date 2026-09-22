@@ -57,4 +57,4 @@ mix owners; call an LLM; fabricate claims; persist partial output as success.
 | Validation | Identifier shape, current/successful state, rule versions, output schema |
 | Frontend | Source selection, analysis-required, pending/conflict/success/failure navigation |
 | Integration | Epic 1 Version + Story 2.3 Analysis fixtures and cache invalidation |
-| Verification | [verification.md](verification.md), quality corpus, MySQL, and E2E gates |
+| Verification | [verification.md](verification.md), quality corpus, PostgreSQL, and E2E gates |

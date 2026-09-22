@@ -84,5 +84,5 @@ owned immutable CV Version
 - Competing updates cannot both claim the same next revision or silently lose a
   User's changes.
 - Analysis and matching read one consistent immutable source set.
-- MySQL 8.4 integration tests must prove constraints, collation-sensitive
+- PostgreSQL 16 integration tests must prove constraints, collation-sensitive
   normalization, ordering, rollback, and competing request behavior.

@@ -64,7 +64,7 @@ uncitable rules. `API-STD-007` also points API failures to `HTTP-CONTRACT-001`.
 - The previous `docs/database.md` raw-AI logging conflict is removed: data,
   security, and observability now distinguish raw sensitive content from
   sanitized audit metadata.
-- API envelope/versioning, MySQL/SQLite scope, ULIDs, validation boundaries,
+- API envelope/versioning, PostgreSQL/SQLite scope, ULIDs, validation boundaries,
   risk-based tests, and post-MVP AI/worker boundaries agree with AD-14 through
   AD-19 and the PRD.
 - Compatibility entries now point to the canonical documents, but the spine's

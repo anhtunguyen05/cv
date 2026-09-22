@@ -17,7 +17,7 @@ one owner, an approved resolution, and evidence in the form
 | E2-DEC-006 | `open` | `unassigned` | Explainability and recommendation contract | Freeze source evidence references, matched/missing/Weak Evidence taxonomy, recommendation-to-section mapping, empty groups, disclaimer copy, and deterministic ordering | `pending` | `pending` | 2.4, 2.5 |
 | E2-DEC-007 | `open` | `unassigned` | Execution, retry, and abuse policy | Keep MVP synchronous; define timeout, rate limits, request deduplication, retryable/terminal codes, ambiguous success reconciliation, and measured async trigger | `pending` | `pending` | 2.1–2.5 |
 | E2-DEC-008 | `open` | `unassigned` | List/history and deleted-source UX | Freeze active list filters/order/pagination, revision visibility, report source summaries, deleted-parent banner/actions, and cache invalidation | `pending` | `pending` | 2.1, 2.2, 2.5 |
-| E2-DEC-009 | `open` | `unassigned` | Stable fixture and verification ownership | Assign owners for contract promotion, analysis/matching corpora, disposable MySQL, Vitest/Playwright harness, CI commands, and quality regression approval | `pending` | `pending` | all verification tasks |
+| E2-DEC-009 | `open` | `unassigned` | Stable fixture and verification ownership | Assign owners for contract promotion, analysis/matching corpora, disposable PostgreSQL, Vitest/Playwright harness, CI commands, and quality regression approval | `pending` | `pending` | all verification tasks |
 
 ## Cross-Epic prerequisites
 
@@ -77,7 +77,7 @@ one owner, an approved resolution, and evidence in the form
 - Stories: all Epic 2 Stories.
 - Decision owner: `unassigned`.
 - Resolution: `pending E2-DEC-009` and accepted `E1-COORD-TEST-001` harness.
-- Reserved boundary: versioned JD/Analysis/Match fixtures, MySQL orchestration,
+- Reserved boundary: versioned JD/Analysis/Match fixtures, PostgreSQL orchestration,
   cross-layer contract tests, Playwright data, CI commands, and quality gate.
 - Sequence/merge rule: one test-integration owner lands shared corpora/harness
   changes; Story owners add bounded scenarios without competing configurations.

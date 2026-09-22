@@ -9,7 +9,7 @@
   feature tests.
 - **E1-TEST-003:** Migrations, uniqueness, ownership constraints, JSON/schema
   compatibility, concurrency, and Version immutability are verified on a
-  declared disposable MySQL 8.4 database.
+  declared disposable PostgreSQL 16 database.
 - **E1-TEST-004:** Vue schemas, adapters, composables/stores, editor components,
   nested errors, and interaction states use Vitest.
 - **E1-TEST-005:** Playwright covers registration/current-account, sign-in/out
@@ -30,7 +30,7 @@
 | 1.5 Education/experience | item rules and editor | stable IDs, add/edit/remove atomicity | edit repeated entries |
 | 1.6 Projects | nested technology/bullet rules | malformed nested data and ownership | edit project Evidence |
 | 1.7 Supplementary | optional-section rules | preserve existing entries | empty and populated sections |
-| 1.8 Version | snapshot service and list state | MySQL transaction, ordering, ownership, immutability | create, reload, edit Profile, re-open Version |
+| 1.8 Version | snapshot service and list state | PostgreSQL transaction, ordering, ownership, immutability | create, reload, edit Profile, re-open Version |
 
 ## Integration gates
 
@@ -42,5 +42,5 @@
    Stories 1.3 through 1.7 proceed in parallel.
 4. `E1-CONTRACT-VERSION-001` is frozen after the complete Profile schema and
    before Story 1.8 implementation.
-5. Full Epic acceptance runs API tests, MySQL integration tests, web static and
+5. Full Epic acceptance runs API tests, PostgreSQL integration tests, web static and
    component checks, and Playwright against explicitly disposable data.

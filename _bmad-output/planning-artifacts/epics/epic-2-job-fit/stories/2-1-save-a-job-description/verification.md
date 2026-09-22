@@ -17,7 +17,7 @@ Return to the [Story overview](README.md). Shared expectations come from the
   failure classification.
 - API/policy: exact contract, session, two-User non-disclosure, malformed input,
   rate limit, and safe serialization.
-- MySQL: migration, root/revision atomicity, constraints, rollback, concurrency,
+- PostgreSQL: migration, root/revision atomicity, constraints, rollback, concurrency,
   and exact reload.
 - Frontend: schema/error mapping, pending/success/failure/reconciliation, safe
   rendering, validation focus, and duplicate submission.

@@ -32,7 +32,7 @@ explicit indexed fields where required for integrity and queries.
 
 ## E4-DATA-003 — Apply transaction
 
-Inside one MySQL transaction with locking/preconditions:
+Inside one PostgreSQL transaction with locking/preconditions:
 
 1. Resolve owner and Patch status.
 2. Revalidate schema, target, Evidence, source IDs, and exact old value.

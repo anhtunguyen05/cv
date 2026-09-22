@@ -60,7 +60,7 @@ CV Version without overwriting history.
 
 Covers explicit confirmation, complete ownership graph, Patch/status/schema/
 Evidence/source/old-value revalidation, deterministic transform, full snapshot
-validation, Version name/provenance, MySQL transaction/locks/idempotency,
+validation, Version name/provenance, PostgreSQL transaction/locks/idempotency,
 competing approve/reject, lost response, rollback injection, FE/API states,
 accessibility, and E2E.
 

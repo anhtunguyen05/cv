@@ -15,7 +15,7 @@ Return to the [Story overview](README.md) and [Epic test strategy](../../test-st
 
 - Corpus/domain: all supported signal groups, absent/unknown, aliases,
   duplicates, ordering, Unicode/boundaries, and repeat-process equality.
-- Application/MySQL: exact revision/rule pinning, deterministic uniqueness,
+- Application/PostgreSQL: exact revision/rule pinning, deterministic uniqueness,
   current/deleted race, rollback, and no successful partial output.
 - API/policy: contract, two-User non-disclosure, repeat response, throttle,
   retryable/terminal failures, and sanitized logs.

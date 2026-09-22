@@ -17,7 +17,7 @@ Return to the [Story overview](README.md) and [Epic test strategy](../../test-st
 
 - Corpus/domain: score/classification/recommendation truthfulness, unsupported
   claims, Weak Evidence thresholds, rounding/order, aliases, and repeat equality.
-- Application/MySQL: exact source/rule pins, current Analysis precondition,
+- Application/PostgreSQL: exact source/rule pins, current Analysis precondition,
   historical/deleted/mixed-owner rejection, source races, dedupe, and rollback.
 - API/policy: complete immutable resource, stable conflict/error matrix, private
   caches, rate limits, malformed transport, and safe logs.

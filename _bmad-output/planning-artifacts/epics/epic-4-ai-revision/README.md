@@ -117,5 +117,5 @@ Epic 2 Match Report + Epic 1 CV Version
 - Source CV Version and prior Patch decisions remain immutable and reproducible.
 - New Version creation and Patch application are atomic, idempotent, and
   ownership-safe.
-- Adversarial provider, privacy, accessibility, failure, MySQL, evaluation, and
+- Adversarial provider, privacy, accessibility, failure, PostgreSQL, evaluation, and
   critical browser checks pass against approved versions.

@@ -59,7 +59,7 @@ the prior decision and create a separately identifiable lineage result.
 Covers allowed predecessor states, source/Evidence/question/context validity,
 lineage, rejection/invalid feedback input, provider contract reuse, minimum
 disclosure, dedupe/concurrency/late/lost result, quality validation, immutable
-predecessor/source, stale recovery, ownership, UX/accessibility, MySQL, and E2E.
+predecessor/source, stale recovery, ownership, UX/accessibility, PostgreSQL, and E2E.
 
 ## References
 

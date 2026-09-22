@@ -56,7 +56,7 @@ each decision needs one owner, approved resolution, and `approver, YYYY-MM-DD` e
   no implementation begins from an unapproved recommendation.
 - **E5-COORD-BASELINE-001:** Story 5.7 owns the evidence manifest/verdict only;
   individual Stories own their test artifacts and remediation.
-- **E5-COORD-TEST-001:** One integration owner coordinates canaries, MySQL/
+- **E5-COORD-TEST-001:** One integration owner coordinates canaries, PostgreSQL/
   external fakes, fault injection, alert drills, evidence storage, and CI config.
 
 ## Discovered work outside current Story scope

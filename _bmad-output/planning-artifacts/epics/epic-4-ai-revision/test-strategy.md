@@ -6,7 +6,7 @@
 | --- | --- |
 | Unit/domain | Eligibility, lifecycle, Evidence provenance, Patch allowlist/validation, stale check, application transform |
 | Laravel feature | API/envelopes, ownership graph, idempotency, conflicts, provider failure mapping, decisions |
-| MySQL integration | Source pinning, constraints, lineage, concurrent decisions, apply rollback and one-Version guarantee |
+| PostgreSQL integration | Source pinning, constraints, lineage, concurrent decisions, apply rollback and one-Version guarantee |
 | Provider contract | Request minimization, schema/tool enforcement, versions, timeout/retry/cancel, malformed/adversarial output |
 | Vue unit/component | Interview states, answer validation, proposal diff/edit, confirmations, conflicts, accessibility |
 | Security/evaluation | Prompt injection, unsupported claims, secret/log leakage, Evidence grounding, quality/cost/latency gates |
@@ -52,4 +52,4 @@ retention/deletion behavior under approved Epic 5 policy.
 3. Provider request/result and Patch schema/validation checkpoint.
 4. Review/edit/reject/regenerate state checkpoint.
 5. Atomic apply/new Version provenance checkpoint.
-6. Security, evaluation, MySQL, and Playwright acceptance checkpoint.
+6. Security, evaluation, PostgreSQL, and Playwright acceptance checkpoint.

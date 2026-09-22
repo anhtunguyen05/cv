@@ -149,6 +149,6 @@ tasks, and verification without creating a second story copy.
 - Existing CV Versions remain byte-for-byte equivalent at the contract level
   after later Profile edits.
 - Account access and CV Version critical journeys pass Playwright; API,
-  authorization, persistence, and migration behavior pass against MySQL 8.4.
+  authorization, persistence, and migration behavior pass against PostgreSQL 16.
 - Stable approved contracts have been promoted to the appropriate `docs/`
   source of truth without leaving duplicate competing definitions here.

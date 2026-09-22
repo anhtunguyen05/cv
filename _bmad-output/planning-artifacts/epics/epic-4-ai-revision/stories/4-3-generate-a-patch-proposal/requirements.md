@@ -33,4 +33,4 @@ transaction. Contract covers provider DTO, Patch and errors. Security covers
 minimum disclosure, injection, secrets, logs, abuse. Validation covers schema,
 allowlist, Evidence grounding, source/value/type/content. Frontend covers
 request/progress/cancel/failure/retry/success without fake state. Verification
-uses provider fake, adversarial corpus, evaluation, MySQL, and browser evidence.
+uses provider fake, adversarial corpus, evaluation, PostgreSQL, and browser evidence.

@@ -90,7 +90,7 @@ revision and persist an immutable, explainable, versioned Match Report.
 The package covers exact-source resolution, current/analysis/deleted/history
 preconditions, mixed ownership, deterministic scoring/evidence/recommendations,
 rule versions, repeated/concurrent requests, stale source races, no partial
-report, safe UX, frontend adapters, MySQL persistence, quality fixtures, and
+report, safe UX, frontend adapters, PostgreSQL persistence, quality fixtures, and
 E2E generation. Exact weights, thresholds, rounding, aliases, explanation
 shape, request dedupe, timeout, and quality approval remain open.
 
@@ -101,7 +101,7 @@ shape, request dedupe, timeout, and quality approval remain open.
 - Epic 1 CV Version and Story 2.3 Analysis are read-only source contracts.
 - Vue Match Report adapter/query/mutation, source selection, Analyze-first,
   conflict, success/navigation, and safe error states.
-- Versioned evaluation corpus plus PHPUnit/MySQL/Vitest/Playwright verification.
+- Versioned evaluation corpus plus PHPUnit/PostgreSQL/Vitest/Playwright verification.
 
 ## Spec change log
 
