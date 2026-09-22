@@ -24,7 +24,7 @@ final class AuthLifecycleTest extends TestCase
         ThrottleRequests::shouldHashKeys(false);
         $fixturePath = (string) ($_ENV['AUTH_CONTRACT_FIXTURE_PATH'] ?? dirname(base_path(), 2).'/docs/contracts/auth/fixtures/registration-v1.json');
         if (! is_file($fixturePath) || ! is_readable($fixturePath)) {
-            self::fail("Authentication fixture is unavailable or unreadable: {$fixturePath}");
+            self::fail('Authentication fixture is unavailable or unreadable: '.$fixturePath);
         }
 
         $this->fixture = json_decode(
@@ -159,7 +159,7 @@ final class AuthLifecycleTest extends TestCase
     public function test_login_email_throttle_is_independent_of_ip_throttle_and_uses_canonical_email(): void
     {
         for ($index = 1; $index <= 3; $index++) {
-            $this->withServerVariables(['REMOTE_ADDR' => "2001:db8::".(100 + $index)]);
+            $this->withServerVariables(['REMOTE_ADDR' => '2001:db8::'.(100 + $index)]);
             $this->postJson('/api/v1/auth/login', [
                 'email' => $index === 1 ? ' TARGET@example.test ' : 'target@example.test',
                 'password' => 'secure-password-123',

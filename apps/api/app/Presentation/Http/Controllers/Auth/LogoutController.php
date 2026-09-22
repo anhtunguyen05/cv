@@ -6,9 +6,9 @@ namespace App\Presentation\Http\Controllers\Auth;
 
 use App\Presentation\Http\Controllers\Controller;
 use App\Presentation\Http\Responses\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 final class LogoutController extends Controller
