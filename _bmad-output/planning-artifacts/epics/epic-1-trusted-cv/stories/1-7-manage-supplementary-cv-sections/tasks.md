@@ -25,12 +25,12 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Branch/worktree: `unassigned`
   - Depends on: `TASK-1-7-01`
   - Covers: `AC-1-7-manage-supplementary-cv-sections-01`, `AC-1-7-manage-supplementary-cv-sections-02`, `AC-1-7-manage-supplementary-cv-sections-03`
-  - Scope: 01. Implement supplementary domain and persistence behavior: Profile aggregate section rules/repository mapping | 02. Expose supplementary update contract: request/resource/use case/errors | 03. Verify supplementary backend behavior: unit/feature/MySQL suite
+  - Scope: 01. Implement supplementary domain and persistence behavior: Profile aggregate section rules/repository mapping | 02. Expose supplementary update contract: request/resource/use case/errors | 03. Verify supplementary backend behavior: unit/feature/PostgreSQL 16 suite
   - Coordination: `E1-COORD-PROFILE-001`
   - Blocked by: approved E1-COORD-PROFILE-001 Profile schema persistence checkpoint from Story 1.3; E1-COORD-VERSION-001 persistence fixture checkpoint
   - Outcome: 01. Implement supplementary domain and persistence behavior: Implement supplementary domain and persistence behavior. | 02. Expose supplementary update contract: Expose supplementary update contract. | 03. Verify supplementary backend behavior: Verify supplementary backend behavior.
   - Acceptance: 01. Implement supplementary domain and persistence behavior: optional add/edit/remove is atomic with stable IDs. | 02. Expose supplementary update contract: optional/invalid/removal behavior matches fixtures without data loss. | 03. Verify supplementary backend behavior: optionality, data preservation, ownership and immutability pass.
-  - Verification: 01. Implement supplementary domain and persistence behavior: unit and MySQL persistence/Version-regression tests. | 02. Expose supplementary update contract: Laravel feature/contract tests. | 03. Verify supplementary backend behavior: focused PHPUnit suites.
+  - Verification: 01. Implement supplementary domain and persistence behavior: unit and PostgreSQL 16 persistence/Version-regression tests. | 02. Expose supplementary update contract: Laravel feature/contract tests. | 03. Verify supplementary backend behavior: focused PHPUnit suites.
 
 - [ ] TASK-1-7-03: Deliver and verify supplementary-section editors
   - Status: `todo`

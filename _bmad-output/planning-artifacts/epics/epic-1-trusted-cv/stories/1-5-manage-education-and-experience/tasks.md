@@ -25,12 +25,12 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Branch/worktree: `unassigned`
   - Depends on: `TASK-1-5-01`
   - Covers: `AC-1-5-manage-education-and-experience-01`, `AC-1-5-manage-education-and-experience-02`, `AC-1-5-manage-education-and-experience-03`
-  - Scope: 01. Implement history item domain and persistence behavior: Profile aggregate history rules/repository mapping | 02. Expose history update contract: request/resource/use case/errors | 03. Verify history backend behavior: unit/feature/MySQL suite
+  - Scope: 01. Implement history item domain and persistence behavior: Profile aggregate history rules/repository mapping | 02. Expose history update contract: request/resource/use case/errors | 03. Verify history backend behavior: unit/feature/PostgreSQL 16 suite
   - Coordination: `E1-COORD-PROFILE-001`
   - Blocked by: approved E1-COORD-PROFILE-001 Profile schema persistence checkpoint from Story 1.3; E1-COORD-VERSION-001 persistence fixture checkpoint
   - Outcome: 01. Implement history item domain and persistence behavior: Implement history item domain and persistence behavior. | 02. Expose history update contract: Expose history update contract. | 03. Verify history backend behavior: Verify history backend behavior.
   - Acceptance: 01. Implement history item domain and persistence behavior: add/edit/remove is atomic with stable server IDs. | 02. Expose history update contract: nested errors and targeted removal match fixtures without partial writes. | 03. Verify history backend behavior: IDs, atomicity, ownership, validation/removal and immutability pass.
-  - Verification: 01. Implement history item domain and persistence behavior: unit and MySQL persistence/Version-regression tests. | 02. Expose history update contract: Laravel feature/contract tests. | 03. Verify history backend behavior: focused PHPUnit suites.
+  - Verification: 01. Implement history item domain and persistence behavior: unit and PostgreSQL 16 persistence/Version-regression tests. | 02. Expose history update contract: Laravel feature/contract tests. | 03. Verify history backend behavior: focused PHPUnit suites.
 
 - [ ] TASK-1-5-03: Deliver and verify education and experience editor
   - Status: `todo`

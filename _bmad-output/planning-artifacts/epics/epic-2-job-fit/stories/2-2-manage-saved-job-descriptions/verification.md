@@ -13,7 +13,7 @@ Return to the [Story overview](README.md) and [Epic test strategy](../../test-st
 
 ## Required evidence
 
-- Domain/MySQL: revision monotonicity/immutability, pointer atomicity, stale and
+- Domain/PostgreSQL: revision monotonicity/immutability, pointer atomicity, stale and
   competing updates, delete races, constraints, rollback, and historical pins.
 - API/policy: list/update/delete/status/error/cache contract, two-User
   non-disclosure, repeat delete, deleted guards, and safe serialization.

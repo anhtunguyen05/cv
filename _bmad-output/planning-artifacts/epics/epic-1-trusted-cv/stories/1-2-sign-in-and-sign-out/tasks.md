@@ -30,7 +30,7 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Blocked by: `E1-DEC-002`; approved E1-COORD-AUTH-001 authentication boundary checkpoint from Story 1.1
   - Outcome: 01. Implement login and logout application/API behavior: Implement login and logout application/API behavior. | 02. Enforce login privacy and abuse controls: Enforce login privacy and abuse controls. | 03. Verify backend auth lifecycle: Verify backend auth lifecycle.
   - Acceptance: 01. Implement login and logout application/API behavior: sessions regenerate/invalidate and all fixture responses match. | 02. Enforce login privacy and abuse controls: unknown/wrong credentials and limits are non-disclosing. | 03. Verify backend auth lifecycle: session, non-disclosure, expiry and data-preservation evidence passes.
-  - Verification: 01. Implement login and logout application/API behavior: PHPUnit and Laravel feature tests. | 02. Enforce login privacy and abuse controls: timing/content, proxy, expiry and redaction feature tests. | 03. Verify backend auth lifecycle: complete focused PHPUnit suite against MySQL where applicable.
+  - Verification: 01. Implement login and logout application/API behavior: PHPUnit and Laravel feature tests. | 02. Enforce login privacy and abuse controls: timing/content, proxy, expiry and redaction feature tests. | 03. Verify backend auth lifecycle: complete focused PHPUnit suite against PostgreSQL 16 where persistence integration is applicable.
 
 - [ ] TASK-1-2-03: Deliver and verify sign-in and sign-out journey
   - Status: `todo`

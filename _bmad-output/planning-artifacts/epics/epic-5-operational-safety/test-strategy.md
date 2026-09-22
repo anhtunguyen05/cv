@@ -5,7 +5,7 @@
 | Layer | Epic 5 responsibility |
 | --- | --- |
 | Unit/contract | Redaction, failure taxonomy, lifecycle, policy evaluation, metric labels, quality metrics |
-| Laravel/MySQL | Operator auth, append-only audit, job/deletion transitions, idempotency, locks, rollback, isolation |
+| Laravel/PostgreSQL | Operator auth, append-only audit, job/deletion transitions, idempotency, locks, rollback, isolation |
 | Provider/job fake | Timeout/rate/malformed/cancel/late/lost/duplicate outcomes and no partial trusted state |
 | Security/privacy | Secret/content canaries, access, log/metric/trace/dashboard leak scan, destructive safeguards |
 | Retention integration | Inventory, dry-run, dependency order, partial failure/rerun, backup/external policy, two-User isolation |
@@ -29,7 +29,7 @@ bounded retry, exact terminal state, idempotency, and no partial trusted state.
 
 ## E5-TEST-003 — Deletion matrix
 
-Use disposable MySQL/storage/external fakes with two Users, complete dependency
+Use disposable PostgreSQL/storage/external fakes with two Users, complete dependency
 graph, holds/exceptions, dry-run, approval, concurrent update/request, partial
 batch failure, rerun, audit, isolation, consistency, and backup expiry evidence.
 

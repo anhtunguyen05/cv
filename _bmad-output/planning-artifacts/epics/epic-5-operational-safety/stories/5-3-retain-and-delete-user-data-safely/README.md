@@ -50,6 +50,6 @@ with scoped, isolated, consistent, recoverable processing and non-sensitive audi
 ## Readiness coverage
 
 Covers inventory/classification, legal authority/holds, clocks/actions/dependency
-order, MySQL/storage/cache/backup/external systems, User/operator request/RBAC,
+order, PostgreSQL/storage/cache/backup/external systems, User/operator request/RBAC,
 dry-run/approval/idempotency/batching/partial/rerun, concurrent writes, anonymization,
 audit, isolation, recovery, accessibility, and E2E. Planning does not authorize production deletion.

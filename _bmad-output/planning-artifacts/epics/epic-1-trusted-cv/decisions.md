@@ -86,10 +86,25 @@ approved resolution, and evidence in the form `approver, YYYY-MM-DD`.
 - Status: `unassigned`.
 - Owner: `unassigned`.
 - Scope: add and configure the project-level Vitest/Playwright harness,
-  reusable fixtures, disposable MySQL orchestration, commands, and CI entry.
+  reusable fixtures, disposable PostgreSQL 16 orchestration, commands, and CI entry.
 - Reason externalized: the capability is reusable across all Epics and is not
   independently valuable registration/Profile/Version behavior.
 - Blocks: every task referencing `E1-COORD-TEST-001`.
 - Acceptance: the owning planning item defines one implementation owner,
   branch/worktree, file boundary, safe database reset contract, and commands
   before any dependent task enters `doing`.
+
+### DISCOVERY-E1-002 — Backend database verification target alignment
+
+- Status: `resolved`.
+- Owner: `Product owner (user-delegated)`.
+- Scope: PostgreSQL 16 is the canonical Epic 1 integration and E2E datastore,
+  matching `docs/standards/data.md`, `docs/standards/testing.md`, the API
+  Docker Compose service, and the repository's existing development direction.
+  SQLite remains permitted only for isolated fast tests when the test does not
+  claim PostgreSQL constraint or integration evidence. PHPUnit configuration,
+  commands, and fixtures must label the database they actually exercise.
+- Evidence: User-directed database decision, 2026-09-22; repository Docker and
+  environment configuration inspected; global data/testing standards aligned.
+- Blocks: none after the implementation test entry points are updated to use a
+  declared disposable PostgreSQL 16 database for integration evidence.

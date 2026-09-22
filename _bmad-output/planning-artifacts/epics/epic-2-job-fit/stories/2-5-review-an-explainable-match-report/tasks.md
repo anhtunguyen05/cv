@@ -31,7 +31,7 @@ Return to the [Story overview](README.md). Story lifecycle comes from
   - Blocked by: `E2-PREREQ-VERSION-001`; approved E2-COORD-JD-001 logical-deletion checkpoint from Story 2.2
   - Outcome: 01. Implement owned Match Report read/list projection: Return exact stored report/source data without recomputation or disclosure.
   - Acceptance: 01. Implement owned Match Report read/list projection: current/deleted source state changes context/actions only, never classifications or score.
-  - Verification: 01. Implement owned Match Report read/list projection: application/Laravel/MySQL contract/history, two-User, deleted-source, and no-recompute tests.
+  - Verification: 01. Implement owned Match Report read/list projection: application/Laravel/PostgreSQL contract/history, two-User, deleted-source, and no-recompute tests.
 
 - [ ] TASK-2-5-03: Deliver and verify explainable Match Report review
   - Status: `todo`

@@ -75,7 +75,7 @@ metadata as one owned logical resource with an atomic immutable initial revision
 
 The package covers creation/reload, atomic initial revision, invalid and
 oversized input, duplicate/lost submission, authenticated ownership,
-non-disclosure, safe text rendering, UI states, FE/API mapping, MySQL
+non-disclosure, safe text rendering, UI states, FE/API mapping, PostgreSQL
 constraints, and browser verification. Exact input, HTTP, concurrency,
 deduplication, rate-limit, list/detail, and tooling values remain in the Epic
 decision register.
@@ -87,7 +87,7 @@ decision register.
 - `apps/api/routes/api.php` — proposed protected product routes.
 - `apps/web/src/shared/api/`, `features/job-descriptions/`, `pages/`, router —
   transport, schema/state, create form, detail/reload, and errors.
-- API/MySQL/Vitest/Playwright locations — planned verification only.
+- API/PostgreSQL/Vitest/Playwright locations — planned verification only.
 
 ## Spec change log
 

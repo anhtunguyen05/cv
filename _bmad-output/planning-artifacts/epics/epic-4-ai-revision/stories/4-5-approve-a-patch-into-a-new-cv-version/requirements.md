@@ -8,7 +8,7 @@ and [UX/validation](../../ux-and-validation.md) remain authoritative.
 
 **Always:** Require fresh explicit confirmation; derive ownership/source/status;
 lock/recheck Patch and old value; validate target, Evidence, proposal and full
-result snapshot; use one idempotent MySQL transaction; record source/Patch/new
+result snapshot; use one idempotent PostgreSQL transaction; record source/Patch/new
 Version provenance; return/reconcile the exact result.
 
 **Never:** Accept a client-composed result snapshot, owner, status, or applied
@@ -33,5 +33,5 @@ Backend/domain own revalidation, pure transform, complete snapshot validation,
 locks, transaction, Version/provenance creation, and Patch transition. Security
 owns ownership graph, explicit human action, non-disclosure, and audit. Frontend
 owns confirmation, pending/stale/success/failure/retry and exact result link.
-Integration/verification use real MySQL, forced write failures, races, two Users,
+Integration/verification use real PostgreSQL, forced write failures, races, two Users,
 and critical browser evidence.

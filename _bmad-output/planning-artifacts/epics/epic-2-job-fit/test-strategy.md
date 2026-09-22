@@ -6,7 +6,7 @@
 | --- | --- |
 | Unit/domain | Revision rules, signal normalization, rule-version selection, evidence classification, score calculation, ordering, and failure classification |
 | Laravel feature | Request/response/status/error matrices, session, policy, stale/deleted state, deduplication, and safe serialization |
-| MySQL integration | Atomic create/revision/report writes, constraints, deterministic keys, rollback, collation, ordering, and concurrency |
+| PostgreSQL integration | Atomic create/revision/report writes, constraints, deterministic keys, rollback, collation, ordering, and concurrency |
 | Vue unit/component | Schema/error adapters plus every intake, analysis, comparison, and report interaction state |
 | Contract | Versioned fixtures consumed by backend and frontend without local variants |
 | Playwright | Save/reload JD, revise/analyze current revision, create report from CV Version, review evidence, and historical deleted-source report |
@@ -56,7 +56,7 @@ text rendering, rate-limit atomicity, and disposable-data enforcement.
 2. Analysis schema/rule-version fixture checkpoint.
 3. Match scoring/evidence fixture and quality threshold checkpoint.
 4. Frontend adapter compatibility checkpoint.
-5. MySQL and Playwright end-to-end acceptance checkpoint.
+5. PostgreSQL and Playwright end-to-end acceptance checkpoint.
 
 Stories may implement independent work in parallel after the relevant gate;
 shared fixture or harness changes are serialized through coordination records.

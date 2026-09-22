@@ -79,7 +79,7 @@ source-derived signals with explicit absent/unknown state.
 The package covers all eight signal groups, absent/unknown semantics, rule and
 schema versions, repeatability, duplicated/concurrent requests, stale/deleted
 sources, explicit retry/terminal failure, safe logs/rendering, frontend source
-distinction, versioned corpora, MySQL persistence, and E2E analysis. Exact
+distinction, versioned corpora, PostgreSQL persistence, and E2E analysis. Exact
 vocabulary, aliases, ordering, deterministic key, timeout/rate limit, and
 quality ownership remain open decisions.
 
@@ -90,7 +90,7 @@ quality ownership remain open decisions.
 - Job Description revision model is consumed read-only from Story 2.1.
 - Vue analysis adapter/query/mutation, raw-versus-derived review surface, retry
   and stale-revision state.
-- Versioned fixture corpus plus PHPUnit/MySQL/Vitest/Playwright checks.
+- Versioned fixture corpus plus PHPUnit/PostgreSQL/Vitest/Playwright checks.
 
 ## Spec change log
 

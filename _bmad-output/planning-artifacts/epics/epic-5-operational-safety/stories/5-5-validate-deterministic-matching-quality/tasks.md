@@ -28,7 +28,7 @@
   - Blocked by: `E5-DEC-008`; approved Epic 2 matcher consumer checkpoint
   - Outcome: 01. Implement read-only matcher evaluation runner: Produce reproducible quality evidence without persistence capability. | 02. Integrate evaluation command and immutable safe artifact: Make matching regression visible and reviewable. | 03. Verify repeatability, quality, performance, and no mutation: Prove deterministic useful evaluation and strict read-only behavior.
   - Acceptance: 01. Implement read-only matcher evaluation runner: runner rejects incompatible/prohibited input and cannot update reports/User data. | 02. Integrate evaluation command and immutable safe artifact: failing threshold fails the command and baseline cannot update implicitly. | 03. Verify repeatability, quality, performance, and no mutation: same inputs match exactly; seeded regressions fail; User/report state hash remains unchanged.
-  - Verification: 01. Implement read-only matcher evaluation runner: unit/golden/property/mutation-guard tests. | 02. Integrate evaluation command and immutable safe artifact: clean/failing/infrastructure CI simulation and artifact validation. | 03. Verify repeatability, quality, performance, and no mutation: approved evaluator/MySQL write-trap/performance command evidence.
+  - Verification: 01. Implement read-only matcher evaluation runner: unit/golden/property/mutation-guard tests. | 02. Integrate evaluation command and immutable safe artifact: clean/failing/infrastructure CI simulation and artifact validation. | 03. Verify repeatability, quality, performance, and no mutation: approved evaluator/PostgreSQL write-trap/performance command evidence.
 
 - [ ] TASK-5-5-03: Document quality triage and close the runner acceptance
   - Status: `todo`

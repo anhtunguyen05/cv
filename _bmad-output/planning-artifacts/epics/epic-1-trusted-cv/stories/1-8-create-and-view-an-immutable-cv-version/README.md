@@ -91,7 +91,7 @@ are planned; exact snapshot/name/concurrency decisions remain open.
   snapshot service, policy and transaction.
 - Presentation HTTP boundary and `routes/api.php` — create/detail/list contract.
 - `apps/web/src/features/cv-versions/`, `pages/`, router — API/query/mutation/UI.
-- API/MySQL/component/Playwright test locations — verification.
+- API/PostgreSQL/component/Playwright test locations — verification.
 
 ## Spec Change Log
 

@@ -28,4 +28,4 @@ build a generic queue without a named operation; let stale worker overwrite term
 Backend owns classifier, retry policy, conditional job state machine, result
 transaction and status API. Frontend owns typed User states/retry/cancel. Ops
 owns audit, metrics, alert/runbook. Verification requires fault injection and
-real MySQL for state races.
+real PostgreSQL for state races.

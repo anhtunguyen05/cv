@@ -13,7 +13,7 @@ choices.
 - Vue, Vite, Pinia, Vue Router, and TypeScript versions/ranges are declared in
   `apps/web/package.json`.
 - Python `>=3.11` is declared in `apps/worker/pyproject.toml`.
-- MySQL 8.4 and Redis 7 Alpine are declared in `apps/api/docker-compose.yml`.
+- PostgreSQL 16 and Redis 7 Alpine are declared in `apps/api/docker-compose.yml`.
 - Laravel exposes `/api/health` and `/up`; the worker exposes `/health` and
   `/api/health`.
 

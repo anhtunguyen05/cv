@@ -148,11 +148,11 @@ boundaries and never become alternate owners of trusted product state.
 - **Prevents:** Per-feature response envelopes, framework-error leakage, and non-versioned public API drift.
 - **Rule:** Product endpoints live under `/api/v1`. Successful resource responses use `data`; paginated collections additionally use `meta` and `links`. Errors use `code`, `message`, and `details`; validation errors are field-keyed in `details`. `/api/health` is a separate operational payload.
 
-### AD-15 — [ADOPTED] MySQL is the canonical product database
+### AD-15 — [ADOPTED] PostgreSQL is the canonical product database
 
 - **Binds:** migrations, persistence, integration tests, deployment planning
-- **Prevents:** MySQL, SQLite, and PostgreSQL behaving as unverified interchangeable production dialects.
-- **Rule:** MySQL 8.4 is required for shared development, integration/E2E verification, and production. SQLite is limited to local fast unit/scaffold work. PostgreSQL is out of MVP scope. Redis remains optional and cannot be required by the core MVP flow.
+- **Prevents:** PostgreSQL, SQLite, and MySQL behaving as unverified interchangeable production dialects.
+- **Rule:** PostgreSQL 16 is required for shared development, integration/E2E verification, and production. SQLite is limited to local fast unit/scaffold work. MySQL is out of MVP scope. Redis remains optional and cannot be required by the core MVP flow.
 
 ### AD-16 — [ADOPTED] New product aggregates have ULID identities
 
@@ -164,7 +164,7 @@ boundaries and never become alternate owners of trusted product state.
 
 - **Binds:** all stories, NFR-1 through NFR-5
 - **Prevents:** Critical journeys being accepted from unit tests alone, or E2E resets touching non-disposable data.
-- **Rule:** Use PHPUnit for PHP domain/application and Laravel HTTP tests, Vitest for Vue/TypeScript unit and component/composable tests, MySQL 8.4 for integration verification, and Playwright for critical browser journeys. Every story maps acceptance criteria to suitable tests; deterministic behavior uses repeatability fixtures. E2E reset operations require a declared disposable database.
+- **Rule:** Use PHPUnit for PHP domain/application and Laravel HTTP tests, Vitest for Vue/TypeScript unit and component/composable tests, PostgreSQL 16 for integration verification, and Playwright for critical browser journeys. Every story maps acceptance criteria to suitable tests; deterministic behavior uses repeatability fixtures. E2E reset operations require a declared disposable database.
 
 ### AD-18 — [ADOPTED] Sensitive content is private by default
 
@@ -209,7 +209,7 @@ flowchart TD
 | Global documentation | Stable cross-epic rules live in `docs/`; planning artifacts and stories reference, rather than duplicate, them. |
 | Authentication | First-party web requests use Sanctum stateful cookie sessions and CSRF; ownership is always server-enforced. |
 | HTTP contracts | Product API is `/api/v1`, successful payloads are enveloped, and errors are machine-readable. |
-| Data platform | MySQL 8.4 is canonical; new product aggregates use ULID strings; all timestamps use UTC ISO-8601 at API boundaries. |
+| Data platform | PostgreSQL 16 is canonical; new product aggregates use ULID strings; all timestamps use UTC ISO-8601 at API boundaries. |
 | Sensitive data | Logs omit CV/JD, credentials, cookies, and raw AI data; audits use sanitized metadata and private storage is the default. |
 | Verification | Tests map to ACs and critical journeys have browser coverage against disposable data. |
 
@@ -225,7 +225,7 @@ flowchart TD
 | Vue Router | `^5.2.0` |
 | TypeScript | `~6.0.0` |
 | Python worker runtime | `>=3.11` |
-| MySQL Docker service | `8.4` |
+| PostgreSQL Docker service | `16-alpine` |
 | Redis Docker service | `7-alpine`, optional for MVP application behavior |
 
 ## Structural Seed
@@ -263,7 +263,7 @@ architecture invariants.
 ```text
 Development:
   Browser -> apps/web dev server -> apps/api Laravel runtime
-                                  -> local SQLite or apps/api Docker MySQL
+                                  -> local SQLite or apps/api Docker PostgreSQL 16
                                   -> optional apps/api Docker Redis
   apps/worker -> independent health service on its own port
 
@@ -291,7 +291,7 @@ MVP production shape:
 - Account recovery policy remains open until account-access implementation
   begins; browser authentication is fixed by AD-13.
 - Production database/storage topology and retention policy remain open; local
-  SQLite and API-local Docker MySQL are both current repository options.
+  SQLite and API-local Docker PostgreSQL 16 are both current repository options.
 - Exact CV JSON field limits, aliases, matching weights, and quality thresholds
   belong to the CV and matching capability contracts and evaluation fixtures.
 - Template representation and final visual/print direction remain open until

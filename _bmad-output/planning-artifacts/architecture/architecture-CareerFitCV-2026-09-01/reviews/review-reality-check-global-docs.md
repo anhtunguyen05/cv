@@ -15,7 +15,7 @@ developer/agent implementation source of truth.
    session-cookie settings, CSRF bootstrap, logout, and expiry handling.
 3. The global overview explicitly says that product-domain behavior remains
    target design until implemented and verified. This correctly covers product
-   routes/envelopes, ULIDs, MySQL integration, Vitest, and Playwright.
+   routes/envelopes, ULIDs, PostgreSQL integration, Vitest, and Playwright.
 
 ## Confirmed implementation gaps (correctly labeled as target)
 
@@ -24,9 +24,9 @@ developer/agent implementation source of truth.
   Resources, Form Requests, policies, custom error renderer, or envelope
   enforcement yet. The HTTP documents are valid future contracts, not current
   runtime behavior.
-- MySQL 8.4 is provided by API-local Compose, but Laravel still defaults to
+- PostgreSQL 16 is provided by API-local Compose, but Laravel still defaults to
   SQLite and PHPUnit explicitly runs SQLite. Also, Compose makes `app` depend
-  on Redis startup. Therefore MySQL-canonical and Redis-optional are target
+  on Redis startup. Therefore PostgreSQL-canonical and Redis-optional are target
   operating rules; the current local topology has not yet been aligned.
 - ULID product identities are a valid Laravel 13 convention, but no product
   aggregate/migration exists. Existing `users` and system migrations remain
@@ -34,7 +34,7 @@ developer/agent implementation source of truth.
 
 ## Confirmed repository facts
 
-- Laravel `^13.17` / PHP `^8.3`, Vue `^3.5.40`, Vite `^8.1.5`, MySQL `8.4`,
+- Laravel `^13.17` / PHP `^8.3`, Vue `^3.5.40`, Vite `^8.1.5`, PostgreSQL `8.4`,
   Redis `7-alpine`, and Python `>=3.11` match their manifests/configuration.
 - Laravel serves `GET /api/health` and framework `GET /up`; the worker serves
   `/health` and `/api/health`. The operational-health exception in the common

@@ -57,7 +57,7 @@ Version remains immutable.
 Covers immutable source/proposal diff, provenance, allowed actions, edit
 allowlist/revalidation, rejection confirmation/history, stale/repeated/concurrent
 decisions, ownership, unsafe/long content, accessibility, FE/API fixtures,
-MySQL state constraints, and E2E.
+PostgreSQL state constraints, and E2E.
 
 ## References
 
