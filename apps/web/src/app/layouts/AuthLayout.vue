@@ -7,16 +7,24 @@ import { Sparkles, CheckCircle, ArrowLeft } from 'lucide-vue-next'
 <template>
   <div class="min-h-[100dvh] flex flex-col lg:flex-row bg-surface">
     <!-- Left: Brand showcase panel -->
-    <div class="hidden lg:flex lg:w-[48%] xl:w-[42%] flex-col justify-between bg-dark-bg px-12 py-12 relative overflow-hidden text-white select-none">
+    <div
+      class="hidden lg:flex lg:w-[48%] xl:w-[42%] flex-col justify-between bg-dark-bg px-12 py-12 relative overflow-hidden text-white select-none"
+    >
       <!-- Ambient radial illumination -->
       <div
         class="absolute -top-24 -left-24 w-96 h-96 rounded-full opacity-30"
-        style="background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%); filter: blur(40px);"
+        style="
+          background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+          filter: blur(40px);
+        "
         aria-hidden="true"
       />
       <div
         class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full opacity-20"
-        style="background: radial-gradient(circle, var(--color-success) 0%, transparent 70%); filter: blur(40px);"
+        style="
+          background: radial-gradient(circle, var(--color-success) 0%, transparent 70%);
+          filter: blur(40px);
+        "
         aria-hidden="true"
       />
 
@@ -43,14 +51,20 @@ import { Sparkles, CheckCircle, ArrowLeft } from 'lucide-vue-next'
 
       <!-- Center: Floating Mockup Card with Glassmorphism -->
       <div class="relative z-10 my-auto py-8">
-        <div class="glass-panel-dark p-6 rounded-2xl border border-white/10 shadow-2xl space-y-4 max-w-sm mx-auto">
+        <div
+          class="glass-panel-dark p-6 rounded-2xl border border-white/10 shadow-2xl space-y-4 max-w-sm mx-auto"
+        >
           <div class="flex items-center justify-between">
             <span class="text-xs font-semibold text-slate-300">Live Skill Match Analysis</span>
-            <span class="text-xs font-bold text-success bg-success/15 px-2 py-0.5 rounded-full">+18 pts lift</span>
+            <span class="text-xs font-bold text-success bg-success/15 px-2 py-0.5 rounded-full"
+              >+18 pts lift</span
+            >
           </div>
 
           <div class="space-y-2">
-            <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/5 border border-white/5">
+            <div
+              class="flex items-center justify-between p-2.5 rounded-lg bg-white/5 border border-white/5"
+            >
               <div class="flex items-center gap-2">
                 <CheckCircle :size="14" class="text-success" />
                 <span class="text-xs text-slate-200 font-medium">Vue 3 Composition API</span>
@@ -58,16 +72,22 @@ import { Sparkles, CheckCircle, ArrowLeft } from 'lucide-vue-next'
               <span class="text-xs text-slate-400">Verified</span>
             </div>
 
-            <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/5 border border-white/5">
+            <div
+              class="flex items-center justify-between p-2.5 rounded-lg bg-white/5 border border-white/5"
+            >
               <div class="flex items-center gap-2">
                 <CheckCircle :size="14" class="text-success" />
-                <span class="text-xs text-slate-200 font-medium">TypeScript & State Management</span>
+                <span class="text-xs text-slate-200 font-medium"
+                  >TypeScript & State Management</span
+                >
               </div>
               <span class="text-xs text-slate-400">Verified</span>
             </div>
           </div>
 
-          <div class="p-3 rounded-lg bg-primary/15 border border-primary/30 text-xs text-indigo-200 leading-relaxed">
+          <div
+            class="p-3 rounded-lg bg-primary/15 border border-primary/30 text-xs text-indigo-200 leading-relaxed"
+          >
             "Candidate evidence grounded directly in repository projects and verified work history."
           </div>
         </div>
@@ -95,7 +115,9 @@ import { Sparkles, CheckCircle, ArrowLeft } from 'lucide-vue-next'
       </RouterLink>
 
       <!-- Centered Form Container -->
-      <div class="w-full max-w-md bg-white p-8 sm:p-10 rounded-2xl border border-border shadow-auth-panel">
+      <div
+        class="w-full max-w-md bg-white p-8 sm:p-10 rounded-2xl border border-border shadow-auth-panel"
+      >
         <slot />
       </div>
     </div>

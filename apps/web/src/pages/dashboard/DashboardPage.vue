@@ -47,18 +47,19 @@ const sampleProfiles = ref([
 <template>
   <div class="space-y-6">
     <!-- ── Top Welcome & Header Strip ──────────────────────────── -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-border/80">
+    <div
+      class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-border/80"
+    >
       <div>
         <div class="flex items-center gap-2 mb-1">
           <span class="text-xs font-bold uppercase tracking-wider text-primary">Overview</span>
           <span class="w-1 h-1 rounded-full bg-border-hover" />
           <span class="text-xs font-medium text-text-muted">Candidate Workspace</span>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">
-          Candidate Workspace
-        </h1>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">Candidate Workspace</h1>
         <p class="text-xs sm:text-sm text-text-muted mt-1 max-w-2xl leading-relaxed">
-          Manage your master CV profiles, evaluate job descriptions, and track ATS match scores with verified evidence.
+          Manage your master CV profiles, evaluate job descriptions, and track ATS match scores with
+          verified evidence.
         </p>
       </div>
 
@@ -82,10 +83,17 @@ const sampleProfiles = ref([
     <!-- ── KPI Metric Bento Cards ──────────────────────────────── -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
       <!-- Card 1: CV Profiles -->
-      <Card padding="sm" class="relative overflow-hidden group hover:border-primary-border transition-all">
+      <Card
+        padding="sm"
+        class="relative overflow-hidden group hover:border-primary-border transition-all"
+      >
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-text-muted uppercase tracking-wider">CV Profiles</span>
-          <div class="w-9 h-9 rounded-lg bg-primary-muted flex items-center justify-center text-primary">
+          <span class="text-xs font-bold text-text-muted uppercase tracking-wider"
+            >CV Profiles</span
+          >
+          <div
+            class="w-9 h-9 rounded-lg bg-primary-muted flex items-center justify-center text-primary"
+          >
             <FileText :size="18" :stroke-width="1.5" />
           </div>
         </div>
@@ -93,24 +101,35 @@ const sampleProfiles = ref([
           <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">
             {{ cvProfiles?.length || 2 }}
           </span>
-          <span class="text-xs font-semibold text-success-hover bg-success-muted border border-success-border px-2 py-0.5 rounded-full flex items-center gap-1">
+          <span
+            class="text-xs font-semibold text-success-hover bg-success-muted border border-success-border px-2 py-0.5 rounded-full flex items-center gap-1"
+          >
             <TrendingUp :size="12" /> Active
           </span>
         </div>
-        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">Master profile & 1 tailored snapshot</p>
+        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">
+          Master profile & 1 tailored snapshot
+        </p>
       </Card>
 
       <!-- Card 2: Job Postings Scanned -->
-      <Card padding="sm" class="relative overflow-hidden group hover:border-info-border transition-all">
+      <Card
+        padding="sm"
+        class="relative overflow-hidden group hover:border-info-border transition-all"
+      >
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-text-muted uppercase tracking-wider">Job Postings</span>
+          <span class="text-xs font-bold text-text-muted uppercase tracking-wider"
+            >Job Postings</span
+          >
           <div class="w-9 h-9 rounded-lg bg-info-muted flex items-center justify-center text-info">
             <Briefcase :size="18" :stroke-width="1.5" />
           </div>
         </div>
         <div class="mt-3 flex items-baseline gap-2">
           <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">3</span>
-          <span class="text-xs font-semibold text-info bg-info-muted border border-info-border px-2 py-0.5 rounded-full">
+          <span
+            class="text-xs font-semibold text-info bg-info-muted border border-info-border px-2 py-0.5 rounded-full"
+          >
             Analyzed
           </span>
         </div>
@@ -118,20 +137,31 @@ const sampleProfiles = ref([
       </Card>
 
       <!-- Card 3: Average Fit Score -->
-      <Card padding="sm" class="relative overflow-hidden group hover:border-success-border transition-all">
+      <Card
+        padding="sm"
+        class="relative overflow-hidden group hover:border-success-border transition-all"
+      >
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-text-muted uppercase tracking-wider">Average Match</span>
-          <div class="w-9 h-9 rounded-lg bg-success-muted flex items-center justify-center text-success-hover">
+          <span class="text-xs font-bold text-text-muted uppercase tracking-wider"
+            >Average Match</span
+          >
+          <div
+            class="w-9 h-9 rounded-lg bg-success-muted flex items-center justify-center text-success-hover"
+          >
             <BarChart2 :size="18" :stroke-width="1.5" />
           </div>
         </div>
         <div class="mt-3 flex items-baseline gap-2">
           <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">81%</span>
-          <span class="text-xs font-semibold text-success-hover bg-success-muted border border-success-border px-2 py-0.5 rounded-full">
+          <span
+            class="text-xs font-semibold text-success-hover bg-success-muted border border-success-border px-2 py-0.5 rounded-full"
+          >
             +14% lift
           </span>
         </div>
-        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">Above competitive benchmark for juniors</p>
+        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">
+          Above competitive benchmark for juniors
+        </p>
       </Card>
     </div>
 
@@ -141,12 +171,18 @@ const sampleProfiles = ref([
       <div class="lg:col-span-8 space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">Active CV Profiles</h2>
-            <p class="text-xs sm:text-sm text-text-muted mt-0.5">Click any profile to modify sections or preview export.</p>
+            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">
+              Active CV Profiles
+            </h2>
+            <p class="text-xs sm:text-sm text-text-muted mt-0.5">
+              Click any profile to modify sections or preview export.
+            </p>
           </div>
 
           <RouterLink :to="ROUTES.CV_EDIT('new')">
-            <span class="text-xs sm:text-sm font-semibold text-primary hover:text-primary-hover flex items-center gap-1.5 transition-colors">
+            <span
+              class="text-xs sm:text-sm font-semibold text-primary hover:text-primary-hover flex items-center gap-1.5 transition-colors"
+            >
               Create another
               <ArrowRight :size="13" />
             </span>
@@ -169,18 +205,24 @@ const sampleProfiles = ref([
         <!-- Profiles List -->
         <div v-else class="space-y-3">
           <div
-            v-for="profile in (cvProfiles?.length ? cvProfiles : sampleProfiles)"
+            v-for="profile in cvProfiles?.length ? cvProfiles : sampleProfiles"
             :key="profile.id"
             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 p-4 sm:p-5 bg-white border border-border rounded-xl hover:border-primary-border hover:shadow-2xs transition-all group"
           >
             <div class="flex items-start sm:items-center gap-3.5 min-w-0">
-              <div class="w-10 h-10 rounded-xl bg-primary-muted border border-primary-border/50 flex items-center justify-center flex-shrink-0 text-primary">
+              <div
+                class="w-10 h-10 rounded-xl bg-primary-muted border border-primary-border/50 flex items-center justify-center flex-shrink-0 text-primary"
+              >
                 <FileText :size="19" :stroke-width="1.5" />
               </div>
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
-                  <p class="text-sm sm:text-base font-bold text-text truncate">{{ profile.title }}</p>
-                  <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-surface-muted text-text-quiet border border-border">
+                  <p class="text-sm sm:text-base font-bold text-text truncate">
+                    {{ profile.title }}
+                  </p>
+                  <span
+                    class="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-surface-muted text-text-quiet border border-border"
+                  >
                     {{ (profile as any).version || 'v1.0' }}
                   </span>
                 </div>
@@ -231,45 +273,69 @@ const sampleProfiles = ref([
               :to="ROUTES.JD_NEW"
               class="block p-3 sm:p-3.5 rounded-xl border border-border bg-white hover:border-primary/40 hover:bg-surface transition-all group"
             >
-              <p class="text-xs sm:text-sm font-semibold text-text group-hover:text-primary-dark flex items-center justify-between">
+              <p
+                class="text-xs sm:text-sm font-semibold text-text group-hover:text-primary-dark flex items-center justify-between"
+              >
                 <span>Evaluate a Job Description</span>
-                <ArrowRight :size="13" class="text-text-subtle group-hover:translate-x-0.5 transition-transform" />
+                <ArrowRight
+                  :size="13"
+                  class="text-text-subtle group-hover:translate-x-0.5 transition-transform"
+                />
               </p>
-              <p class="text-xs text-text-muted mt-0.5 leading-relaxed">Paste any JD to audit required keywords vs your CV.</p>
+              <p class="text-xs text-text-muted mt-0.5 leading-relaxed">
+                Paste any JD to audit required keywords vs your CV.
+              </p>
             </RouterLink>
 
             <RouterLink
               :to="ROUTES.TEMPLATES"
               class="block p-3 sm:p-3.5 rounded-xl border border-border bg-white hover:border-primary/40 hover:bg-surface transition-all group"
             >
-              <p class="text-xs sm:text-sm font-semibold text-text group-hover:text-primary-dark flex items-center justify-between">
+              <p
+                class="text-xs sm:text-sm font-semibold text-text group-hover:text-primary-dark flex items-center justify-between"
+              >
                 <span>Change CV Template</span>
-                <ArrowRight :size="13" class="text-text-subtle group-hover:translate-x-0.5 transition-transform" />
+                <ArrowRight
+                  :size="13"
+                  class="text-text-subtle group-hover:translate-x-0.5 transition-transform"
+                />
               </p>
-              <p class="text-xs text-text-muted mt-0.5 leading-relaxed">Explore 4 ATS-optimized layouts tailored for engineers.</p>
+              <p class="text-xs text-text-muted mt-0.5 leading-relaxed">
+                Explore 4 ATS-optimized layouts tailored for engineers.
+              </p>
             </RouterLink>
 
             <RouterLink
               to="/match/1"
               class="block p-3 sm:p-3.5 rounded-xl border border-border bg-white hover:border-primary/40 hover:bg-surface transition-all group"
             >
-              <p class="text-xs sm:text-sm font-semibold text-text group-hover:text-primary-dark flex items-center justify-between">
+              <p
+                class="text-xs sm:text-sm font-semibold text-text group-hover:text-primary-dark flex items-center justify-between"
+              >
                 <span>View Latest Match Report</span>
-                <ArrowRight :size="13" class="text-text-subtle group-hover:translate-x-0.5 transition-transform" />
+                <ArrowRight
+                  :size="13"
+                  class="text-text-subtle group-hover:translate-x-0.5 transition-transform"
+                />
               </p>
-              <p class="text-xs text-text-muted mt-0.5 leading-relaxed">Check skill coverage for ReactJS / Vue Intern.</p>
+              <p class="text-xs text-text-muted mt-0.5 leading-relaxed">
+                Check skill coverage for ReactJS / Vue Intern.
+              </p>
             </RouterLink>
           </div>
         </Card>
 
         <!-- Trust Note -->
-        <div class="p-4 sm:p-5 rounded-xl border border-border bg-surface text-xs text-text-muted space-y-1.5">
+        <div
+          class="p-4 sm:p-5 rounded-xl border border-border bg-surface text-xs text-text-muted space-y-1.5"
+        >
           <div class="flex items-center gap-2 font-semibold text-text text-xs sm:text-sm">
             <CheckCircle2 :size="15" class="text-success" />
             <span>Deterministic Analysis</span>
           </div>
           <p class="leading-relaxed">
-            CareerFitCV only evaluates verified keywords present in your projects. No hallucinated experience is ever submitted.
+            CareerFitCV only evaluates verified keywords present in your projects. No hallucinated
+            experience is ever submitted.
           </p>
         </div>
       </div>

@@ -22,7 +22,7 @@ withDefaults(defineProps<Props>(), {
   completedSections: () => ['personal_info', 'summary', 'skills', 'projects', 'education'],
 })
 
-const emit = defineEmits<{ 'select': [section: CvSectionKey] }>()
+const emit = defineEmits<{ select: [section: CvSectionKey] }>()
 
 const sections: Array<{ key: CvSectionKey; label: string; icon: Component }> = [
   { key: 'personal_info', label: 'Personal Info', icon: User },
@@ -37,11 +37,15 @@ const sections: Array<{ key: CvSectionKey; label: string; icon: Component }> = [
 </script>
 
 <template>
-  <nav class="w-60 flex-shrink-0 border-r border-border/80 py-4 bg-surface/50 flex flex-col justify-between">
+  <nav
+    class="w-60 flex-shrink-0 border-r border-border/80 py-4 bg-surface/50 flex flex-col justify-between"
+  >
     <div>
       <div class="px-4 mb-3 flex items-center justify-between">
         <span class="text-xs font-bold text-text-subtle uppercase tracking-wider">Sections</span>
-        <span class="text-xs font-mono text-primary bg-primary-muted px-2 py-0.5 rounded-full font-semibold border border-primary-border">
+        <span
+          class="text-xs font-mono text-primary bg-primary-muted px-2 py-0.5 rounded-full font-semibold border border-primary-border"
+        >
           {{ completedSections.length }}/{{ sections.length }}
         </span>
       </div>
@@ -65,7 +69,9 @@ const sections: Array<{ key: CvSectionKey; label: string; icon: Component }> = [
                 :stroke-width="1.5"
                 :class="[
                   'flex-shrink-0 transition-colors',
-                  activeSection === section.key ? 'text-primary' : 'text-text-subtle group-hover:text-text-muted',
+                  activeSection === section.key
+                    ? 'text-primary'
+                    : 'text-text-subtle group-hover:text-text-muted',
                 ]"
               />
               <span class="truncate">{{ section.label }}</span>

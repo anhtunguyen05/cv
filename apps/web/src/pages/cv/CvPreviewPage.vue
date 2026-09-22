@@ -99,7 +99,9 @@ const cvData: CvData = {
       </div>
 
       <!-- Zoom controls -->
-      <div class="flex items-center gap-2 bg-white border border-border px-3 py-1.5 rounded-xl shadow-2xs">
+      <div
+        class="flex items-center gap-2 bg-white border border-border px-3 py-1.5 rounded-xl shadow-2xs"
+      >
         <button
           type="button"
           class="p-1 text-text-muted hover:text-text rounded-lg cursor-pointer transition-colors"

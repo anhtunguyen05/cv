@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "Vue.volar",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bmewburn.vscode-intelephense-client",
+    "ms-python.python"
+  ],
+  "unwantedRecommendations": [
+    "octref.vetur"
+  ]
+}

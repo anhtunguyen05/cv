@@ -14,7 +14,10 @@ withDefaults(defineProps<Props>(), {
 <template>
   <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
     <div>
-      <div v-if="kicker" class="text-xs font-semibold text-primary uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+      <div
+        v-if="kicker"
+        class="text-xs font-semibold text-primary uppercase tracking-wider mb-1.5 flex items-center gap-1.5"
+      >
         <slot name="kicker">{{ kicker }}</slot>
       </div>
 

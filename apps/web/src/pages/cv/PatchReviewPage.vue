@@ -17,7 +17,8 @@ const patches = ref([
     reason: 'JD explicitly demands "Pinia state management" keyword in production features.',
     scoreImpact: '+6 pts',
     original: 'Engineered responsive single-page application with caching and client stores.',
-    proposed: 'Engineered responsive single-page application with TanStack Vue Query caching and Pinia client state management.',
+    proposed:
+      'Engineered responsive single-page application with TanStack Vue Query caching and Pinia client state management.',
     status: 'pending' as 'pending' | 'accepted' | 'rejected',
   },
   {
@@ -57,7 +58,9 @@ function rejectPatch(id: number) {
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
         <div>
           <div class="flex items-center gap-2.5 mb-1.5">
-            <span class="text-xs font-bold text-primary uppercase tracking-wider">Selective AI Patches</span>
+            <span class="text-xs font-bold text-primary uppercase tracking-wider"
+              >Selective AI Patches</span
+            >
             <span class="text-xs text-border-hover">•</span>
             <span class="text-xs font-semibold text-text-muted">Human in the Loop</span>
           </div>
@@ -80,13 +83,11 @@ function rejectPatch(id: number) {
 
     <!-- Patches List -->
     <div class="space-y-6">
-      <Card
-        v-for="patch in patches"
-        :key="patch.id"
-        class="space-y-5 border border-border"
-      >
+      <Card v-for="patch in patches" :key="patch.id" class="space-y-5 border border-border">
         <!-- Patch meta header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-surface-muted">
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-surface-muted"
+        >
           <div class="flex items-center gap-3">
             <GitCompare :size="18" class="text-primary" />
             <span class="text-base font-bold text-text">{{ patch.section }}</span>
@@ -127,14 +128,22 @@ function rejectPatch(id: number) {
         <!-- Diff view -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm font-mono">
           <!-- Current content -->
-          <div class="p-4 sm:p-5 rounded-2xl bg-danger-muted/70 border border-danger-border space-y-1.5">
-            <div class="text-xs font-bold text-danger-text uppercase tracking-wider">Original Text</div>
+          <div
+            class="p-4 sm:p-5 rounded-2xl bg-danger-muted/70 border border-danger-border space-y-1.5"
+          >
+            <div class="text-xs font-bold text-danger-text uppercase tracking-wider">
+              Original Text
+            </div>
             <p class="text-danger-strong leading-relaxed">{{ patch.original }}</p>
           </div>
 
           <!-- Proposed content -->
-          <div class="p-4 sm:p-5 rounded-2xl bg-success-muted/80 border border-success-border space-y-1.5">
-            <div class="text-xs font-bold text-success-text uppercase tracking-wider">Proposed ATS Replacement</div>
+          <div
+            class="p-4 sm:p-5 rounded-2xl bg-success-muted/80 border border-success-border space-y-1.5"
+          >
+            <div class="text-xs font-bold text-success-text uppercase tracking-wider">
+              Proposed ATS Replacement
+            </div>
             <p class="text-success-strong leading-relaxed">{{ patch.proposed }}</p>
           </div>
         </div>

@@ -1,5 +1,10 @@
 import { api } from '@/shared/api/client'
-import type { AuthResponse, LoginCredentials, RegisterCredentials, AuthUser } from '../types/auth.types'
+import type {
+  AuthResponse,
+  LoginCredentials,
+  RegisterCredentials,
+  AuthUser,
+} from '../types/auth.types'
 
 export function login(credentials: LoginCredentials): Promise<AuthResponse> {
   return api<AuthResponse>('/auth/login', { method: 'POST', body: credentials })

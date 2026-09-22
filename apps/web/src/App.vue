@@ -17,9 +17,7 @@ const layoutComponents = {
 
 type LayoutName = keyof typeof layoutComponents
 
-const layout = computed<LayoutName>(
-  () => (route.meta.layout as LayoutName) ?? 'AppLayout',
-)
+const layout = computed<LayoutName>(() => (route.meta.layout as LayoutName) ?? 'AppLayout')
 </script>
 
 <template>

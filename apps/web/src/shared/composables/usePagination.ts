@@ -25,5 +25,16 @@ export function usePagination(initialPage = 1, initialPerPage = 15) {
     total.value = n
   }
 
-  return { page, perPage, total, lastPage, hasNextPage, hasPrevPage, nextPage, prevPage, setPage, setTotal }
+  return {
+    page,
+    perPage,
+    total,
+    lastPage,
+    hasNextPage,
+    hasPrevPage,
+    nextPage,
+    prevPage,
+    setPage,
+    setTotal,
+  }
 }

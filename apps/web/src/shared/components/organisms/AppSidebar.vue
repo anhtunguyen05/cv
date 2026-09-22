@@ -81,7 +81,8 @@ const navItems = [
           :stroke-width="1.5"
           :class="[
             'flex-shrink-0 transition-colors',
-            route.path === item.to || (item.to !== ROUTES.DASHBOARD && route.path.startsWith(item.to))
+            route.path === item.to ||
+            (item.to !== ROUTES.DASHBOARD && route.path.startsWith(item.to))
               ? 'text-primary'
               : 'text-text-subtle group-hover:text-text-quiet',
           ]"
@@ -90,7 +91,10 @@ const navItems = [
 
         <!-- Active indicator pill on left -->
         <span
-          v-if="route.path === item.to || (item.to !== ROUTES.DASHBOARD && route.path.startsWith(item.to))"
+          v-if="
+            route.path === item.to ||
+            (item.to !== ROUTES.DASHBOARD && route.path.startsWith(item.to))
+          "
           class="absolute left-0 top-1.5 bottom-1.5 w-1 bg-primary rounded-r-full"
         />
       </RouterLink>
@@ -104,9 +108,13 @@ const navItems = [
             <Sparkles :size="13" class="text-primary" />
             Match AI Engine
           </span>
-          <span class="text-xs font-medium text-success bg-success-muted px-1.5 py-0.5 rounded-full">v1.0</span>
+          <span class="text-xs font-medium text-success bg-success-muted px-1.5 py-0.5 rounded-full"
+            >v1.0</span
+          >
         </div>
-        <p class="text-xs text-text-muted leading-relaxed">Tailor your CV to beat ATS filters with grounded evidence citations.</p>
+        <p class="text-xs text-text-muted leading-relaxed">
+          Tailor your CV to beat ATS filters with grounded evidence citations.
+        </p>
       </div>
     </div>
   </aside>

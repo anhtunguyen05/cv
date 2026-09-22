@@ -34,7 +34,10 @@ const pingColor = computed(() => {
     <span class="relative flex h-2 w-2">
       <span
         v-if="status === 'active' || status === 'processing'"
-        :class="['animate-ping absolute inline-flex h-full w-full rounded-full opacity-75', pingColor]"
+        :class="[
+          'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
+          pingColor,
+        ]"
       />
       <span :class="['relative inline-flex rounded-full h-2 w-2', dotColor]" />
     </span>
