@@ -13,7 +13,7 @@ story_location: "_bmad-output/planning-artifacts/epics"
 development_status:
   epic-1: in-progress
   1-1-register-an-account: review
-  1-2-sign-in-and-sign-out: backlog
+  1-2-sign-in-and-sign-out: review
   1-3-create-a-cv-profile: backlog
   1-4-manage-cv-summary-and-skills: backlog
   1-5-manage-education-and-experience: backlog

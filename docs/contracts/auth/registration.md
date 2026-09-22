@@ -1,14 +1,18 @@
-# Registration and current-account contract
+# Authentication lifecycle contract
 
-Version: `registration-v1`
+Version: `auth-lifecycle-v2` (revision of `registration-v1`)
 
-Owner: Epic 1, Story 1.1 (`E1-COORD-AUTH-001`)
+Owner: Epic 1, Stories 1.1 and 1.2 (`E1-COORD-AUTH-001`)
 
-This is the approved stable contract for first-party browser registration and
-current-account retrieval. The executable examples live in
+This is the approved stable contract for first-party browser registration,
+authentication, current-account retrieval, sign-out, and session recovery. The
+executable examples live in
 [`fixtures/registration-v1.json`](fixtures/registration-v1.json). Backend and
 frontend verification must consume that corpus instead of defining local
 envelopes, User projections, or authentication behavior.
+
+The legacy filename is retained as the reserved cross-story compatibility path;
+its metadata identifies the `auth-lifecycle-v2` revision.
 
 ## Authentication boundary
 
@@ -19,8 +23,12 @@ envelopes, User projections, or authentication behavior.
   requests. It never stores a bearer token, session cookie, CSRF value,
   password, or password hash in Pinia, localStorage, sessionStorage, analytics,
   or error reports.
+- The CSRF bootstrap establishes the browser `XSRF-TOKEN` cookie. State-changing
+  requests send its decoded synthetic value in `X-CSRF-TOKEN`; fixtures never
+  contain a real token.
 - Registration and login regenerate the session. Logout invalidates the
-  session and regenerates the CSRF token.
+  session and regenerates the CSRF token. A repeated logout with a valid CSRF
+  boundary is idempotent and returns `204`.
 
 ## Public User projection
 
@@ -43,7 +51,9 @@ other security metadata.
 | --- | --- | --- | --- |
 | CSRF bootstrap | `GET /sanctum/csrf-cookie` | Cookie/state established | `419 SESSION_EXPIRED` or safe bootstrap failure; refresh once, then show a recoverable error |
 | Register | `POST /api/v1/auth/register` with `name`, `email`, `password`, `password_confirmation` only | `201`, `{ "data": { "user": PublicUser } }`; `Cache-Control: private, no-store` | `400 INVALID_REQUEST_BODY`, `422 VALIDATION_FAILED`, `409 AUTHENTICATED_REGISTRATION_FORBIDDEN`, `419 SESSION_EXPIRED`, `429 THROTTLED`, or `500 INTERNAL_ERROR` according to the fixture row |
+| Sign in | `POST /api/v1/auth/login` with `email` and `password` only | `200`, `{ "data": { "user": PublicUser } }`; `Cache-Control: private, no-store`; regenerated session | `401 INVALID_CREDENTIALS` for unknown email or wrong password with identical public shape, `419 SESSION_EXPIRED`, `429 THROTTLED`, or `500 INTERNAL_ERROR` according to the fixture row |
 | Current account | `GET /api/v1/auth/me` with the browser session; no User ID payload | `200`, `{ "data": { "user": PublicUser } }`; `Cache-Control: private, no-store` | `401 UNAUTHENTICATED`; clear protected state and redirect to the safe login return path |
+| Sign out | `POST /api/v1/auth/logout` with the approved browser session and CSRF boundary | `204`; session invalidated and CSRF token regenerated | A repeated or guest logout with valid CSRF is also `204`; invalid CSRF is `419 SESSION_EXPIRED` |
 
 All `/api/v1` failures use the common JSON error envelope from
 `docs/contracts/common/http.md`; messages are safe for display and `details`
@@ -66,6 +76,22 @@ is field-keyed for `VALIDATION_FAILED`.
   canonical-email keys: 5 attempts per 10 minutes per IP and 3 attempts per
   10 minutes per email. Rejected and successful attempts count. `429` includes
   `Retry-After`.
+- Sign-in throttling uses Redis-backed, separately hashed trusted-IP and
+  canonical-email keys: 5 attempts per 10 minutes per IP and 3 attempts per 10
+  minutes per email. Rejected and successful attempts count. `429` includes
+  `Retry-After` and does not disclose account existence.
+
+## Sign-in and sign-out rules
+
+- Unknown email and wrong password are externally identical: same status, code,
+  message, response shape, and no User disclosure.
+- Login and logout accept no client-supplied User ID, bearer token, or remember
+  flag. Browser ownership comes only from the Sanctum session.
+- Successful logout changes session access only. It never edits or deletes User,
+  Profile, Version, or other User-owned data.
+- A protected `401` or `419` clears protected Vue Query data and auth state
+  before redirecting to `/login?return_to=<internal-path>`. External return URLs
+  are rejected, and stale in-flight responses cannot repopulate cleared state.
 
 ## Recovery and privacy
 
@@ -75,7 +101,8 @@ is field-keyed for `VALIDATION_FAILED`.
 - Protected-state `401` or `419` clears protected Vue Query data and auth state,
   then redirects to `/login?return_to=<internal-path>`. External return URLs
   are rejected.
-- Registration and current-account responses are private and `no-store`.
+- Registration, sign-in, and current-account responses are private and
+  `no-store`.
 - The fixture corpus is synthetic and contains no real credentials, hashes,
   cookies, CSRF values, bearer tokens, or user data.
 
