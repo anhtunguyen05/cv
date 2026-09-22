@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://careerfitcv.test/contracts/auth/fixtures/registration-v1.json",
+  "contract": "registration-v1",
+  "fixture_version": 1,
+  "references": [
+    "AC-1-1-register-an-account-01",
+    "AC-1-1-register-an-account-02",
+    "AC-1-1-register-an-account-03",
+    "AC-1-1-register-an-account-04",
+    "AC-1-1-register-an-account-05",
+    "E1-DEC-001",
+    "E1-DEC-002",
+    "E1-DEC-007",
+    "E1-DEC-009",
+    "E1-CONTRACT-USER-001",
+    "E1-CONTRACT-AUTH-001",
+    "E1-CONTRACT-ERROR-001",
+    "E1-BR-001",
+    "E1-BR-004",
+    "E1-BR-016",
+    "E1-BR-017",
+    "E1-SEC-001",
+    "E1-SEC-003",
+    "E1-SEC-006",
+    "E1-SEC-007",
+    "E1-SEC-008",
+    "HTTP-CONTRACT-000",
+    "HTTP-CONTRACT-001",
+    "HTTP-CONTRACT-003",
+    "HTTP-CONTRACT-006",
+    "ERROR-STD-002",
+    "VAL-STD-001",
+    "VAL-STD-003",
+    "VAL-STD-005"
+  ],
+  "public_user": {
+    "id": "123",
+    "name": "Nguyen Anh Tu",
+    "email": "nguyen.anhtu@example.test"
+  },
+  "forbidden_response_fields": [
+    "password",
+    "password_hash",
+    "remember_token",
+    "token",
+    "access_token",
+    "session",
+    "csrf_token",
+    "email_verified_at",
+    "security_metadata"
+  ],
+  "fixtures": [
+    {
+      "id": "csrf-bootstrap-success",
+      "ac": ["AC-1-1-register-an-account-01"],
+      "operation": "csrf_bootstrap",
+      "request": {"method": "GET", "path": "/sanctum/csrf-cookie"},
+      "expect": {"status": 204, "client_action": "submit_credentialed_request"}
+    },
+    {
+      "id": "register-valid-guest",
+      "ac": ["AC-1-1-register-an-account-01"],
+      "operation": "register",
+      "precondition": "guest_with_valid_csrf_session",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "body": {"name": " Nguyen Anh Tu ", "email": " Nguyen.Anhtu@Example.Test ", "password": "<synthetic-password>", "password_confirmation": "<synthetic-password>"}},
+      "expect": {"status": 201, "body": {"data": {"user": "public_user"}}, "headers": {"cache_control": "private, no-store"}, "client_action": "store_user_in_memory_and_navigate_dashboard", "forbidden_response_fields": "global"}
+    },
+    {
+      "id": "register-duplicate-email",
+      "ac": ["AC-1-1-register-an-account-02"],
+      "operation": "register",
+      "precondition": "canonical_email_already_exists",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "body": {"name": "Another User", "email": "nguyen.anhtu@example.test", "password": "<synthetic-password>", "password_confirmation": "<synthetic-password>"}},
+      "expect": {"status": 422, "error": {"code": "VALIDATION_FAILED", "details": {"email": "generic_email_error"}}, "client_action": "show_email_error_without_user_data", "creates_user": false}
+    },
+    {
+      "id": "register-concurrent-duplicate-email",
+      "ac": ["AC-1-1-register-an-account-02"],
+      "operation": "register",
+      "precondition": "two_guest_requests_race_on_same_canonical_email",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "body": "valid_registration_body"},
+      "expect": {"winner": {"status": 201, "creates_user": true}, "loser": {"status": 422, "error": {"code": "VALIDATION_FAILED", "details": {"email": "generic_email_error"}}, "creates_user": false}, "client_action": "treat_loser_as_normal_duplicate"}
+    },
+    {
+      "id": "register-invalid-fields",
+      "ac": ["AC-1-1-register-an-account-03"],
+      "operation": "register",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "body": {"name": "", "email": "not-an-email", "password": "", "password_confirmation": "mismatch"}},
+      "expect": {"status": 422, "error": {"code": "VALIDATION_FAILED", "details": {"name": "required", "email": "invalid", "password": "required_or_policy", "password_confirmation": "does_not_match"}}, "client_action": "show_all_field_errors_and_preserve_non_sensitive_input", "creates_user": false}
+    },
+    {
+      "id": "register-password-policy-failure",
+      "ac": ["AC-1-1-register-an-account-04"],
+      "operation": "register",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "body": {"name": "Valid User", "email": "valid@example.test", "password": "short", "password_confirmation": "short"}},
+      "expect": {"status": 422, "error": {"code": "VALIDATION_FAILED", "details": {"password": "min_12_or_max_72"}}, "client_action": "show_safe_password_policy", "creates_user": false}
+    },
+    {
+      "id": "register-malformed-body",
+      "ac": ["AC-1-1-register-an-account-03"],
+      "operation": "register",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "content_type": "application/json", "body": "malformed_json"},
+      "expect": {"status": 400, "error": {"code": "INVALID_REQUEST_BODY"}, "client_action": "show_safe_global_error", "creates_user": false}
+    },
+    {
+      "id": "register-authenticated-caller",
+      "ac": ["AC-1-1-register-an-account-01", "AC-1-1-register-an-account-03"],
+      "operation": "register",
+      "precondition": "authenticated_session",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "body": "valid_registration_body"},
+      "expect": {"status": 409, "error": {"code": "AUTHENTICATED_REGISTRATION_FORBIDDEN"}, "client_action": "preserve_current_identity", "creates_user": false}
+    },
+    {
+      "id": "register-throttled",
+      "ac": ["AC-1-1-register-an-account-03"],
+      "operation": "register",
+      "precondition": "registration_limit_exceeded",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "body": "valid_registration_body"},
+      "expect": {"status": 429, "error": {"code": "THROTTLED"}, "headers": {"retry_after": "positive_seconds"}, "client_action": "show_retryable_throttle_without_auto_retry", "creates_user": false}
+    },
+    {
+      "id": "register-csrf-expired",
+      "ac": ["AC-1-1-register-an-account-03"],
+      "operation": "register",
+      "precondition": "expired_or_invalid_csrf_session",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "body": "valid_registration_body"},
+      "expect": {"status": 419, "error": {"code": "SESSION_EXPIRED"}, "client_action": "refresh_csrf_once_then_show_recoverable_error", "creates_user": false}
+    },
+    {
+      "id": "register-response-lost",
+      "ac": ["AC-1-1-register-an-account-01", "AC-1-1-register-an-account-02"],
+      "operation": "register",
+      "precondition": "persistence_may_have_committed_but_response_is_lost",
+      "request": {"method": "POST", "path": "/api/v1/auth/register", "body": "valid_registration_body"},
+      "expect": {"client_action": "call_current_account_before_explicit_retry", "if_current_account_200": {"action": "navigate_dashboard"}, "if_current_account_401": {"action": "permit_one_explicit_retry"}, "automatic_retry": false}
+    },
+    {
+      "id": "current-account-success",
+      "ac": ["AC-1-1-register-an-account-05"],
+      "operation": "current_account",
+      "precondition": "authenticated_session",
+      "request": {"method": "GET", "path": "/api/v1/auth/me"},
+      "expect": {"status": 200, "body": {"data": {"user": "public_user"}}, "headers": {"cache_control": "private, no-store"}, "forbidden_response_fields": "global"}
+    },
+    {
+      "id": "current-account-unauthenticated",
+      "ac": ["AC-1-1-register-an-account-05"],
+      "operation": "current_account",
+      "precondition": "guest_or_expired_session",
+      "request": {"method": "GET", "path": "/api/v1/auth/me"},
+      "expect": {"status": 401, "error": {"code": "UNAUTHENTICATED"}, "client_action": "clear_protected_state_and_redirect_login", "user_disclosure": false}
+    }
+  ]
+}
