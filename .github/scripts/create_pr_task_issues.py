@@ -231,49 +231,61 @@ def run() -> None:
     event_name = os.environ.get("GITHUB_EVENT_NAME", "pull_request_target")
     pr = event.get("pull_request")
     if event_name == "workflow_dispatch":
-        group_key = os.environ.get("ISSUE_TASK_GROUP", "")
-        if not group_key:
+        requested_group = os.environ.get("ISSUE_TASK_GROUP", "")
+        if not requested_group:
             raise AutomationError("Manual workflow dispatch requires ISSUE_TASK_GROUP")
-        tasks = manifest["groups"].get(group_key)
-        if not isinstance(tasks, list):
-            raise AutomationError(f"Unknown issue task group: {group_key}")
+        if requested_group == "epic-1":
+            selected_groups = sorted(
+                (key, tasks) for key, tasks in manifest["groups"].items() if key.startswith("story-1-")
+            )
+            if not selected_groups:
+                raise AutomationError("Epic 1 has no story task groups")
+        else:
+            tasks = manifest["groups"].get(requested_group)
+            if not isinstance(tasks, list):
+                raise AutomationError(f"Unknown issue task group: {requested_group}")
+            selected_groups = [(requested_group, tasks)]
     else:
         if not isinstance(pr, dict) or not isinstance(pr.get("number"), int):
             raise AutomationError("Expected a pull_request event payload")
         group_key, tasks = selected_group(event, manifest["groups"])
         if group_key is None:
             return
-    if not 1 <= len(tasks) <= 3:
-        raise AutomationError(f"Group {group_key} must contain between 1 and 3 tasks")
-    validate_tasks(tasks)
-    validate_labels(tasks)
+        selected_groups = [(group_key, tasks)]
+
+    for group_key, tasks in selected_groups:
+        if not 1 <= len(tasks) <= 3:
+            raise AutomationError(f"Group {group_key} must contain between 1 and 3 tasks")
+        validate_tasks(tasks)
+        validate_labels(tasks)
 
     existing = all_issues()
     issue_urls: list[str] = []
     skipped_keys: list[str] = []
-    for task in tasks:
-        if not task.get("create", True):
-            print(f"Skipping {task['key']} because create is false")
-            skipped_keys.append(task["key"])
-            continue
-        marker = (
-            issue_marker(pr["number"], task["key"])
-            if pr is not None
-            else manual_issue_marker(group_key, task["key"])
-        )
-        match = next((item for item in existing if marker in (item.get("body") or "")), None)
-        if match is None:
-            payload = {
-                "title": task["title"].strip(),
-                "body": make_issue_body(task, marker, pr),
-                "labels": task.get("labels", []),
-            }
-            match = api_request("POST", "issues", payload)
-            existing.append(match)
-            print(f"Created {task['key']}: {match['html_url']}")
-        else:
-            print(f"Found existing {task['key']}: {match['html_url']}")
-        issue_urls.append(f"- `{task['key']}`: {match['html_url']}")
+    for group_key, tasks in selected_groups:
+        for task in tasks:
+            if not task.get("create", True):
+                print(f"Skipping {task['key']} because create is false")
+                skipped_keys.append(task["key"])
+                continue
+            marker = (
+                issue_marker(pr["number"], task["key"])
+                if pr is not None
+                else manual_issue_marker(group_key, task["key"])
+            )
+            match = next((item for item in existing if marker in (item.get("body") or "")), None)
+            if match is None:
+                payload = {
+                    "title": task["title"].strip(),
+                    "body": make_issue_body(task, marker, pr),
+                    "labels": task.get("labels", []),
+                }
+                match = api_request("POST", "issues", payload)
+                existing.append(match)
+                print(f"Created {task['key']}: {match['html_url']}")
+            else:
+                print(f"Found existing {task['key']}: {match['html_url']}")
+            issue_urls.append(f"- `{task['key']}`: {match['html_url']}")
     if pr is None:
         print("Task issues provisioned by manual workflow dispatch:")
         for issue_url in issue_urls:

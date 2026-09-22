@@ -12,7 +12,8 @@ the Actions `workflow_dispatch` form without a PR:
 The marker value selects a group from `.github/pr-issue-tasks.json`. Unknown or
 repeated markers fail without creating issues. PRs without a marker are left
 alone. For manual provisioning, select one `story-1-*` group in the Actions
-form. A group contains one to three task records. Each record creates at most
+form. Select `epic-1` to provision all eight Epic 1 Story groups in one run, or
+select one Story group. A group contains one to three task records. Each record creates at most
 one issue; `create: false` records are skipped. The workflow does not create
 child issues.
 
@@ -98,8 +99,9 @@ closed issues, for that marker. This makes manual reruns and retries
 idempotent. Editing a PR description can run the workflow again, but existing
 markers prevent duplicate issues. Manual dispatch uses a group/key marker in
 each issue, so it does not require a placeholder PR. Run one Story group at a
-time; Epic 1 is split into eight `story-1-*` groups because each group is
-limited to three tasks. Concurrency is serialized per PR or Story group. The
+time when provisioning a single Story; `epic-1` provisions all eight groups in
+one run while preserving each Story/task marker. Epic 1 is split into eight
+`story-1-*` groups because each group is limited to three tasks. Concurrency is serialized per PR or Story group. The
 PR summary comment is only updated for PR-triggered runs.
 
 ## Maintaining the registry

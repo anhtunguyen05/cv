@@ -10,6 +10,7 @@ on:
         required: true
         type: choice
         options:
+          - epic-1
           - story-1-1
           - story-1-2
           - story-1-3
