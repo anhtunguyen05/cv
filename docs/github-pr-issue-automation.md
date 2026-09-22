@@ -86,8 +86,10 @@ that should be skipped for this group.
 The workflow uses `pull_request_target` so it can create issues for fork PRs.
 It checks out the PR base commit, where the trusted workflow configuration and
 script live, and never checks out or executes PR-head code. It uses the
-repository `GITHUB_TOKEN` with read access to contents and pull requests and
-write access to Issues. Keep workflow changes under normal review.
+repository `GITHUB_TOKEN` with read access to contents and write access to
+Issues and pull requests. Pull request write access is required for the summary
+comment; creating task Issues separately uses Issues write access. Keep
+workflow changes under normal review.
 
 Each created issue has a hidden marker containing the PR number and task key.
 Before creating an issue, the script checks all existing issues, including
