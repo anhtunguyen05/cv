@@ -6,18 +6,18 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
 
 **Execution:**
 
-- [ ] TASK-1-2-01: Freeze authentication lifecycle fixtures
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
+- [x] TASK-1-2-01: Freeze authentication lifecycle fixtures
+  - Status: `done`
+  - Owner: `Codex`
+  - Branch/worktree: `feat/task-1-2-01-auth-lifecycle-fixtures`
   - Depends on: `none`
   - Covers: `AC-1-2-sign-in-and-sign-out-01`, `AC-1-2-sign-in-and-sign-out-02`, `AC-1-2-sign-in-and-sign-out-03`, `AC-1-2-sign-in-and-sign-out-04`, `AC-1-2-sign-in-and-sign-out-05`
-  - Scope: 01. Extend executable auth fixtures for login/logout/expiry: stable auth contract fixtures
+  - Scope: 01. Revise `docs/contracts/auth/registration.md` as the shared auth lifecycle contract without creating a second corpus. | 02. Extend `docs/contracts/auth/fixtures/registration-v1.json` with login, generic invalid-credential, sign-in throttle, logout idempotency, CSRF/session expiry, protected-state clearing, stale-response, redaction, and data-preservation rows while preserving Story 1.1 semantics. | 03. Record the approved revision metadata, limiter policy, logout policy, owner, branch, and verification evidence.
   - Coordination: `E1-COORD-AUTH-001`
-  - Blocked by: `E1-DEC-001`; `E1-DEC-002`; `E1-DEC-007`; `E1-DEC-009`
-  - Outcome: 01. Extend executable auth fixtures for login/logout/expiry: Extend executable auth fixtures for login/logout/expiry.
-  - Acceptance: 01. Extend executable auth fixtures for login/logout/expiry: one fixture set defines every operation and recovery classification.
-  - Verification: 01. Extend executable auth fixtures for login/logout/expiry: syntax and cross-story contract review.
+  - Blocked by: `none`; `E1-DEC-001`, `E1-DEC-002`, `E1-DEC-007`, and `E1-DEC-009` are resolved for this fixture revision.
+  - Outcome: One versioned fixture set defines registration, login, current-account, logout, expiry, and recovery classification for both backend and frontend consumers.
+  - Acceptance: The revised contract and corpus preserve all Story 1.1 rows, cover all five Story 1.2 ACs, make unknown-email and wrong-password failures identical, define the approved sign-in limiter and idempotent logout behavior, and assert public User redaction plus stale protected-state clearing.
+  - Verification: Node structural audit passed with `auth-lifecycle` fixture version 2, 24 unique rows, all six required operations, all five Story 1.2 AC mappings, and public User keys exactly `email,id,name`; forbidden credential fields were absent. `git diff --check` passed. Manual review confirmed existing Story 1.1 rows retain their semantics and the revised contract/fixture agree on limiter, logout idempotency, redaction, and expiry recovery.
 
 - [ ] TASK-1-2-02: Deliver secure session lifecycle backend
   - Status: `todo`

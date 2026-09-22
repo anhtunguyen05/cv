@@ -1,8 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://careerfitcv.test/contracts/auth/fixtures/registration-v1.json",
-  "contract": "registration-v1",
-  "fixture_version": 1,
+  "contract": "auth-lifecycle",
+  "fixture_version": 2,
+  "contract_revision": "auth-lifecycle-v2",
+  "previous_contract": "registration-v1",
   "references": [
     "AC-1-1-register-an-account-01",
     "AC-1-1-register-an-account-02",
@@ -137,19 +139,120 @@
     },
     {
       "id": "current-account-success",
-      "ac": ["AC-1-1-register-an-account-05"],
+      "ac": ["AC-1-1-register-an-account-05", "AC-1-2-sign-in-and-sign-out-03"],
       "operation": "current_account",
       "precondition": "authenticated_session",
+      "references": ["E1-DEC-001", "E1-DEC-007", "E1-DEC-009", "E1-CONTRACT-USER-001"],
       "request": {"method": "GET", "path": "/api/v1/auth/me"},
       "expect": {"status": 200, "body": {"data": {"user": "public_user"}}, "headers": {"cache_control": "private, no-store"}, "forbidden_response_fields": "global"}
     },
     {
       "id": "current-account-unauthenticated",
-      "ac": ["AC-1-1-register-an-account-05"],
+      "ac": ["AC-1-1-register-an-account-05", "AC-1-2-sign-in-and-sign-out-03", "AC-1-2-sign-in-and-sign-out-05"],
       "operation": "current_account",
       "precondition": "guest_or_expired_session",
+      "references": ["E1-DEC-007", "E1-DEC-009", "E1-SEC-008"],
       "request": {"method": "GET", "path": "/api/v1/auth/me"},
       "expect": {"status": 401, "error": {"code": "UNAUTHENTICATED"}, "client_action": "clear_protected_state_and_redirect_login", "user_disclosure": false}
+    },
+    {
+      "id": "login-valid-credentials",
+      "ac": ["AC-1-2-sign-in-and-sign-out-01"],
+      "references": ["E1-DEC-001", "E1-DEC-002", "E1-DEC-009", "E1-SEC-001", "E1-SEC-007"],
+      "operation": "login",
+      "precondition": "guest_with_valid_csrf_session_and_existing_account",
+      "request": {"method": "POST", "path": "/api/v1/auth/login", "headers": {"X-CSRF-TOKEN": "<synthetic-csrf-token>"}, "body": {"email": "existing@example.test", "password": "<synthetic-password>"}},
+      "expect": {"status": 200, "body": {"data": {"user": "public_user"}}, "headers": {"cache_control": "private, no-store"}, "session": {"regenerated": true, "authenticated": true}, "client_action": "store_public_user_and_navigate_dashboard", "forbidden_response_fields": "global"}
+    },
+    {
+      "id": "login-unknown-email",
+      "ac": ["AC-1-2-sign-in-and-sign-out-02"],
+      "references": ["E1-DEC-002", "E1-DEC-009", "E1-SEC-002"],
+      "operation": "login",
+      "precondition": "guest_with_valid_csrf_session_and_unknown_email",
+      "request": {"method": "POST", "path": "/api/v1/auth/login", "headers": {"X-CSRF-TOKEN": "<synthetic-csrf-token>"}, "body": {"email": "unknown@example.test", "password": "<synthetic-password>"}},
+      "expect": {"status": 401, "error": {"code": "INVALID_CREDENTIALS", "message": "generic_invalid_credentials", "shape": "login-invalid-credential"}, "client_action": "show_generic_login_error", "authenticated": false, "user_disclosure": false}
+    },
+    {
+      "id": "login-wrong-password",
+      "ac": ["AC-1-2-sign-in-and-sign-out-02"],
+      "references": ["E1-DEC-002", "E1-DEC-009", "E1-SEC-002"],
+      "operation": "login",
+      "precondition": "guest_with_valid_csrf_session_and_existing_email",
+      "request": {"method": "POST", "path": "/api/v1/auth/login", "headers": {"X-CSRF-TOKEN": "<synthetic-csrf-token>"}, "body": {"email": "existing@example.test", "password": "<wrong-synthetic-password>"}},
+      "expect": {"status": 401, "error": {"code": "INVALID_CREDENTIALS", "message": "generic_invalid_credentials", "shape": "login-invalid-credential"}, "same_public_failure_as": "login-unknown-email", "client_action": "show_generic_login_error", "authenticated": false, "user_disclosure": false}
+    },
+    {
+      "id": "login-invalid-fields",
+      "ac": ["AC-1-2-sign-in-and-sign-out-02"],
+      "references": ["E1-DEC-002", "E1-DEC-009", "VAL-STD-001", "VAL-STD-005"],
+      "operation": "login",
+      "precondition": "guest_with_valid_csrf_session",
+      "request": {"method": "POST", "path": "/api/v1/auth/login", "body": {"email": "not-an-email", "password": ""}},
+      "expect": {"status": 422, "error": {"code": "VALIDATION_FAILED", "details": {"email": "invalid", "password": "required"}}, "client_action": "show_field_errors", "authenticated": false}
+    },
+    {
+      "id": "login-malformed-body",
+      "ac": ["AC-1-2-sign-in-and-sign-out-02"],
+      "references": ["E1-DEC-009", "HTTP-CONTRACT-001"],
+      "operation": "login",
+      "precondition": "guest_with_valid_csrf_session",
+      "request": {"method": "POST", "path": "/api/v1/auth/login", "content_type": "application/json", "body": "malformed_json"},
+      "expect": {"status": 400, "error": {"code": "INVALID_REQUEST_BODY"}, "client_action": "show_safe_global_error", "authenticated": false}
+    },
+    {
+      "id": "login-throttled",
+      "ac": ["AC-1-2-sign-in-and-sign-out-02"],
+      "references": ["E1-DEC-002", "E1-SEC-006"],
+      "operation": "login",
+      "precondition": "sign_in_limit_exceeded_by_hashed_ip_or_email_key",
+      "request": {"method": "POST", "path": "/api/v1/auth/login", "body": "valid_login_body"},
+      "expect": {"status": 429, "error": {"code": "THROTTLED"}, "headers": {"retry_after": "positive_seconds"}, "client_action": "show_retryable_throttle_without_auto_retry", "user_disclosure": false}
+    },
+    {
+      "id": "logout-authenticated",
+      "ac": ["AC-1-2-sign-in-and-sign-out-04"],
+      "references": ["E1-DEC-001", "E1-DEC-009", "E1-BR-005", "E1-SEC-001", "E1-SEC-008"],
+      "operation": "logout",
+      "precondition": "authenticated_session_with_valid_csrf",
+      "request": {"method": "POST", "path": "/api/v1/auth/logout", "headers": {"X-CSRF-TOKEN": "<synthetic-csrf-token>"}, "body": {}},
+      "expect": {"status": 204, "body": null, "session": {"invalidated": true, "csrf_regenerated": true}, "client_action": "clear_auth_and_protected_cache_and_navigate_login", "user_data": "unchanged", "protected_requests_after_logout": "rejected"}
+    },
+    {
+      "id": "logout-already-invalidated",
+      "ac": ["AC-1-2-sign-in-and-sign-out-04"],
+      "references": ["E1-DEC-009", "E1-BR-005"],
+      "operation": "logout",
+      "precondition": "guest_or_already_invalidated_session_with_valid_csrf",
+      "request": {"method": "POST", "path": "/api/v1/auth/logout", "headers": {"X-CSRF-TOKEN": "<synthetic-csrf-token>"}, "body": {}},
+      "expect": {"status": 204, "body": null, "idempotent": true, "client_action": "clear_auth_and_protected_cache_and_navigate_login", "user_data": "unchanged"}
+    },
+    {
+      "id": "logout-invalid-csrf",
+      "ac": ["AC-1-2-sign-in-and-sign-out-04", "AC-1-2-sign-in-and-sign-out-05"],
+      "references": ["E1-DEC-001", "E1-DEC-009"],
+      "operation": "logout",
+      "precondition": "authenticated_session_with_invalid_or_expired_csrf",
+      "request": {"method": "POST", "path": "/api/v1/auth/logout", "body": {}},
+      "expect": {"status": 419, "error": {"code": "SESSION_EXPIRED"}, "client_action": "clear_protected_state_and_redirect_login", "user_data": "unchanged"}
+    },
+    {
+      "id": "protected-request-expired-session",
+      "ac": ["AC-1-2-sign-in-and-sign-out-05"],
+      "references": ["E1-DEC-007", "E1-BR-005", "E1-SEC-008"],
+      "operation": "protected_request",
+      "precondition": "session_expired_during_protected_work",
+      "request": {"method": "GET", "path": "/api/v1/auth/me"},
+      "expect": {"status": 401, "error": {"code": "UNAUTHENTICATED"}, "client_action_order": ["clear_protected_query_data", "clear_auth_state", "discard_stale_response", "redirect_to_safe_internal_login"], "protected_data_displayed": false}
+    },
+    {
+      "id": "stale-response-after-auth-clear",
+      "ac": ["AC-1-2-sign-in-and-sign-out-05"],
+      "references": ["E1-DEC-007", "E1-UX-005", "E1-SEC-008"],
+      "operation": "protected_request",
+      "precondition": "in_flight_protected_response_arrives_after_logout_or_expiry",
+      "request": {"method": "GET", "path": "/api/v1/auth/me"},
+      "expect": {"client_action": "discard_response_without_repopulating_auth_or_protected_cache", "protected_data_displayed": false}
     }
   ]
 }
