@@ -22,9 +22,17 @@ final class AuthLifecycleTest extends TestCase
         parent::setUp();
 
         ThrottleRequests::shouldHashKeys(false);
-        $fixturePath = (string) ($_ENV['AUTH_CONTRACT_FIXTURE_PATH'] ?? dirname(base_path(), 2).'/docs/contracts/auth/fixtures/registration-v1.json');
-        if (! is_file($fixturePath) || ! is_readable($fixturePath)) {
-            self::fail('Authentication fixture is unavailable or unreadable: '.$fixturePath);
+        $configuredFixturePath = (string) ($_ENV['AUTH_CONTRACT_FIXTURE_PATH'] ?? '');
+        $fixtureCandidates = array_filter([
+            $configuredFixturePath,
+            dirname(base_path(), 2).'/docs/contracts/auth/fixtures/registration-v1.json',
+        ]);
+        $fixturePath = current(array_filter(
+            $fixtureCandidates,
+            static fn (string $path): bool => is_file($path) && is_readable($path),
+        ));
+        if ($fixturePath === false) {
+            self::fail('Authentication fixture is unavailable. Checked: '.implode(', ', $fixtureCandidates));
         }
 
         $this->fixture = json_decode(
