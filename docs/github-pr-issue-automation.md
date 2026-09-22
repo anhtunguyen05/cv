@@ -1,9 +1,9 @@
-# GitHub PR Task Issue Automation
+# GitHub Task Issue Automation
 
-The workflow at `.github/workflows/create-pr-task-issues.yml` creates GitHub
-Issues when a pull request is opened or its title/description is edited. It
-does not run for PR reopen or synchronization events. This allows a marker to
-be added after opening while keeping the workflow opt-in:
+The workflow at `.github/workflows/create-pr-task-issues.yml` supports two
+opt-in modes. It creates GitHub Issues when a pull request is opened or its
+title/description is edited, and it can provision a Story group directly from
+the Actions `workflow_dispatch` form without a PR:
 
 ```markdown
 <!-- issue-tasks: story-1-1 -->
@@ -11,7 +11,8 @@ be added after opening while keeping the workflow opt-in:
 
 The marker value selects a group from `.github/pr-issue-tasks.json`. Unknown or
 repeated markers fail without creating issues. PRs without a marker are left
-alone. A group contains one to three task records. Each record creates at most
+alone. For manual provisioning, select one `story-1-*` group in the Actions
+form. A group contains one to three task records. Each record creates at most
 one issue; `create: false` records are skipped. The workflow does not create
 child issues.
 
@@ -95,8 +96,11 @@ Each created issue has a hidden marker containing the PR number and task key.
 Before creating an issue, the script checks all existing issues, including
 closed issues, for that marker. This makes manual reruns and retries
 idempotent. Editing a PR description can run the workflow again, but existing
-markers prevent duplicate issues. Concurrency is serialized per PR. The PR summary comment is also
-updated in place when it already exists.
+markers prevent duplicate issues. Manual dispatch uses a group/key marker in
+each issue, so it does not require a placeholder PR. Run one Story group at a
+time; Epic 1 is split into eight `story-1-*` groups because each group is
+limited to three tasks. Concurrency is serialized per PR or Story group. The
+PR summary comment is only updated for PR-triggered runs.
 
 ## Maintaining the registry
 

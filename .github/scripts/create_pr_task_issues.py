@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create one idempotent GitHub issue per configured task group on PR open."""
+"""Create idempotent GitHub issues from PR markers or manual workflow dispatch."""
 
 from __future__ import annotations
 
@@ -170,7 +170,11 @@ def issue_marker(pr_number: int, key: str) -> str:
     return f"<!-- careerfitcv-pr-task: {pr_number}-{key} -->"
 
 
-def make_issue_body(task: dict[str, Any], marker: str, pr: dict[str, Any]) -> str:
+def manual_issue_marker(group_key: str, key: str) -> str:
+    return f"<!-- careerfitcv-manual-task: {group_key}-{key} -->"
+
+
+def make_issue_body(task: dict[str, Any], marker: str, pr: dict[str, Any] | None) -> str:
     lines = [
         f"Automation key: `{task['key']}`",
         f"Source: `{task['source']}`",
@@ -178,15 +182,25 @@ def make_issue_body(task: dict[str, Any], marker: str, pr: dict[str, Any]) -> st
         task["description"].strip(),
     ]
     if task["source"] == "canonical":
+        if pr is not None:
+            canonical_url = f"{pr['base']['repo']['html_url']}/blob/{pr['base']['sha']}/{task['task_file']}"
+        else:
+            repository = os.environ["GITHUB_REPOSITORY"]
+            revision = os.environ.get("GITHUB_SHA", "main")
+            canonical_url = f"https://github.com/{repository}/blob/{revision}/{task['task_file']}"
         lines.extend(
             [
                 f"Story: `{task['story']}`",
-                f"Canonical task: [`{task['key']}`]({pr['base']['repo']['html_url']}/blob/{pr['base']['sha']}/{task['task_file']})",
+                f"Canonical task: [`{task['key']}`]({canonical_url})",
             ]
         )
     else:
         lines.append(f"Reason: {task['reason'].strip()}")
-    lines.extend([f"Created for PR: [#{pr['number']}]({pr['html_url']})", "", marker])
+    if pr is not None:
+        lines.append(f"Created for PR: [#{pr['number']}]({pr['html_url']})")
+    else:
+        lines.append("Created by manual workflow dispatch.")
+    lines.extend(["", marker])
     return "\n".join(lines)
 
 
@@ -213,14 +227,24 @@ def upsert_pr_comment(pr_number: int, marker: str, message: str) -> None:
 def run() -> None:
     event_path = Path(os.environ["GITHUB_EVENT_PATH"])
     event = json.loads(event_path.read_text(encoding="utf-8"))
-    pr = event.get("pull_request")
-    if not isinstance(pr, dict) or not isinstance(pr.get("number"), int):
-        raise AutomationError("Expected a pull_request event payload")
-
     manifest = load_manifest()
-    group_key, tasks = selected_group(event, manifest["groups"])
-    if group_key is None:
-        return
+    event_name = os.environ.get("GITHUB_EVENT_NAME", "pull_request_target")
+    pr = event.get("pull_request")
+    if event_name == "workflow_dispatch":
+        group_key = os.environ.get("ISSUE_TASK_GROUP", "")
+        if not group_key:
+            raise AutomationError("Manual workflow dispatch requires ISSUE_TASK_GROUP")
+        tasks = manifest["groups"].get(group_key)
+        if not isinstance(tasks, list):
+            raise AutomationError(f"Unknown issue task group: {group_key}")
+    else:
+        if not isinstance(pr, dict) or not isinstance(pr.get("number"), int):
+            raise AutomationError("Expected a pull_request event payload")
+        group_key, tasks = selected_group(event, manifest["groups"])
+        if group_key is None:
+            return
+    if not 1 <= len(tasks) <= 3:
+        raise AutomationError(f"Group {group_key} must contain between 1 and 3 tasks")
     validate_tasks(tasks)
     validate_labels(tasks)
 
@@ -232,7 +256,11 @@ def run() -> None:
             print(f"Skipping {task['key']} because create is false")
             skipped_keys.append(task["key"])
             continue
-        marker = issue_marker(pr["number"], task["key"])
+        marker = (
+            issue_marker(pr["number"], task["key"])
+            if pr is not None
+            else manual_issue_marker(group_key, task["key"])
+        )
         match = next((item for item in existing if marker in (item.get("body") or "")), None)
         if match is None:
             payload = {
@@ -246,6 +274,12 @@ def run() -> None:
         else:
             print(f"Found existing {task['key']}: {match['html_url']}")
         issue_urls.append(f"- `{task['key']}`: {match['html_url']}")
+    if pr is None:
+        print("Task issues provisioned by manual workflow dispatch:")
+        for issue_url in issue_urls:
+            print(issue_url)
+        return
+
     map_marker = f"<!-- careerfitcv-task-issue-map: {pr['number']} -->"
     summary = "\n".join(
         [
