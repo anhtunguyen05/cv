@@ -19,8 +19,11 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`; this story package does not carry a second lifecycle status.
 
-**Planning blockers:** `E1-DEC-001`, `E1-DEC-002`, `E1-DEC-007` through
-`E1-DEC-009` block readiness approval. No implementation is authorized.
+**Planning status:** The account decisions `E1-DEC-001`, `E1-DEC-002`,
+`E1-DEC-007`, and `E1-DEC-009`, plus the `E1-COORD-AUTH-001` fixture boundary,
+are resolved by the user-delegated planning decisions dated 2026-09-22. The
+contract/fixture slice is complete for `TASK-1-1-01`; runtime Laravel/Vue
+implementation remains owned by `TASK-1-1-02` and `TASK-1-1-03`.
 
 ## Package map
 

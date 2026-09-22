@@ -19,6 +19,28 @@ Return to the [story overview](README.md). This file owns only the Story-specifi
 - Retryable, terminal, stale, expired-session, and ambiguous-success outcomes remain distinct.
 - A story implementation may not introduce a local envelope, error code, User/Profile/Version shape, or authentication mechanism.
 
+## TASK-1-1-01 fixture boundary
+
+The contract document and executable fixture corpus produced by
+`TASK-1-1-01` are the cross-layer source for the registration and
+current-account examples. They must pin, after approval of the blocking Epic
+decisions, the request fields and normalization, success and failure status,
+the common envelope, stable `code`, field-keyed `details`, relevant cache and
+CSRF/session behavior, and the client action for each matrix row. The corpus
+must include valid, duplicate/concurrent duplicate, invalid/missing/password
+policy, malformed, throttled, authenticated-caller, session/CSRF failure,
+lost-response reconciliation, current-account success, and unauthenticated
+cases.
+
+Fixtures are synthetic and versioned. They must assert that the public User
+projection contains only the approved public fields and never contains a
+password, password hash, remember token, bearer token, session cookie, CSRF
+material, or internal security metadata. Backend and frontend tasks consume
+these fixtures; neither may define a local response envelope or authentication
+mechanism. The current scaffold's `/auth/*` plus bearer-token shape is not an
+approved target and must be treated as a migration input, not copied into the
+fixture contract.
+
 ## Approval boundary
 
 Before this story moves to `ready-for-dev`, every decision referenced by this contract must contain an approved resolution, owner, and dated evidence. The stable subset is then promoted to `docs/contracts/`; executable fixtures consume that source instead of redefining it here.
