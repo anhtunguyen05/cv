@@ -21,6 +21,11 @@ Do not add sprint or task entries under `development_status` in
 
 ## External issue mapping
 
+For PR-opened GitHub issue automation, see
+[`docs/github-pr-issue-automation.md`](../../../docs/github-pr-issue-automation.md).
+That manifest selects which issues automation creates; it does not duplicate
+task lifecycle or replace the canonical mapping recorded with each Story task.
+
 Story task keys such as `TASK-1-1-01` are permanent cross-references for GitHub
 Issues or Jira. The task's `tasks.md` is the task-level source of truth. When an
 external issue is explicitly requested and the platform is selected, record

@@ -20,6 +20,11 @@ implementation evidence during planning.
 | `_bmad-output/planning-artifacts/epics/<epic-key>/stories/<story-key>/` | One permanent Story content/task/evidence package | A duplicate Story lifecycle status |
 | `_bmad-output/implementation-artifacts/sprint-status.yaml` | Epic and Story lifecycle | Sprint membership or task status |
 | `_bmad-output/implementation-artifacts/sprints/<sprint-id>.md` | Sprint goal, dates, capacity, constraints, refinement keys, and committed keys | Story or task status |
+| `.github/pr-issue-tasks.json` | Which configured task issues are created for a PR-open marker | Canonical task definitions or task lifecycle |
+
+GitHub PR issue automation and its ad hoc task boundary are defined in
+[`github-pr-issue-automation.md`](github-pr-issue-automation.md). Canonical
+task definitions and lifecycle remain in each Story's `tasks.md`.
 
 Current Story status is always read from `sprint-status.yaml`. Current task
 status is always read from the Story's `tasks.md`. A sprint charter links those
