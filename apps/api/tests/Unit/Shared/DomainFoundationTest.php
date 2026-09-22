@@ -33,13 +33,9 @@ final class DomainFoundationTest extends TestCase
     }
 }
 
-final class TestEntity extends BaseEntity
-{
-}
+final class TestEntity extends BaseEntity {}
 
-final class OtherTestEntity extends BaseEntity
-{
-}
+final class OtherTestEntity extends BaseEntity {}
 
 final class TestAggregate extends AggregateRoot
 {
@@ -49,6 +45,4 @@ final class TestAggregate extends AggregateRoot
     }
 }
 
-final readonly class TestEvent extends DomainEvent
-{
-}
+final readonly class TestEvent extends DomainEvent {}

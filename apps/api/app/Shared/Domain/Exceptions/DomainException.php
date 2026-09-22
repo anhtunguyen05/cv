@@ -6,6 +6,4 @@ namespace App\Shared\Domain\Exceptions;
 
 use RuntimeException;
 
-abstract class DomainException extends RuntimeException
-{
-}
+abstract class DomainException extends RuntimeException {}

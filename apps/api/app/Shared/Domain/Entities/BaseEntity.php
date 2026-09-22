@@ -8,8 +8,7 @@ abstract class BaseEntity
 {
     public function __construct(
         protected readonly string $id,
-    ) {
-    }
+    ) {}
 
     public function id(): string
     {

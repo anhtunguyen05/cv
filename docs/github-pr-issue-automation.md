@@ -1,9 +1,9 @@
 # GitHub PR Task Issue Automation
 
 The workflow at `.github/workflows/create-pr-task-issues.yml` creates GitHub
-Issues when a pull request is opened. It runs only for the `opened` event; PR
-reopen, synchronization, and later edits do not trigger it. A PR must include
-one marker in its description to select configured tasks:
+Issues when a pull request is opened or its title/description is edited. It
+does not run for PR reopen or synchronization events. This allows a marker to
+be added after opening while keeping the workflow opt-in:
 
 ```markdown
 <!-- issue-tasks: story-1-1 -->
@@ -92,7 +92,8 @@ write access to Issues. Keep workflow changes under normal review.
 Each created issue has a hidden marker containing the PR number and task key.
 Before creating an issue, the script checks all existing issues, including
 closed issues, for that marker. This makes manual reruns and retries
-idempotent. Concurrency is serialized per PR. The PR summary comment is also
+idempotent. Editing a PR description can run the workflow again, but existing
+markers prevent duplicate issues. Concurrency is serialized per PR. The PR summary comment is also
 updated in place when it already exists.
 
 ## Maintaining the registry

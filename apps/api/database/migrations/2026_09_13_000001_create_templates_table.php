@@ -50,16 +50,16 @@ return new class extends Migration
 
         // Seed the single MVP template
         DB::table('templates')->insert([
-            'id'            => \Illuminate\Support\Str::ulid(),
-            'name'          => 'Clean Modern',
-            'slug'          => 'clean-modern',
-            'version'       => '1.0.0',
-            'is_active'     => true,
-            'description'   => 'A clean, professional single-column CV template.',
+            'id' => Str::ulid(),
+            'name' => 'Clean Modern',
+            'slug' => 'clean-modern',
+            'version' => '1.0.0',
+            'is_active' => true,
+            'description' => 'A clean, professional single-column CV template.',
             'layout_config' => json_encode([
-                'font_family'    => 'Inter, sans-serif',
-                'primary_color'  => '#1e293b',
-                'section_order'  => ['personal_info', 'summary', 'experience', 'projects', 'education', 'skills', 'certificates', 'languages', 'activities'],
+                'font_family' => 'Inter, sans-serif',
+                'primary_color' => '#1e293b',
+                'section_order' => ['personal_info', 'summary', 'experience', 'projects', 'education', 'skills', 'certificates', 'languages', 'activities'],
                 'page_margin_mm' => 20,
             ]),
             'created_at' => now(),

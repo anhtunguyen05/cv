@@ -42,6 +42,11 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Prepare Laravel test environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force --no-interaction
+
       - name: Check PHP formatting
         run: vendor/bin/pint --test
 
