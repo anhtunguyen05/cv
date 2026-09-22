@@ -26,7 +26,7 @@ return new class extends Migration
     public function up(): void
     {
         // Add DEFERRABLE FK — not expressible via Blueprint
-        DB::statement(<<<SQL
+        DB::statement(<<<'SQL'
             ALTER TABLE job_descriptions
             ADD CONSTRAINT job_descriptions_current_revision_id_fk
             FOREIGN KEY (current_revision_id)

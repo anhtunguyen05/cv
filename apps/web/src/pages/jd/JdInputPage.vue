@@ -49,7 +49,11 @@ function loadSample() {
   onInput()
 }
 
-const { mutate: submit, isPending, error } = useMutation({
+const {
+  mutate: submit,
+  isPending,
+  error,
+} = useMutation({
   mutationFn: () =>
     createJobDescription({
       raw_text: rawText.value,
@@ -76,11 +80,16 @@ function handleSubmit() {
     <!-- Header -->
     <div class="pb-4 border-b border-border/80">
       <div class="flex items-center gap-2 mb-1.5">
-        <RouterLink to="/dashboard" class="text-xs text-text-muted hover:text-text transition-colors">
+        <RouterLink
+          to="/dashboard"
+          class="text-xs text-text-muted hover:text-text transition-colors"
+        >
           Dashboard
         </RouterLink>
         <span class="text-xs text-border-hover">/</span>
-        <span class="text-xs sm:text-xs font-bold text-primary uppercase tracking-wider">Job Description Ingestion</span>
+        <span class="text-xs sm:text-xs font-bold text-primary uppercase tracking-wider"
+          >Job Description Ingestion</span
+        >
       </div>
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">
         Analyze Job Description
@@ -100,13 +109,19 @@ function handleSubmit() {
           class="p-3.5 sm:p-4 rounded-xl bg-danger-muted border border-danger-border text-xs sm:text-sm text-danger-hover"
           role="alert"
         >
-          {{ (error as Error).message || 'Note: Connecting with offline demo fallback for match report.' }}
+          {{
+            (error as Error).message ||
+            'Note: Connecting with offline demo fallback for match report.'
+          }}
         </div>
 
         <!-- Role Metadata Fields -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           <div class="flex flex-col gap-1.5">
-            <label for="company" class="text-xs sm:text-sm font-semibold text-text flex items-center gap-2">
+            <label
+              for="company"
+              class="text-xs sm:text-sm font-semibold text-text flex items-center gap-2"
+            >
               <Building2 :size="15" class="text-text-muted" />
               Company Name
             </label>
@@ -120,7 +135,10 @@ function handleSubmit() {
           </div>
 
           <div class="flex flex-col gap-1.5">
-            <label for="job-title" class="text-xs sm:text-sm font-semibold text-text flex items-center gap-2">
+            <label
+              for="job-title"
+              class="text-xs sm:text-sm font-semibold text-text flex items-center gap-2"
+            >
               <Briefcase :size="15" class="text-text-muted" />
               Target Role Title
             </label>
@@ -137,7 +155,10 @@ function handleSubmit() {
         <!-- JD Textarea with character counter -->
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
-            <label for="jd-text" class="text-xs sm:text-sm font-semibold text-text flex items-center gap-2">
+            <label
+              for="jd-text"
+              class="text-xs sm:text-sm font-semibold text-text flex items-center gap-2"
+            >
               <FileText :size="15" class="text-text-muted" />
               Job Posting Content <span class="text-danger">*</span>
             </label>
@@ -162,10 +183,18 @@ function handleSubmit() {
 
           <!-- Length validation progress -->
           <div class="flex items-center justify-between text-xs pt-1">
-            <span :class="charCount < MIN_CHARS ? 'text-warning font-mono font-semibold' : 'text-success-hover font-mono font-semibold'">
+            <span
+              :class="
+                charCount < MIN_CHARS
+                  ? 'text-warning font-mono font-semibold'
+                  : 'text-success-hover font-mono font-semibold'
+              "
+            >
               {{ charCount }} / {{ MIN_CHARS }} characters min
             </span>
-            <span class="text-text-muted">Supports multi-lingual English / Vietnamese postings</span>
+            <span class="text-text-muted"
+              >Supports multi-lingual English / Vietnamese postings</span
+            >
           </div>
         </div>
 
@@ -196,23 +225,35 @@ function handleSubmit() {
           <ul class="space-y-3 text-xs sm:text-sm text-text-secondary">
             <li class="flex items-start gap-2.5">
               <CheckCircle2 :size="15" class="text-success flex-shrink-0 mt-0.5" />
-              <span><strong>Hard Skills:</strong> Exact framework names, programming languages, and toolchains.</span>
+              <span
+                ><strong>Hard Skills:</strong> Exact framework names, programming languages, and
+                toolchains.</span
+              >
             </li>
             <li class="flex items-start gap-2.5">
               <CheckCircle2 :size="15" class="text-success flex-shrink-0 mt-0.5" />
-              <span><strong>Seniority Expectations:</strong> Years of experience, student / intern / junior tags.</span>
+              <span
+                ><strong>Seniority Expectations:</strong> Years of experience, student / intern /
+                junior tags.</span
+              >
             </li>
             <li class="flex items-start gap-2.5">
               <CheckCircle2 :size="15" class="text-success flex-shrink-0 mt-0.5" />
-              <span><strong>Required vs Preferred:</strong> Differentiates must-haves from bonus points.</span>
+              <span
+                ><strong>Required vs Preferred:</strong> Differentiates must-haves from bonus
+                points.</span
+              >
             </li>
           </ul>
         </Card>
 
-        <div class="p-4 sm:p-5 rounded-xl border border-border bg-surface text-xs sm:text-sm text-text-muted space-y-2">
+        <div
+          class="p-4 sm:p-5 rounded-xl border border-border bg-surface text-xs sm:text-sm text-text-muted space-y-2"
+        >
           <p class="font-bold text-text">Privacy & Accuracy</p>
           <p class="leading-relaxed">
-            Parsed job data is analyzed locally within your session. Your CV is never sent to third-party scrapers or recruiters without your approval.
+            Parsed job data is analyzed locally within your session. Your CV is never sent to
+            third-party scrapers or recruiters without your approval.
           </p>
         </div>
       </div>

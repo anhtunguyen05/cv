@@ -38,12 +38,10 @@ const classes = computed(() => {
   const variants: Record<string, string> = {
     default:
       'bg-primary text-white hover:bg-primary-hover shadow-control focus-visible:ring-primary',
-    secondary:
-      'bg-surface-muted text-text hover:bg-border focus-visible:ring-primary',
+    secondary: 'bg-surface-muted text-text hover:bg-border focus-visible:ring-primary',
     outline:
       'border border-border bg-white text-text hover:bg-surface hover:border-border-hover hover:text-primary-dark shadow-control-outline focus-visible:ring-primary',
-    ghost:
-      'text-text-quiet hover:bg-surface-muted hover:text-text focus-visible:ring-primary',
+    ghost: 'text-text-quiet hover:bg-surface-muted hover:text-text focus-visible:ring-primary',
     destructive:
       'bg-danger text-white hover:bg-danger-hover shadow-control focus-visible:ring-danger',
     glass:

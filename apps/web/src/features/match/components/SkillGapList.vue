@@ -106,8 +106,11 @@ const statusConfig = {
             :size="18"
             :stroke-width="2"
             :class="[
-              item.category === 'matched' ? 'text-success' :
-              item.category === 'weak' ? 'text-warning' : 'text-danger',
+              item.category === 'matched'
+                ? 'text-success'
+                : item.category === 'weak'
+                  ? 'text-warning'
+                  : 'text-danger',
               'flex-shrink-0 mt-0.5 sm:mt-0',
             ]"
           />
@@ -133,7 +136,11 @@ const statusConfig = {
             +10 pts
           </span>
 
-          <AppBadge :variant="statusConfig[item.category].variant" :label="statusConfig[item.category].label" size="sm" />
+          <AppBadge
+            :variant="statusConfig[item.category].variant"
+            :label="statusConfig[item.category].label"
+            size="sm"
+          />
         </div>
       </div>
     </div>

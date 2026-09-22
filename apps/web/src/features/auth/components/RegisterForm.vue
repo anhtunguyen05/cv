@@ -41,7 +41,9 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
   <div class="space-y-6">
     <div>
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">Create your account</h1>
-      <p class="mt-1.5 text-sm text-text-muted">Get started tailoring your CV for every job application.</p>
+      <p class="mt-1.5 text-sm text-text-muted">
+        Get started tailoring your CV for every job application.
+      </p>
     </div>
 
     <form class="space-y-4" novalidate @submit="onSubmit">
@@ -128,7 +130,12 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
         </p>
       </FormField>
 
-      <FormField label="Confirm Password" :error="errors.password_confirmation" html-for="password-confirm" required>
+      <FormField
+        label="Confirm Password"
+        :error="errors.password_confirmation"
+        html-for="password-confirm"
+        required
+      >
         <div class="relative flex items-center">
           <Lock :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input
@@ -158,7 +165,10 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
 
     <p class="text-center text-sm text-text-muted">
       Already have an account?
-      <RouterLink to="/login" class="text-primary hover:text-primary-hover font-semibold ml-1 transition-colors">
+      <RouterLink
+        to="/login"
+        class="text-primary hover:text-primary-hover font-semibold ml-1 transition-colors"
+      >
         Sign in
       </RouterLink>
     </p>

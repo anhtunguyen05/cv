@@ -65,9 +65,7 @@ function filterTemplates() {
   const query = search.value.toLowerCase().trim()
   filtered.value = stubTemplates.filter((t) => {
     const matchesSearch =
-      !query ||
-      t.name.toLowerCase().includes(query) ||
-      t.type.toLowerCase().includes(query)
+      !query || t.name.toLowerCase().includes(query) || t.type.toLowerCase().includes(query)
     return matchesSearch
   })
 }
@@ -90,10 +88,15 @@ function applyTemplate() {
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/80">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/80"
+    >
       <div>
         <div class="flex items-center gap-2 mb-1">
-          <RouterLink to="/dashboard" class="text-xs text-text-muted hover:text-text transition-colors">
+          <RouterLink
+            to="/dashboard"
+            class="text-xs text-text-muted hover:text-text transition-colors"
+          >
             Dashboard
           </RouterLink>
           <span class="text-xs text-border-hover">/</span>
@@ -103,7 +106,8 @@ function applyTemplate() {
           ATS-Optimized Templates
         </h1>
         <p class="text-xs sm:text-sm text-text-muted mt-1 leading-relaxed max-w-2xl">
-          Choose a layout tailored for applicant tracking systems. Formatting stays strictly within standard recruiter rules.
+          Choose a layout tailored for applicant tracking systems. Formatting stays strictly within
+          standard recruiter rules.
         </p>
       </div>
 
@@ -118,10 +122,16 @@ function applyTemplate() {
     <!-- Filter & Search Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="w-full sm:w-80">
-        <SearchInput v-model="search" placeholder="Search templates by style..." @search="onSearch" />
+        <SearchInput
+          v-model="search"
+          placeholder="Search templates by style..."
+          @search="onSearch"
+        />
       </div>
 
-      <div class="flex items-center gap-1.5 text-xs font-semibold text-success-text bg-success-muted border border-success-border px-3 py-1.5 rounded-full self-start sm:self-auto shadow-2xs">
+      <div
+        class="flex items-center gap-1.5 text-xs font-semibold text-success-text bg-success-muted border border-success-border px-3 py-1.5 rounded-full self-start sm:self-auto shadow-2xs"
+      >
         <ShieldCheck :size="15" />
         <span>Certified for Workday, Greenhouse & Lever</span>
       </div>
@@ -148,7 +158,12 @@ function applyTemplate() {
       title="No templates found"
       :description="`No templates match your search '${search}'.`"
       action-label="Reset search"
-      @action="() => { search = ''; filterTemplates(); }"
+      @action="
+        () => {
+          search = ''
+          filterTemplates()
+        }
+      "
     />
   </div>
 </template>

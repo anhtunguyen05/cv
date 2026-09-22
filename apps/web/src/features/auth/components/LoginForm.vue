@@ -31,8 +31,12 @@ function fillDemo() {
 <template>
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">Sign in to CareerFitCV</h1>
-      <p class="mt-1.5 text-sm text-text-muted">Access your tailored CV profiles and job analyses.</p>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">
+        Sign in to CareerFitCV
+      </h1>
+      <p class="mt-1.5 text-sm text-text-muted">
+        Access your tailored CV profiles and job analyses.
+      </p>
     </div>
 
     <!-- Quick Demo Credential Fill Button -->
@@ -45,7 +49,10 @@ function fillDemo() {
         <Sparkles :size="16" class="text-primary" />
         <span class="font-medium">Fill Demo Account (tu@example.com)</span>
       </div>
-      <span class="font-bold text-xs uppercase tracking-wider bg-white/80 px-2 py-0.5 rounded-md border border-primary-border">Auto-fill</span>
+      <span
+        class="font-bold text-xs uppercase tracking-wider bg-white/80 px-2 py-0.5 rounded-md border border-primary-border"
+        >Auto-fill</span
+      >
     </button>
 
     <form class="space-y-4" novalidate @submit="onSubmit">
@@ -110,7 +117,10 @@ function fillDemo() {
 
     <p class="text-center text-sm text-text-muted">
       Don't have an account yet?
-      <RouterLink to="/register" class="text-primary hover:text-primary-hover font-semibold ml-1 transition-colors">
+      <RouterLink
+        to="/register"
+        class="text-primary hover:text-primary-hover font-semibold ml-1 transition-colors"
+      >
         Create one free
       </RouterLink>
     </p>

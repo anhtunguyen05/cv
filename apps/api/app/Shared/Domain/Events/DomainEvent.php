@@ -11,6 +11,5 @@ abstract readonly class DomainEvent
     public function __construct(
         public string $eventId,
         public DateTimeImmutable $occurredAt,
-    ) {
-    }
+    ) {}
 }

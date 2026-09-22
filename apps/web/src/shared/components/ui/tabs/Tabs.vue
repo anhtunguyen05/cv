@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import {
-  TabsRoot,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from 'reka-ui'
+import { TabsRoot, TabsList, TabsTrigger, TabsContent } from 'reka-ui'
 
 interface TabItem {
   value: string

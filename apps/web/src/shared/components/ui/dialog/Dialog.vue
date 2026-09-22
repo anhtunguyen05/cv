@@ -35,7 +35,9 @@ const emit = defineEmits<{
     </DialogTrigger>
 
     <DialogPortal>
-      <DialogOverlay class="fixed inset-0 z-50 bg-text/40 backdrop-blur-xs transition-opacity duration-200" />
+      <DialogOverlay
+        class="fixed inset-0 z-50 bg-text/40 backdrop-blur-xs transition-opacity duration-200"
+      />
       <DialogContent
         class="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-xl border border-border focus:outline-hidden transition-all duration-200"
       >

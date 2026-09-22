@@ -15,7 +15,7 @@ withDefaults(defineProps<Props>(), {
   <!-- Genuine A4 paper document canvas -->
   <article
     class="cv-document bg-white text-text paper-shadow rounded-sm mx-auto transition-all selection:bg-primary/20"
-    style="width: 794px; min-height: 1123px; padding: 48px 56px; font-family: 'Outfit', sans-serif;"
+    style="width: 794px; min-height: 1123px; padding: 48px 56px; font-family: 'Outfit', sans-serif"
   >
     <!-- Header: Personal Info -->
     <header class="border-b-2 border-text pb-4 mb-6">
@@ -25,7 +25,9 @@ withDefaults(defineProps<Props>(), {
 
       <!-- Contact and links row -->
       <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-quiet">
-        <span v-if="data.personal_info.email" class="font-medium text-text">{{ data.personal_info.email }}</span>
+        <span v-if="data.personal_info.email" class="font-medium text-text">{{
+          data.personal_info.email
+        }}</span>
         <span v-if="data.personal_info.phone">• {{ data.personal_info.phone }}</span>
         <span v-if="data.personal_info.location">• {{ data.personal_info.location }}</span>
         <a
@@ -60,7 +62,9 @@ withDefaults(defineProps<Props>(), {
 
     <!-- Professional Summary -->
     <section v-if="data.summary" class="mb-6">
-      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2">
+      <h2
+        class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2"
+      >
         Professional Summary
       </h2>
       <p class="text-xs sm:text-[13px] leading-relaxed text-text-secondary">
@@ -70,7 +74,9 @@ withDefaults(defineProps<Props>(), {
 
     <!-- Technical Skills -->
     <section v-if="data.skills && Object.keys(data.skills).length" class="mb-6">
-      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2">
+      <h2
+        class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2"
+      >
         Technical Skills
       </h2>
       <div class="space-y-1.5 text-xs sm:text-[13px]">
@@ -91,7 +97,9 @@ withDefaults(defineProps<Props>(), {
 
     <!-- Projects & Evidence -->
     <section v-if="data.projects?.length" class="mb-6">
-      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-3">
+      <h2
+        class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-3"
+      >
         Key Projects
       </h2>
       <div class="space-y-4">
@@ -126,7 +134,9 @@ withDefaults(defineProps<Props>(), {
 
     <!-- Education -->
     <section v-if="data.education?.length" class="mb-6">
-      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2">
+      <h2
+        class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2"
+      >
         Education
       </h2>
       <div class="space-y-2">
@@ -148,7 +158,9 @@ withDefaults(defineProps<Props>(), {
 
     <!-- Certificates -->
     <section v-if="data.certificates?.length" class="mb-6">
-      <h2 class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2">
+      <h2
+        class="text-xs font-bold uppercase tracking-widest text-text border-b border-border pb-1 mb-2"
+      >
         Certifications & Awards
       </h2>
       <ul class="space-y-1 text-xs sm:text-[13px]">
@@ -158,7 +170,8 @@ withDefaults(defineProps<Props>(), {
           class="flex justify-between items-baseline"
         >
           <span class="text-text">
-            <strong>{{ cert.name }}</strong> <span class="text-text-muted">· {{ cert.issuer }}</span>
+            <strong>{{ cert.name }}</strong>
+            <span class="text-text-muted">· {{ cert.issuer }}</span>
           </span>
           <span class="text-xs text-text-muted font-medium">{{ cert.date }}</span>
         </li>

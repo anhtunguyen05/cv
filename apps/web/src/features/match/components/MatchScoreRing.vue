@@ -33,7 +33,8 @@ const scoreLabel = computed(() => {
       <svg class="w-full h-full -rotate-90" viewBox="0 0 130 130">
         <!-- Background track -->
         <circle
-          cx="65" cy="65"
+          cx="65"
+          cy="65"
           :r="radius"
           fill="none"
           stroke="var(--color-surface-muted)"
@@ -41,7 +42,8 @@ const scoreLabel = computed(() => {
         />
         <!-- Progress arc -->
         <circle
-          cx="65" cy="65"
+          cx="65"
+          cy="65"
           :r="radius"
           fill="none"
           :stroke="scoreColor"
@@ -49,13 +51,15 @@ const scoreLabel = computed(() => {
           stroke-linecap="round"
           :stroke-dasharray="circumference"
           :stroke-dashoffset="offset"
-          style="transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1);"
+          style="transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1)"
         />
       </svg>
 
       <!-- Centered score -->
       <div class="absolute inset-0 flex flex-col items-center justify-center">
-        <span class="text-3xl sm:text-4xl font-extrabold text-text font-mono leading-none tracking-tight">
+        <span
+          class="text-3xl sm:text-4xl font-extrabold text-text font-mono leading-none tracking-tight"
+        >
           {{ score }}
         </span>
         <span class="text-xs font-medium text-text-subtle mt-1">/ 100 PTS</span>

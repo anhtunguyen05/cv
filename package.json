@@ -1,0 +1,12 @@
+{
+  "name": "careerfitcv",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "lint": "cd apps/web && npm exec -- eslint . && npm exec -- oxlint .",
+    "pint": "composer --working-dir=apps/api exec -- pint -- --test"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

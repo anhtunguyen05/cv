@@ -81,7 +81,9 @@ function logout() {
     <!-- Right Controls -->
     <div class="flex items-center gap-3">
       <!-- Status Badge -->
-      <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface border border-border text-xs font-medium text-text-muted">
+      <div
+        class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface border border-border text-xs font-medium text-text-muted"
+      >
         <span class="w-1.5 h-1.5 rounded-full bg-success" />
         <span>ATS Engine Ready</span>
       </div>
@@ -165,9 +167,11 @@ function logout() {
       :key="link.to"
       :to="link.to"
       class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-      :class="route.path === link.to
-        ? 'bg-primary-muted text-primary-dark'
-        : 'text-text-muted hover:bg-surface hover:text-text'"
+      :class="
+        route.path === link.to
+          ? 'bg-primary-muted text-primary-dark'
+          : 'text-text-muted hover:bg-surface hover:text-text'
+      "
       @click="mobileMenuOpen = false"
     >
       <component :is="link.icon" :size="16" :stroke-width="1.5" />

@@ -18,10 +18,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <label
-      :for="htmlFor"
-      class="block text-sm font-medium text-text"
-    >
+    <label :for="htmlFor" class="block text-sm font-medium text-text">
       {{ label }}
       <span v-if="required" class="text-danger ml-0.5" aria-hidden="true">*</span>
     </label>

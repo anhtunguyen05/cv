@@ -5,8 +5,5 @@ defineProps<{ class?: string }>()
 </script>
 
 <template>
-  <div
-    :class="['rounded-md skeleton-shimmer', $props.class]"
-    aria-hidden="true"
-  />
+  <div :class="['rounded-md skeleton-shimmer', $props.class]" aria-hidden="true" />
 </template>

@@ -73,27 +73,36 @@ const features = [
   <div class="relative overflow-hidden">
     <!-- ── Hero Section ───────────────────────────────────────── -->
     <section class="min-h-[92dvh] flex items-center px-6 lg:px-16 pt-8 pb-16">
-      <div class="w-full max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-[54%_46%] gap-12 lg:gap-16 items-center">
+      <div
+        class="w-full max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-[54%_46%] gap-12 lg:gap-16 items-center"
+      >
         <!-- Left: Content (left-aligned) -->
-        <div class="flex flex-col justify-center stagger-reveal" style="--index: 0;">
+        <div class="flex flex-col justify-center stagger-reveal" style="--index: 0">
           <!-- Kicker Tag -->
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-slate-300 text-xs font-medium w-fit mb-6 shadow-xs">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-slate-300 text-xs font-medium w-fit mb-6 shadow-xs"
+          >
             <span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             <span>ATS Matching & Evidence Engine for Tech Roles</span>
           </div>
 
           <!-- Bold Headline -->
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.08]">
+          <h1
+            class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.08]"
+          >
             Match your CV<br />
             to every job.<br />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-light via-primary-lighter to-primary-border">
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-primary-light via-primary-lighter to-primary-border"
+            >
               With verified evidence.
             </span>
           </h1>
 
           <!-- Value prop description -->
           <p class="mt-6 text-slate-300 text-base sm:text-lg leading-relaxed max-w-[48ch]">
-            Extract required keywords, audit missing skills against real project work, and export an ATS-proof CV in minutes. Built specifically for students and engineers.
+            Extract required keywords, audit missing skills against real project work, and export an
+            ATS-proof CV in minutes. Built specifically for students and engineers.
           </p>
 
           <!-- CTAs -->
@@ -106,9 +115,7 @@ const features = [
             </RouterLink>
 
             <RouterLink :to="ROUTES.LOGIN">
-              <AppButton size="lg" variant="glass">
-                Sign in to workspace
-              </AppButton>
+              <AppButton size="lg" variant="glass"> Sign in to workspace </AppButton>
             </RouterLink>
           </div>
 
@@ -130,21 +137,30 @@ const features = [
         </div>
 
         <!-- Right: Interactive Match Report Mockup -->
-        <div class="flex items-center justify-center stagger-reveal" style="--index: 1;">
-          <div class="w-full max-w-lg glass-panel-dark rounded-2xl p-6 sm:p-7 shadow-dark-hero border border-white/10 relative">
+        <div class="flex items-center justify-center stagger-reveal" style="--index: 1">
+          <div
+            class="w-full max-w-lg glass-panel-dark rounded-2xl p-6 sm:p-7 shadow-dark-hero border border-white/10 relative"
+          >
             <!-- Header of Mockup Card -->
             <div class="flex items-center justify-between pb-5 border-b border-white/10">
               <div>
                 <div class="flex items-center gap-2 mb-1">
-                  <span class="text-xs font-bold tracking-wider uppercase text-primary-light">Match Analysis</span>
-                  <span class="text-xs bg-success/20 text-success px-2.5 py-0.5 rounded-full font-semibold border border-success/30">ATS High Fit</span>
+                  <span class="text-xs font-bold tracking-wider uppercase text-primary-light"
+                    >Match Analysis</span
+                  >
+                  <span
+                    class="text-xs bg-success/20 text-success px-2.5 py-0.5 rounded-full font-semibold border border-success/30"
+                    >ATS High Fit</span
+                  >
                 </div>
                 <h3 class="text-white font-bold text-lg mt-1">Frontend Engineer (Vue 3 / TS)</h3>
                 <p class="text-sm text-slate-400 mt-0.5">TechCorp Global · Intern & Junior</p>
               </div>
 
               <!-- Score circle badge -->
-              <div class="w-16 h-16 rounded-full border-4 border-primary bg-primary/10 flex flex-col items-center justify-center flex-shrink-0 shadow-brand-ring">
+              <div
+                class="w-16 h-16 rounded-full border-4 border-primary bg-primary/10 flex flex-col items-center justify-center flex-shrink-0 shadow-brand-ring"
+              >
                 <span class="text-white font-extrabold text-xl leading-none">88</span>
                 <span class="text-xs text-slate-400 font-mono">/ 100</span>
               </div>
@@ -152,38 +168,58 @@ const features = [
 
             <!-- Skill checklist preview -->
             <div class="py-5 space-y-3">
-              <div class="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5">
+              <div
+                class="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5"
+              >
                 <div class="flex items-center gap-3">
-                  <div class="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
+                  <div
+                    class="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0"
+                  >
                     <CheckCircle2 :size="14" class="text-success" />
                   </div>
                   <span class="text-sm text-slate-200 font-medium">Vue 3 Composition API</span>
                 </div>
-                <span class="text-xs font-medium text-success bg-success/15 px-2.5 py-1 rounded-full">
+                <span
+                  class="text-xs font-medium text-success bg-success/15 px-2.5 py-1 rounded-full"
+                >
                   Evidence: CareerFitCV
                 </span>
               </div>
 
-              <div class="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5">
+              <div
+                class="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5"
+              >
                 <div class="flex items-center gap-3">
-                  <div class="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
+                  <div
+                    class="w-6 h-6 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0"
+                  >
                     <CheckCircle2 :size="14" class="text-success" />
                   </div>
-                  <span class="text-sm text-slate-200 font-medium">TypeScript & State Management</span>
+                  <span class="text-sm text-slate-200 font-medium"
+                    >TypeScript & State Management</span
+                  >
                 </div>
-                <span class="text-xs font-medium text-success bg-success/15 px-2.5 py-1 rounded-full">
+                <span
+                  class="text-xs font-medium text-success bg-success/15 px-2.5 py-1 rounded-full"
+                >
                   Evidence: Pinia & Types
                 </span>
               </div>
 
-              <div class="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5">
+              <div
+                class="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/5"
+              >
                 <div class="flex items-center gap-3">
-                  <div class="w-6 h-6 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0">
+                  <div
+                    class="w-6 h-6 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0"
+                  >
                     <Sparkles :size="14" class="text-warning" />
                   </div>
                   <span class="text-sm text-slate-200 font-medium">Unit Testing (Vitest)</span>
                 </div>
-                <span class="text-xs font-medium text-warning bg-warning/15 px-2.5 py-1 rounded-full">
+                <span
+                  class="text-xs font-medium text-warning bg-warning/15 px-2.5 py-1 rounded-full"
+                >
                   Weak Evidence
                 </span>
               </div>
@@ -194,7 +230,9 @@ const features = [
               <div class="flex items-start gap-3">
                 <Sparkles :size="18" class="text-primary-light flex-shrink-0 mt-0.5" />
                 <p class="text-sm text-indigo-100 leading-relaxed">
-                  <strong class="text-white font-semibold">Suggested Fix:</strong> Explicitly mention unit testing in your project bullets to gain an estimated <strong class="text-success">+8 points</strong> on this JD.
+                  <strong class="text-white font-semibold">Suggested Fix:</strong> Explicitly
+                  mention unit testing in your project bullets to gain an estimated
+                  <strong class="text-success">+8 points</strong> on this JD.
                 </p>
               </div>
             </div>
@@ -204,10 +242,15 @@ const features = [
     </section>
 
     <!-- ── How it works (Bento Flow) ──────────────────────────── -->
-    <section id="how-it-works" class="bg-dark-raised px-6 lg:px-16 py-20 lg:py-24 border-t border-white/5">
+    <section
+      id="how-it-works"
+      class="bg-dark-raised px-6 lg:px-16 py-20 lg:py-24 border-t border-white/5"
+    >
       <div class="max-w-[1440px] mx-auto">
         <div class="max-w-xl mb-12 sm:mb-16">
-          <p class="text-xs font-bold text-primary-light uppercase tracking-widest mb-2">Workflow</p>
+          <p class="text-xs font-bold text-primary-light uppercase tracking-widest mb-2">
+            Workflow
+          </p>
           <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Four steps from job posting to interview-ready CV.
           </h2>
@@ -221,10 +264,14 @@ const features = [
           >
             <!-- Step Number Pill -->
             <div class="flex items-center justify-between mb-5">
-              <div class="w-11 h-11 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div
+                class="w-11 h-11 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center group-hover:scale-105 transition-transform"
+              >
                 <component :is="step.icon" :size="20" class="text-primary-light" />
               </div>
-              <span class="font-mono font-bold text-2xl text-white/25 group-hover:text-primary-light/50 transition-colors">
+              <span
+                class="font-mono font-bold text-2xl text-white/25 group-hover:text-primary-light/50 transition-colors"
+              >
                 {{ step.num }}
               </span>
             </div>
@@ -250,16 +297,24 @@ const features = [
           <!-- Stat Panel -->
           <div :class="[i % 2 !== 0 ? 'lg:col-start-2' : '']">
             <div class="glass-panel-dark p-6 sm:p-8 rounded-xl border border-white/10 max-w-md">
-              <span class="text-xs font-semibold uppercase tracking-wider text-primary-light bg-primary/15 px-2.5 py-1 rounded-full">
+              <span
+                class="text-xs font-semibold uppercase tracking-wider text-primary-light bg-primary/15 px-2.5 py-1 rounded-full"
+              >
                 {{ feat.badge }}
               </span>
-              <div class="mt-5 text-5xl sm:text-6xl font-extrabold text-white tracking-tight font-mono">
+              <div
+                class="mt-5 text-5xl sm:text-6xl font-extrabold text-white tracking-tight font-mono"
+              >
                 {{ feat.stat }}
               </div>
               <p class="text-slate-300 text-xs sm:text-sm font-medium mt-1">{{ feat.statLabel }}</p>
 
               <div class="mt-5 pt-5 border-t border-white/10 space-y-2">
-                <div v-for="item in feat.highlights" :key="item" class="flex items-center gap-2 text-xs text-slate-300">
+                <div
+                  v-for="item in feat.highlights"
+                  :key="item"
+                  class="flex items-center gap-2 text-xs text-slate-300"
+                >
                   <CheckCircle2 :size="13" class="text-success" />
                   <span>{{ item }}</span>
                 </div>
@@ -278,7 +333,9 @@ const features = [
 
             <div class="mt-6">
               <RouterLink :to="ROUTES.REGISTER">
-                <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-light hover:text-primary-lighter transition-colors">
+                <span
+                  class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-light hover:text-primary-lighter transition-colors"
+                >
                   Explore how it works
                   <ArrowRight :size="13" />
                 </span>
@@ -292,7 +349,9 @@ const features = [
     <!-- ── Final High-Impact CTA ──────────────────────────────── -->
     <section class="bg-dark-raised px-6 py-24 border-t border-white/10 relative">
       <div class="max-w-3xl mx-auto text-center space-y-6">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 text-primary-light text-xs font-semibold">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 text-primary-light text-xs font-semibold"
+        >
           <Sparkles :size="13" />
           Ready to level up your job hunt?
         </div>
@@ -303,7 +362,8 @@ const features = [
         </h2>
 
         <p class="text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
-          Start for free today. Create immutable CV profiles, analyze job postings, and export ATS-tested PDFs.
+          Start for free today. Create immutable CV profiles, analyze job postings, and export
+          ATS-tested PDFs.
         </p>
 
         <div class="pt-4 flex flex-wrap justify-center gap-4">
@@ -314,9 +374,7 @@ const features = [
             </AppButton>
           </RouterLink>
           <RouterLink :to="ROUTES.LOGIN">
-            <AppButton size="lg" variant="glass">
-              Sign in to existing account
-            </AppButton>
+            <AppButton size="lg" variant="glass"> Sign in to existing account </AppButton>
           </RouterLink>
         </div>
       </div>

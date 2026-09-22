@@ -12,7 +12,9 @@ function printCV() {
 <template>
   <div class="min-h-[100dvh] flex flex-col bg-surface-muted">
     <!-- Document toolbar -->
-    <header class="no-print h-16 bg-white/95 backdrop-blur-md border-b border-border flex items-center justify-between px-6 lg:px-10 flex-shrink-0 sticky top-0 z-30 shadow-xs">
+    <header
+      class="no-print h-16 bg-white/95 backdrop-blur-md border-b border-border flex items-center justify-between px-6 lg:px-10 flex-shrink-0 sticky top-0 z-30 shadow-xs"
+    >
       <div class="flex items-center gap-4">
         <RouterLink
           :to="ROUTES.DASHBOARD"
@@ -29,7 +31,9 @@ function printCV() {
             <Sparkles :size="14" class="text-white" />
           </div>
           <span class="text-sm font-bold text-text">CV Document Preview</span>
-          <span class="hidden md:inline text-xs font-mono text-success-hover bg-success-muted border border-success-border px-2.5 py-0.5 rounded-full font-medium">
+          <span
+            class="hidden md:inline text-xs font-mono text-success-hover bg-success-muted border border-success-border px-2.5 py-0.5 rounded-full font-medium"
+          >
             A4 Standard · 1 Page
           </span>
         </div>

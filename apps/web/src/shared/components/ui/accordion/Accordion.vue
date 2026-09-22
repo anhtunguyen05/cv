@@ -35,12 +35,7 @@ withDefaults(defineProps<Props>(), {
     :default-value="defaultValue as any"
     class="w-full divide-y divide-border border border-border rounded-lg overflow-hidden bg-white"
   >
-    <AccordionItem
-      v-for="item in items"
-      :key="item.value"
-      :value="item.value"
-      class="group"
-    >
+    <AccordionItem v-for="item in items" :key="item.value" :value="item.value" class="group">
       <AccordionHeader class="flex">
         <AccordionTrigger
           class="flex flex-1 items-center justify-between py-3.5 px-4 text-sm font-medium text-text hover:bg-surface transition-all group-data-[state=open]:text-primary cursor-pointer"

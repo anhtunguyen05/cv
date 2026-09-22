@@ -58,9 +58,13 @@ function onMouseLeave() {
       />
 
       <!-- Template preview document mockup -->
-      <div class="bg-surface aspect-[3/4] p-4 flex items-center justify-center overflow-hidden relative border-b border-border">
+      <div
+        class="bg-surface aspect-[3/4] p-4 flex items-center justify-center overflow-hidden relative border-b border-border"
+      >
         <!-- Top ATS tag -->
-        <div class="absolute top-3 left-3 z-20 flex items-center gap-1.5 text-xs font-semibold text-success-text bg-success-muted border border-success-border px-2.5 py-0.5 rounded-full shadow-2xs">
+        <div
+          class="absolute top-3 left-3 z-20 flex items-center gap-1.5 text-xs font-semibold text-success-text bg-success-muted border border-success-border px-2.5 py-0.5 rounded-full shadow-2xs"
+        >
           <ShieldCheck :size="12" />
           <span>98% ATS Score</span>
         </div>
@@ -74,7 +78,9 @@ function onMouseLeave() {
         </div>
 
         <!-- Realistic Document Silhouette Graphic -->
-        <div class="w-40 h-56 bg-white rounded-md shadow-paper-preview border border-border p-3 space-y-2 select-none group-hover:scale-[1.02] transition-transform duration-200">
+        <div
+          class="w-40 h-56 bg-white rounded-md shadow-paper-preview border border-border p-3 space-y-2 select-none group-hover:scale-[1.02] transition-transform duration-200"
+        >
           <!-- Document Header -->
           <div class="space-y-1.5 pb-2 border-b border-border">
             <div class="h-2.5 bg-text rounded-sm w-3/5" />
