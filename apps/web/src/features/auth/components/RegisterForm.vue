@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { registerSchema } from '../schemas/auth.schema'
@@ -7,8 +7,9 @@ import { useRegisterMutation } from '../api/auth.mutations'
 import FormField from '@/shared/components/molecules/FormField.vue'
 import AppButton from '@/shared/components/atoms/AppButton.vue'
 import { User, Mail, Lock, ArrowRight } from 'lucide-vue-next'
+import { ApiRequestError } from '@/shared/api/client'
 
-const { handleSubmit, defineField, errors, values } = useForm({
+const { handleSubmit, defineField, errors, values, setErrors } = useForm({
   validationSchema: toTypedSchema(registerSchema),
 })
 
@@ -19,6 +20,36 @@ const [passwordConfirmation, passwordConfirmationAttrs] = defineField('password_
 
 const { mutate: register, isPending, error: mutationError } = useRegisterMutation()
 
+const serverMessage = computed(() => {
+  if (!mutationError.value) return ''
+  return mutationError.value instanceof Error
+    ? mutationError.value.message
+    : 'Registration failed. Please try again.'
+})
+
+const retryMessage = computed(() => {
+  if (!(mutationError.value instanceof ApiRequestError)) return ''
+  if (mutationError.value.status === 429 && mutationError.value.retryAfter) {
+    return `Please try again in ${mutationError.value.retryAfter} seconds.`
+  }
+  if (mutationError.value.status === 419) {
+    return 'Your session expired. Please submit again to refresh your session.'
+  }
+  return ''
+})
+
+watch(mutationError, (error) => {
+  if (!(error instanceof ApiRequestError) || !error.details) return
+  setErrors(
+    Object.fromEntries(
+      Object.entries(error.details).map(([field, message]) => [
+        field,
+        Array.isArray(message) ? message[0] : message,
+      ]),
+    ),
+  )
+})
+
 const onSubmit = handleSubmit((vals) => register(vals))
 
 // Password strength computation
@@ -26,10 +57,10 @@ const passwordStrength = computed(() => {
   const pw = values.password ?? ''
   if (!pw) return 0
   let score = 0
-  if (pw.length >= 8) score++
-  if (/[A-Z]/.test(pw)) score++
-  if (/[0-9]/.test(pw)) score++
-  if (/[^A-Za-z0-9]/.test(pw)) score++
+  if (pw.length >= 6) score++
+  if (pw.length >= 12) score++
+  if (pw.length >= 18) score++
+  if (pw.length >= 24) score++
   return score
 })
 
@@ -53,7 +84,8 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
         class="px-4 py-3 rounded-xl bg-danger-muted border border-danger-border text-sm text-danger-hover"
         role="alert"
       >
-        {{ (mutationError as Error).message || 'Registration failed. Please try again.' }}
+        {{ serverMessage }}
+        <span v-if="retryMessage" class="block mt-1">{{ retryMessage }}</span>
       </div>
 
       <FormField label="Full Name" :error="errors.name" html-for="name" required>
@@ -63,6 +95,8 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
             id="name"
             v-model="name"
             v-bind="nameAttrs"
+            :aria-invalid="!!errors.name"
+            :aria-describedby="errors.name ? 'name-error' : undefined"
             type="text"
             autocomplete="name"
             placeholder="Nguyen Anh Tu"
@@ -83,6 +117,8 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
             id="reg-email"
             v-model="email"
             v-bind="emailAttrs"
+            :aria-invalid="!!errors.email"
+            :aria-describedby="errors.email ? 'reg-email-error' : undefined"
             type="email"
             autocomplete="email"
             placeholder="you@example.com"
@@ -103,6 +139,8 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
             id="reg-password"
             v-model="password"
             v-bind="passwordAttrs"
+            :aria-invalid="!!errors.password"
+            :aria-describedby="errors.password ? 'reg-password-error' : undefined"
             type="password"
             autocomplete="new-password"
             placeholder="••••••••"
@@ -142,6 +180,8 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
             id="password-confirm"
             v-model="passwordConfirmation"
             v-bind="passwordConfirmationAttrs"
+            :aria-invalid="!!errors.password_confirmation"
+            :aria-describedby="errors.password_confirmation ? 'password-confirm-error' : undefined"
             type="password"
             autocomplete="new-password"
             placeholder="••••••••"
