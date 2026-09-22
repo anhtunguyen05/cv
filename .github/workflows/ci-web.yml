@@ -1,0 +1,55 @@
+name: CI - Web
+
+on:
+  push:
+    paths:
+      - 'apps/web/**'
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Web checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npx prettier --check src/
+
+      - name: Run ESLint
+        run: npx eslint .
+
+      - name: Run oxlint
+        run: npx oxlint .
+
+      - name: Type-check
+        run: npm run type-check
+
+      - name: Build
+        run: npm run build-only
