@@ -16,7 +16,9 @@ const props = withDefaults(defineProps<Props>(), {
   required: false,
 })
 
-const errorId = computed(() => (props.htmlFor && props.error ? `${props.htmlFor}-error` : undefined))
+const errorId = computed(() =>
+  props.htmlFor && props.error ? `${props.htmlFor}-error` : undefined,
+)
 </script>
 
 <template>
