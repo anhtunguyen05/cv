@@ -21,9 +21,10 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`; this story package does not carry a second lifecycle status.
 
-**Planning blockers:** `E1-DEC-003`, `E1-DEC-004`, `E1-DEC-006`
-through `E1-DEC-008`, `E1-COORD-PROFILE-001`, and
-`E1-COORD-VERSION-001`.
+**Execution blockers:** the Profile persistence checkpoint from Story 1.3,
+one assigned `E1-COORD-VERSION-001` owner/branch for shared Version fixtures,
+and the approved `E1-COORD-TEST-001` harness. The Profile and Version
+decisions are approved.
 
 ## Package map
 
@@ -83,7 +84,8 @@ Create/detail/list, invalid name, foreign access, stale/concurrent source,
 reload and Profile-edit regression are explicit. Snapshot/pagination/error
 contracts, transaction/immutability/ownership, validation, accessible
 create/list/detail states, FE/API mapping, caching and all verification layers
-are planned; exact snapshot/name/concurrency decisions remain open.
+are planned; exact snapshot/name/concurrency behavior is normative in
+`version-v1.md`.
 
 ## Code Map
 

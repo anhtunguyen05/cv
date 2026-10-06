@@ -1,0 +1,27 @@
+{
+  "version": "profile-v1",
+  "fixtures": [
+    {
+      "id": "profile-minimal-create",
+      "request": {
+        "title": "Backend CV",
+        "personal_information": {
+          "full_name": "Nguyen Anh Tu",
+          "headline": null,
+          "email": null,
+          "phone": null,
+          "location": null,
+          "website_url": null,
+          "linkedin_url": null,
+          "github_url": null
+        }
+      },
+      "expect": { "status": 201, "revision": 1, "summary": null, "sections_empty": true }
+    },
+    {
+      "id": "profile-stale-section-write",
+      "request": { "section": "summary", "if_match": "\"1\"" },
+      "expect": { "status": 409, "code": "PROFILE_UPDATE_CONFLICT", "mutates": false }
+    }
+  ]
+}

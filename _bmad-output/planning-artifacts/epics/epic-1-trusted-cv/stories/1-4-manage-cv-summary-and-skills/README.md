@@ -20,8 +20,8 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`; this story package does not carry a second lifecycle status.
 
-**Planning blockers:** `E1-DEC-003` through `E1-DEC-005`,
-`E1-DEC-007`, `E1-DEC-008`, and `E1-COORD-PROFILE-001`.
+**Execution blockers:** the Profile persistence/fixture checkpoint from Story
+1.3 and the approved `E1-COORD-TEST-001` harness. The Profile decisions are approved.
 
 ## Package map
 

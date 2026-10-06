@@ -20,8 +20,9 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`; this story package does not carry a second lifecycle status.
 
-**Planning blockers:** `E1-DEC-001`, `E1-DEC-002`, `E1-DEC-007`
-through `E1-DEC-009`, and the approved `E1-COORD-AUTH-001` checkpoint.
+**Execution blockers:** authentication implementation and its
+`E1-COORD-AUTH-001` shared-boundary checkpoint, then the approved
+`E1-COORD-TEST-001` verification harness. The listed decisions are approved.
 
 ## Package map
 
@@ -76,7 +77,8 @@ current-account hydration, explicit sign-out, and safe expiry recovery.
 Behavior, alternate failures, logout and expiry are explicit. Contract,
 backend session transitions, security/enumeration/limits, input validation,
 frontend states, CSRF/cache integration, and unit/feature/component/E2E layers
-reference the shared Epic artifacts. Exact policy values remain human-gated.
+reference the shared Epic artifacts. Exact policy values are fixed by the
+approved authentication decisions; implementation evidence remains pending.
 
 ## Code Map
 

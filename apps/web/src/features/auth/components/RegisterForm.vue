@@ -44,7 +44,11 @@ watch(mutationError, (error) => {
     Object.fromEntries(
       Object.entries(error.details).map(([field, message]) => [
         field,
-        Array.isArray(message) ? message[0] : message,
+        Array.isArray(message)
+          ? typeof message[0] === 'string'
+            ? message[0]
+            : (message[0]?.message ?? '')
+          : message,
       ]),
     ),
   )

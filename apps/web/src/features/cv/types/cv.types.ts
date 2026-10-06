@@ -1,82 +1,105 @@
-export interface PersonalInfo {
+export interface PersonalInformation {
   full_name: string
-  email: string
-  phone: string
-  location: string
-  github?: string
-  linkedin?: string
-  portfolio?: string
+  headline: string | null
+  email: string | null
+  phone: string | null
+  location: string | null
+  website_url: string | null
+  linkedin_url: string | null
+  github_url: string | null
 }
 
-export interface CvSkills {
-  frontend?: string[]
-  backend?: string[]
-  tools?: string[]
-  [key: string]: string[] | undefined
-}
-
-export interface CvProject {
-  id: string
+export interface SkillItem {
+  id?: string
   name: string
+}
+export interface SkillCategory {
+  id?: string
+  label: string
+  items: SkillItem[]
+}
+export interface EducationItem {
+  id?: string
+  institution: string
+  degree: string
+  field_of_study: string | null
+  location: string | null
+  start_date: string | null
+  end_date: string | null
+  description: string | null
+}
+export interface ExperienceItem {
+  id?: string
+  organization: string
   role: string
-  tech_stack: string[]
-  bullets: string[]
-  period?: string
-  url?: string
+  employment_type: string | null
+  location: string | null
+  start_date: string
+  end_date: string | null
+  is_current: boolean
+  highlights: string[]
 }
-
-export interface CvEducation {
-  school: string
-  major: string
-  period: string
-  gpa?: string
+export interface ProjectItem {
+  id?: string
+  name: string
+  role: string | null
+  url: string | null
+  start_date: string | null
+  end_date: string | null
+  technologies: string[]
+  highlights: string[]
 }
-
-export interface CvCertificate {
+export interface CertificateItem {
+  id?: string
   name: string
   issuer: string
-  date: string
-  url?: string
+  issued_on: string | null
+  expires_on: string | null
+  credential_url: string | null
+}
+export interface LanguageItem {
+  id?: string
+  language: string
+  proficiency: string
+}
+export interface ActivityItem {
+  id?: string
+  name: string
+  role: string | null
+  organization: string | null
+  start_date: string | null
+  end_date: string | null
+  description: string | null
 }
 
-export interface CvData {
-  personal_info: PersonalInfo
-  summary: string
-  skills: CvSkills
-  projects: CvProject[]
-  education: CvEducation[]
-  certificates?: CvCertificate[]
-  languages?: Array<{ name: string; level: string }>
-  activities?: string[]
+export interface CvDocument {
+  personal_information: PersonalInformation
+  summary: string | null
+  skills: SkillCategory[]
+  education: EducationItem[]
+  experience: ExperienceItem[]
+  projects: ProjectItem[]
+  certificates: CertificateItem[]
+  languages: LanguageItem[]
+  activities: ActivityItem[]
 }
 
-export interface CvProfile {
-  id: number
-  user_id: number
+export interface CvProfile extends CvDocument {
+  id: string
   title: string
-  base_data_json: CvData
+  revision: number
   created_at: string
   updated_at: string
 }
 
 export interface CvVersion {
-  id: number
-  cv_profile_id: number
-  job_description_id?: number
-  template_id: number
-  version_name: string
-  data_json: CvData
-  match_score?: number
+  id: string
+  name: string
+  source_profile_id: string
+  source_profile_revision: number
+  snapshot_schema_version: string
+  snapshot: CvDocument & { title: string }
   created_at: string
-  updated_at: string
 }
 
-export type CvSectionKey =
-  | 'personal_info'
-  | 'summary'
-  | 'skills'
-  | 'projects'
-  | 'education'
-  | 'certificates'
-  | 'languages'
-  | 'activities'
+export type CvSectionKey = keyof CvDocument

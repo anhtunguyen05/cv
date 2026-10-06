@@ -19,13 +19,13 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  completedSections: () => ['personal_info', 'summary', 'skills', 'projects', 'education'],
+  completedSections: () => ['personal_information', 'summary', 'skills', 'projects', 'education'],
 })
 
 const emit = defineEmits<{ select: [section: CvSectionKey] }>()
 
 const sections: Array<{ key: CvSectionKey; label: string; icon: Component }> = [
-  { key: 'personal_info', label: 'Personal Info', icon: User },
+  { key: 'personal_information', label: 'Personal Info', icon: User },
   { key: 'summary', label: 'Summary', icon: FileText },
   { key: 'skills', label: 'Skills & Stack', icon: Code2 },
   { key: 'projects', label: 'Projects', icon: FolderGit2 },

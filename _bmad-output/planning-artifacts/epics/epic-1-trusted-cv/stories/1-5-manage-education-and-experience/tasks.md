@@ -14,7 +14,7 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Covers: `AC-1-5-manage-education-and-experience-01`, `AC-1-5-manage-education-and-experience-02`, `AC-1-5-manage-education-and-experience-03`
   - Scope: 01. Extend Profile fixtures with history item schemas: education/experience fixtures
   - Coordination: `E1-COORD-PROFILE-001`
-  - Blocked by: `E1-DEC-003`; `E1-DEC-004`; `E1-DEC-005`
+  - Blocked by: none for contract definition; `profile-v1` is approved. The shared fixture corpus from `TASK-1-3-01` remains the source to extend.
   - Outcome: 01. Extend Profile fixtures with history item schemas: Extend Profile fixtures with history item schemas.
   - Acceptance: 01. Extend Profile fixtures with history item schemas: fields, date rules, IDs, paths, limits and errors are frozen.
   - Verification: 01. Extend Profile fixtures with history item schemas: schema/AC review.
@@ -40,7 +40,7 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Covers: `AC-1-5-manage-education-and-experience-01`, `AC-1-5-manage-education-and-experience-02`, `AC-1-5-manage-education-and-experience-03`
   - Scope: 01. Build education/experience repeated editor: frontend schema/API/components/state | 02. Verify history end to end: browser add/edit/remove/reload path
   - Coordination: `E1-COORD-PROFILE-001`, `E1-COORD-TEST-001`
-  - Blocked by: `E1-DEC-007`; `E1-DEC-008`
+  - Blocked by: implementation of the approved `E1-COORD-TEST-001` harness and backend acceptance from `TASK-1-5-02`.
   - Outcome: 01. Build education/experience repeated editor: Build education/experience repeated editor. | 02. Verify history end to end: Verify history end to end.
   - Acceptance: 01. Build education/experience repeated editor: keyboard-usable stable rows preserve valid siblings and errors. | 02. Verify history end to end: critical and meaningful failure paths pass on disposable data. | Integrated journey acceptance closes only after `TASK-1-5-02` is done with backend evidence.
   - Verification: 01. Build education/experience repeated editor: type-check and Vitest after enablement. | 02. Verify history end to end: approved Playwright command. | Run the cross-layer journey check after `TASK-1-5-02` passes its backend acceptance.

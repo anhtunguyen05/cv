@@ -1,478 +1,365 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { computed, ref, toRaw, watch } from 'vue'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import CvSectionNav from '@/features/cv/components/CvSectionNav.vue'
 import AppButton from '@/shared/components/atoms/AppButton.vue'
-import StatusDot from '@/shared/components/atoms/StatusDot.vue'
-import { Eye, Save, Plus, Trash2, Sparkles, CheckCircle2 } from 'lucide-vue-next'
-import type { CvSectionKey, CvData } from '@/features/cv'
+import { ApiRequestError } from '@/shared/api/client'
+import {
+  createCvProfile,
+  updateCvSection,
+  updateCvTitle,
+  createCvVersion,
+} from '@/features/cv/api/cv.api'
+import { useCvProfileQuery, useCvVersionsQuery } from '@/features/cv/api/cv.queries'
+import { queryClient } from '@/app/providers/vue-query'
+import type {
+  CvDocument,
+  CvProfile,
+  CvSectionKey,
+  PersonalInformation,
+} from '@/features/cv/types/cv.types'
 
 const route = useRoute()
-const cvId = route.params.id as string
-const isNew = cvId === 'new'
+const router = useRouter()
+const profileId = computed(() => String(route.params.id ?? 'new'))
+const isNew = computed(() => profileId.value === 'new')
+const activeSection = ref<CvSectionKey>('personal_information')
+const title = ref('')
+const sectionText = ref('')
+const saving = ref(false)
+const errorMessage = ref('')
+const fieldErrors = ref<Record<string, string>>({})
+const versionName = ref('')
+const versionMessage = ref('')
+const versionSaving = ref(false)
 
-const activeSection = ref<CvSectionKey>('personal_info')
-const isSaving = ref(false)
-const lastSaved = ref<Date | null>(new Date())
+const blankPersonal = (): PersonalInformation => ({
+  full_name: '',
+  headline: null,
+  email: null,
+  phone: null,
+  location: null,
+  website_url: null,
+  linkedin_url: null,
+  github_url: null,
+})
+const blankDocument = (): CvDocument => ({
+  personal_information: blankPersonal(),
+  summary: null,
+  skills: [],
+  education: [],
+  experience: [],
+  projects: [],
+  certificates: [],
+  languages: [],
+  activities: [],
+})
+const localDocument = ref<CvDocument>(blankDocument())
+const currentProfile = ref<CvProfile | null>(null)
+const profileQuery = useCvProfileQuery(profileId)
+const versionsQuery = useCvVersionsQuery(profileId)
+const { isError: profileLoadError } = profileQuery
+const versions = computed(() => versionsQuery.data.value ?? [])
 
-// Sample Initial Form Data
-const cvData = ref<CvData>({
-  personal_info: {
-    full_name: 'Nguyen Anh Tu',
-    email: 'tu@example.com',
-    phone: '+84 901 234 567',
-    location: 'Ho Chi Minh City, Vietnam',
-    github: 'https://github.com/anhtunguyen05',
-    linkedin: 'https://linkedin.com/in/anhtunguyen05',
-    portfolio: 'https://anhtunguyen.dev',
-  },
-  summary:
-    'Dedicated software engineering student with proven experience building responsive web applications using Vue 3, TypeScript, and REST APIs. Strong focus on clean architecture, component design, and automated testing.',
-  skills: {
-    frontend: ['Vue 3', 'TypeScript', 'Tailwind CSS', 'Vite', 'HTML/CSS'],
-    backend: ['Laravel', 'PHP', 'MySQL', 'REST API'],
-    tools: ['Git', 'Docker', 'Postman', 'Figma'],
-  },
-  projects: [
-    {
-      id: '1',
-      name: 'CareerFitCV',
-      role: 'Fullstack Developer',
-      tech_stack: ['Vue 3', 'TypeScript', 'Tailwind v4', 'Laravel 13'],
-      period: 'Sep 2026 – Present',
-      bullets: [
-        'Architected a deterministic CV tailoring system cross-referencing candidate project claims against job postings.',
-        'Engineered responsive single-page application with TanStack Vue Query and Pinia state management.',
-        'Designed ATS-optimized export pipeline rendering print-perfect A4 documents.',
-      ],
-    },
-    {
-      id: '2',
-      name: 'Edura E-Learning Platform',
-      role: 'Frontend Contributor',
-      tech_stack: ['Vue 3', 'Vite', 'Pinia', 'Axios'],
-      period: 'Jan 2026 – May 2026',
-      bullets: [
-        'Developed course enrollment workflows and interactive quiz interfaces serving 500+ active students.',
-        'Refactored legacy form state into reusable composables, reducing boilerplate by 35%.',
-      ],
-    },
-  ],
-  education: [
-    {
-      school: 'University of Information Technology (UIT)',
-      major: 'Software Engineering',
-      period: '2023 – 2027 (Expected)',
-      gpa: '3.4 / 4.0',
-    },
-  ],
-  certificates: [
-    {
-      name: 'Vue.js Certified Developer',
-      issuer: 'CertiGlobal',
-      date: '2026',
-    },
-  ],
+const completedSections = computed<CvSectionKey[]>(() => {
+  const document = localDocument.value
+  const completed: CvSectionKey[] = []
+  if (document.personal_information.full_name.trim()) completed.push('personal_information')
+  if (document.summary?.trim()) completed.push('summary')
+  for (const section of [
+    'skills',
+    'education',
+    'experience',
+    'projects',
+    'certificates',
+    'languages',
+    'activities',
+  ] as const) {
+    if (document[section].length > 0) completed.push(section)
+  }
+  return completed
 })
 
-// Quick helper to add project
-function addProject() {
-  cvData.value.projects.push({
-    id: Date.now().toString(),
-    name: 'New Project',
-    role: 'Developer',
-    tech_stack: ['Vue 3', 'TypeScript'],
-    period: '2026',
-    bullets: ['Implemented key user-facing features and integrated RESTful endpoints.'],
-  })
+function loadProfile(profile: CvProfile | undefined) {
+  if (!profile) return
+  currentProfile.value = profile
+  title.value = profile.title
+  localDocument.value = structuredClone(toRaw(profile))
+  loadSectionText()
+}
+watch(() => profileQuery.data.value, loadProfile, { immediate: true })
+watch(activeSection, loadSectionText)
+
+function loadSectionText() {
+  const value = localDocument.value[activeSection.value]
+  sectionText.value =
+    activeSection.value === 'summary' ? String(value ?? '') : JSON.stringify(value, null, 2)
 }
 
-function removeProject(index: number) {
-  cvData.value.projects.splice(index, 1)
+function parseSection(): CvDocument[CvSectionKey] {
+  if (activeSection.value === 'summary') return sectionText.value || null
+  return JSON.parse(sectionText.value)
 }
 
-// New skill input tag model
-const newSkillTag = ref('')
-const selectedSkillCategory = ref<'frontend' | 'backend' | 'tools'>('frontend')
+function hasUnsavedSectionChanges(): boolean {
+  if (activeSection.value === 'personal_information') return false
+  const current = localDocument.value[activeSection.value]
+  const expected =
+    activeSection.value === 'summary' ? String(current ?? '') : JSON.stringify(current, null, 2)
+  return sectionText.value !== expected
+}
 
-function addSkill() {
-  const val = newSkillTag.value.trim()
-  if (!val) return
-  if (!cvData.value.skills[selectedSkillCategory.value]) {
-    cvData.value.skills[selectedSkillCategory.value] = []
+function selectSection(section: CvSectionKey): void {
+  if (section === activeSection.value) return
+  if (
+    hasUnsavedSectionChanges() &&
+    typeof window !== 'undefined' &&
+    !window.confirm('Discard unsaved changes in this section?')
+  ) {
+    return
   }
-  cvData.value.skills[selectedSkillCategory.value]?.push(val)
-  newSkillTag.value = ''
+  activeSection.value = section
 }
 
-function removeSkill(category: string, skillIndex: number) {
-  cvData.value.skills[category]?.splice(skillIndex, 1)
+function applyError(error: unknown) {
+  if (error instanceof ApiRequestError) {
+    errorMessage.value = error.message
+    fieldErrors.value = Object.fromEntries(
+      Object.entries(error.details ?? {}).map(([key, value]) => [
+        key,
+        typeof value === 'string'
+          ? value
+          : Array.isArray(value)
+            ? typeof value[0] === 'string'
+              ? value[0]
+              : (value[0]?.message ?? '')
+            : 'Invalid value',
+      ]),
+    )
+  } else if (error instanceof SyntaxError) {
+    errorMessage.value = 'This section must contain valid JSON.'
+  } else {
+    errorMessage.value = 'Unable to save this section. Please try again.'
+  }
+}
+
+async function reconcileConflict(): Promise<void> {
+  const draftTitle = title.value
+  const draftDocument = structuredClone(localDocument.value)
+  const draftSectionText = sectionText.value
+  const fresh = await profileQuery.refetch()
+  if (!fresh.data) return
+
+  currentProfile.value = fresh.data
+  localDocument.value = structuredClone(toRaw(fresh.data))
+  title.value = draftTitle
+  if (activeSection.value === 'personal_information') {
+    localDocument.value.personal_information = draftDocument.personal_information
+  } else {
+    sectionText.value = draftSectionText
+  }
+  errorMessage.value =
+    'This Profile changed elsewhere. Your draft is kept; review it and save again.'
 }
 
 async function save() {
-  isSaving.value = true
-  await new Promise((r) => setTimeout(r, 600))
-  isSaving.value = false
-  lastSaved.value = new Date()
+  if (saving.value) return
+  saving.value = true
+  errorMessage.value = ''
+  fieldErrors.value = {}
+  try {
+    if (isNew.value) {
+      const profile = await createCvProfile(title.value, localDocument.value.personal_information)
+      await router.replace(`/cv/${profile.id}/edit`)
+      loadProfile(profile)
+      return
+    }
+    let profile = currentProfile.value
+    if (!profile) return
+    if (title.value !== profile.title) {
+      profile = await updateCvTitle(profile.id, title.value, profile.revision)
+      currentProfile.value = profile
+      queryClient.setQueryData(['cv-profiles', profile.id], profile)
+    }
+    const value = parseSection()
+    const updated = await updateCvSection(profile.id, activeSection.value, value, profile.revision)
+    currentProfile.value = updated
+    localDocument.value = structuredClone(toRaw(updated))
+    queryClient.setQueryData(['cv-profiles', updated.id], updated)
+    void queryClient.invalidateQueries({ queryKey: ['cv-profiles'] })
+    loadSectionText()
+  } catch (error) {
+    applyError(error)
+    if (error instanceof ApiRequestError && error.status === 409) {
+      await reconcileConflict()
+    }
+  } finally {
+    saving.value = false
+  }
+}
+
+async function saveVersion() {
+  if (versionSaving.value) return
+  const profile = currentProfile.value
+  if (!profile || !versionName.value.trim()) return
+  versionSaving.value = true
+  versionMessage.value = ''
+  try {
+    await createCvVersion(profile.id, versionName.value.trim(), profile.revision)
+    await versionsQuery.refetch()
+    void queryClient.invalidateQueries({ queryKey: ['cv-versions'] })
+    versionMessage.value = 'Version saved.'
+    versionName.value = ''
+  } catch (error) {
+    versionMessage.value = error instanceof Error ? error.message : 'Unable to save version.'
+    if (error instanceof ApiRequestError && error.status === 409) {
+      const fresh = await profileQuery.refetch()
+      if (fresh.data) {
+        currentProfile.value = fresh.data
+        queryClient.setQueryData(['cv-profiles', fresh.data.id], fresh.data)
+        versionMessage.value =
+          'The Profile changed. Review the draft and try Version creation again.'
+      }
+    }
+  } finally {
+    versionSaving.value = false
+  }
 }
 </script>
 
 <template>
-  <div class="space-y-6">
-    <!-- Top Sub-Header & Sticky Action Bar -->
+  <section class="space-y-6" aria-labelledby="cv-editor-title">
     <div
-      class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/80"
+      class="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between"
     >
       <div>
-        <div class="flex items-center gap-2 mb-1.5">
-          <RouterLink
-            to="/dashboard"
-            class="text-xs text-text-muted hover:text-text transition-colors"
-          >
-            Dashboard
-          </RouterLink>
-          <span class="text-xs text-border-hover">/</span>
-          <span class="text-xs font-bold text-primary uppercase tracking-wider"
-            >CV Profile Editor</span
-          >
-        </div>
-
-        <div class="flex items-center gap-3">
-          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">
-            {{ cvData.personal_info.full_name }}'s CV
-          </h1>
-          <span
-            class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-primary-muted text-primary-dark border border-primary-border"
-          >
-            {{ isNew ? 'v1.0 (Draft)' : 'v1.2 (Active)' }}
-          </span>
-        </div>
+        <RouterLink to="/dashboard" class="text-xs text-text-muted">Dashboard</RouterLink>
+        <h1 id="cv-editor-title" class="mt-1 text-2xl font-bold text-text">CV Profile editor</h1>
+        <p class="mt-1 text-sm text-text-muted">
+          Changes are saved manually to your private Profile.
+        </p>
       </div>
-
-      <div class="flex items-center gap-3 flex-shrink-0">
-        <StatusDot
-          :status="isSaving ? 'processing' : 'active'"
-          :label="
-            isSaving
-              ? 'Saving changes...'
-              : `Saved at ${lastSaved?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-          "
+      <div class="flex items-center gap-2">
+        <input
+          v-model="title"
+          aria-label="Profile title"
+          class="h-10 rounded-lg border border-border px-3 text-sm"
+          placeholder="Profile title"
         />
-
-        <RouterLink :to="`/cv/${cvId === 'new' ? '1' : cvId}/preview`">
-          <AppButton variant="outline" size="md">
-            <Eye :size="16" :stroke-width="1.5" />
-            <span>Document Preview</span>
-          </AppButton>
-        </RouterLink>
-
-        <AppButton size="md" :loading="isSaving" @click="save">
-          <Save :size="16" :stroke-width="2" />
-          <span>Save Changes</span>
-        </AppButton>
+        <AppButton :loading="saving" :disabled="saving" @click="save">Save section</AppButton>
       </div>
     </div>
 
-    <!-- Main Workspace: Section Navigator + Section Editor Form -->
     <div
-      class="flex flex-col md:flex-row border border-border rounded-xl bg-white shadow-2xs overflow-hidden min-h-[600px]"
+      v-if="errorMessage"
+      role="alert"
+      class="rounded-lg border border-danger-border bg-danger-muted px-4 py-3 text-sm text-danger-hover"
     >
-      <!-- Section Navigation Sidebar -->
-      <CvSectionNav :active-section="activeSection" @select="(s) => (activeSection = s)" />
+      {{ errorMessage }}
+      <div v-for="(message, field) in fieldErrors" :key="field" class="mt-1">
+        {{ field }}: {{ message }}
+      </div>
+    </div>
+    <div
+      v-if="profileLoadError"
+      role="alert"
+      class="rounded-lg border border-danger-border bg-danger-muted px-4 py-3 text-sm text-danger-hover"
+    >
+      Unable to load this Profile.
+    </div>
 
-      <!-- Editor Content Panel -->
-      <div class="flex-1 p-5 sm:p-7 lg:p-8 overflow-y-auto bg-white">
-        <!-- ── Personal Info ────────────────────────── -->
-        <div v-if="activeSection === 'personal_info'" class="space-y-6 max-w-2xl">
-          <div>
-            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">
-              Personal Information
-            </h2>
-            <p class="text-xs sm:text-sm text-text-muted mt-0.5">
-              Contact details and portfolio links for recruiters to reach you.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-            <div class="flex flex-col gap-1.5">
-              <label for="full-name" class="text-xs sm:text-sm font-semibold text-text"
-                >Full Name <span class="text-danger">*</span></label
-              >
-              <input
-                id="full-name"
-                v-model="cvData.personal_info.full_name"
-                type="text"
-                class="h-9.5 sm:h-10 px-3.5 rounded-lg text-sm border border-border bg-white text-text focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all"
-              />
-            </div>
-
-            <div class="flex flex-col gap-1.5">
-              <label for="cv-email" class="text-xs sm:text-sm font-semibold text-text"
-                >Email <span class="text-danger">*</span></label
-              >
-              <input
-                id="cv-email"
-                v-model="cvData.personal_info.email"
-                type="email"
-                class="h-9.5 sm:h-10 px-3.5 rounded-lg text-sm border border-border bg-white text-text focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all"
-              />
-            </div>
-
-            <div class="flex flex-col gap-1.5">
-              <label for="phone" class="text-xs sm:text-sm font-semibold text-text">Phone</label>
-              <input
-                id="phone"
-                v-model="cvData.personal_info.phone"
-                type="tel"
-                class="h-9.5 sm:h-10 px-3.5 rounded-lg text-sm border border-border bg-white text-text focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all"
-              />
-            </div>
-
-            <div class="flex flex-col gap-1.5">
-              <label for="location" class="text-xs sm:text-sm font-semibold text-text"
-                >Location</label
-              >
-              <input
-                id="location"
-                v-model="cvData.personal_info.location"
-                type="text"
-                class="h-9.5 sm:h-10 px-3.5 rounded-lg text-sm border border-border bg-white text-text focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all"
-              />
-            </div>
-
-            <div class="flex flex-col gap-1.5">
-              <label for="github" class="text-xs sm:text-sm font-semibold text-text"
-                >GitHub URL</label
-              >
-              <input
-                id="github"
-                v-model="cvData.personal_info.github"
-                type="url"
-                class="h-9.5 sm:h-10 px-3.5 rounded-lg text-sm border border-border bg-white text-text focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all"
-              />
-            </div>
-
-            <div class="flex flex-col gap-1.5">
-              <label for="linkedin" class="text-xs sm:text-sm font-semibold text-text"
-                >LinkedIn URL</label
-              >
-              <input
-                id="linkedin"
-                v-model="cvData.personal_info.linkedin"
-                type="url"
-                class="h-9.5 sm:h-10 px-3.5 rounded-lg text-sm border border-border bg-white text-text focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Summary ──────────────────────────────── -->
-        <div v-else-if="activeSection === 'summary'" class="space-y-6 max-w-2xl">
-          <div>
-            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">
-              Professional Summary
-            </h2>
-            <p class="text-xs sm:text-sm text-text-muted mt-0.5">
-              A 2–3 sentence executive synopsis highlighting your engineering focus.
-            </p>
-          </div>
-
-          <div class="space-y-2">
-            <textarea
-              id="cv-summary"
-              v-model="cvData.summary"
-              rows="5"
-              class="w-full p-3.5 sm:p-4 rounded-xl text-sm border border-border bg-white text-text focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all leading-relaxed"
-            />
-            <div class="flex items-center justify-between text-xs text-text-muted">
-              <span>{{ cvData.summary.length }} characters</span>
-              <span
-                class="text-success-hover font-semibold bg-success-muted border border-success-border px-2.5 py-0.5 rounded-full"
-                >Optimal: 150–300 chars</span
-              >
-            </div>
-          </div>
-
-          <div
-            class="p-3.5 sm:p-4 rounded-xl bg-primary-muted border border-primary-border/60 flex items-start gap-2.5"
+    <div
+      class="flex min-h-[540px] flex-col overflow-hidden rounded-xl border border-border bg-white md:flex-row"
+    >
+      <CvSectionNav
+        :active-section="activeSection"
+        :completed-sections="completedSections"
+        @select="selectSection"
+      />
+      <div class="flex-1 space-y-5 p-5 sm:p-8">
+        <div
+          v-if="activeSection === 'personal_information'"
+          class="grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2"
+        >
+          <h2 class="sm:col-span-2 text-lg font-bold text-text">Personal information</h2>
+          <label
+            v-for="key in [
+              'full_name',
+              'headline',
+              'email',
+              'phone',
+              'location',
+              'website_url',
+              'linkedin_url',
+              'github_url',
+            ]"
+            :key="key"
+            class="space-y-1 text-sm font-medium text-text"
           >
-            <Sparkles :size="17" class="text-primary flex-shrink-0 mt-0.5" />
-            <div class="text-xs sm:text-sm text-text-secondary leading-relaxed">
-              <strong class="font-semibold text-text">ATS Pro-Tip:</strong> Mention your primary
-              stack (e.g. Vue 3, TypeScript, Laravel) directly in the first sentence to increase
-              keyword match weighting.
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Skills ───────────────────────────────── -->
-        <div v-else-if="activeSection === 'skills'" class="space-y-6 max-w-2xl">
-          <div>
-            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">
-              Technical Skills & Tools
-            </h2>
-            <p class="text-xs sm:text-sm text-text-muted mt-0.5">
-              Group technical proficiencies for targeted ATS keyword matching.
-            </p>
-          </div>
-
-          <!-- Add skill bar -->
-          <div class="flex items-center gap-2 p-2 bg-surface border border-border rounded-xl">
-            <select
-              v-model="selectedSkillCategory"
-              class="h-9 px-2.5 rounded-lg text-xs sm:text-sm border border-border bg-white font-medium text-text focus:outline-none"
-            >
-              <option value="frontend">Frontend</option>
-              <option value="backend">Backend</option>
-              <option value="tools">Tools / DevOps</option>
-            </select>
-
+            <span>{{ key.replaceAll('_', ' ') }}<span v-if="key === 'full_name'"> *</span></span>
             <input
-              v-model="newSkillTag"
-              type="text"
-              placeholder="e.g. Pinia, GraphQL, Docker..."
-              class="flex-1 h-9 px-3 rounded-lg text-sm border border-border bg-white focus:outline-none focus:border-primary"
-              @keyup.enter="addSkill"
+              v-model="localDocument.personal_information[key as keyof PersonalInformation]"
+              :type="key === 'email' ? 'email' : key.endsWith('_url') ? 'url' : 'text'"
+              class="w-full rounded-lg border border-border px-3 py-2"
             />
-
-            <AppButton size="sm" @click="addSkill">
-              <Plus :size="14" />
-              <span>Add</span>
-            </AppButton>
-          </div>
-
-          <!-- Skills categorized list -->
-          <div class="space-y-4">
-            <div
-              v-for="(skills, cat) in cvData.skills"
-              :key="cat"
-              class="p-4 border border-border rounded-xl bg-white space-y-2.5"
-            >
-              <span class="text-xs font-bold text-text uppercase tracking-wider">{{ cat }}</span>
-              <div class="flex flex-wrap gap-2">
-                <span
-                  v-for="(skill, sIndex) in skills"
-                  :key="skill"
-                  class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs sm:text-[13px] font-medium bg-surface-muted text-text-secondary border border-border hover:border-border-hover group"
-                >
-                  {{ skill }}
-                  <button
-                    type="button"
-                    class="text-text-subtle hover:text-danger transition-colors cursor-pointer text-sm leading-none"
-                    @click="removeSkill(cat as string, sIndex)"
-                  >
-                    &times;
-                  </button>
-                </span>
-              </div>
-            </div>
-          </div>
+          </label>
         </div>
-
-        <!-- ── Projects ─────────────────────────────── -->
-        <div v-else-if="activeSection === 'projects'" class="space-y-6 max-w-3xl">
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">
-                Projects & Evidence
-              </h2>
-              <p class="text-xs sm:text-sm text-text-muted mt-0.5">
-                Project descriptions act as primary truth evidence for match score checks.
-              </p>
-            </div>
-
-            <AppButton size="md" variant="outline" @click="addProject">
-              <Plus :size="15" />
-              <span>Add Project</span>
-            </AppButton>
-          </div>
-
-          <div class="space-y-4">
-            <div
-              v-for="(project, pIdx) in cvData.projects"
-              :key="project.id"
-              class="p-4 sm:p-5 border border-border rounded-xl bg-white space-y-3.5 shadow-2xs"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 flex-1">
-                  <div>
-                    <label class="text-xs font-bold text-text-muted uppercase tracking-wider"
-                      >Project Name</label
-                    >
-                    <input
-                      v-model="project.name"
-                      type="text"
-                      class="w-full h-9 px-3 rounded-lg text-sm border border-border mt-1 text-text focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                  <div>
-                    <label class="text-xs font-bold text-text-muted uppercase tracking-wider"
-                      >Role / Title</label
-                    >
-                    <input
-                      v-model="project.role"
-                      type="text"
-                      class="w-full h-9 px-3 rounded-lg text-sm border border-border mt-1 text-text focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  class="text-text-subtle hover:text-danger p-1.5 rounded-lg transition-colors cursor-pointer"
-                  @click="removeProject(pIdx)"
-                >
-                  <Trash2 :size="16" />
-                </button>
-              </div>
-
-              <!-- Bullets -->
-              <div>
-                <label class="text-xs font-bold text-text-muted uppercase tracking-wider"
-                  >Key Impact Bullets</label
-                >
-                <div class="space-y-2 mt-1">
-                  <div
-                    v-for="(bullet, bIdx) in project.bullets"
-                    :key="bIdx"
-                    class="flex items-center gap-2"
-                  >
-                    <span class="text-xs text-text-subtle">•</span>
-                    <input
-                      v-model="project.bullets[bIdx]"
-                      type="text"
-                      class="flex-1 h-9 px-3 rounded-lg text-sm border border-border text-text focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Other Sections Placeholder with modern fallback ── -->
-        <div v-else class="space-y-7 max-w-2xl">
-          <div>
-            <h2 class="text-xl font-bold text-text tracking-tight capitalize">
-              {{ activeSection.replace('_', ' ') }}
-            </h2>
-            <p class="text-sm text-text-muted mt-1">Section configurations and data inputs.</p>
-          </div>
-
-          <div
-            class="p-8 rounded-2xl border border-dashed border-border-hover text-center space-y-4"
-          >
-            <CheckCircle2 :size="28" class="text-success mx-auto" />
-            <p class="text-sm text-text-muted leading-relaxed">
-              This section is active. Fill in your details below or export directly to document
-              preview.
-            </p>
-            <RouterLink :to="`/cv/${cvId === 'new' ? '1' : cvId}/preview`">
-              <AppButton size="md" variant="outline"> View in Document Canvas </AppButton>
-            </RouterLink>
-          </div>
+        <div v-else class="max-w-4xl space-y-3">
+          <h2 class="text-lg font-bold capitalize text-text">
+            {{ activeSection.replaceAll('_', ' ') }}
+          </h2>
+          <p class="text-sm text-text-muted">
+            Replace this complete section. Existing item IDs are preserved by the server.
+          </p>
+          <textarea
+            v-model="sectionText"
+            :aria-label="`${activeSection} section`"
+            class="min-h-[360px] w-full rounded-lg border border-border p-3 font-mono text-sm"
+            :placeholder="
+              activeSection === 'summary' ? 'Write a concise professional summary' : '[]'
+            "
+          />
         </div>
       </div>
     </div>
-  </div>
+
+    <div v-if="!isNew && currentProfile" class="rounded-xl border border-border bg-white p-5">
+      <h2 class="font-bold text-text">Create immutable Version</h2>
+      <div class="mt-3 flex flex-col gap-2 sm:flex-row">
+        <input
+          v-model="versionName"
+          aria-label="Version name"
+          class="h-10 flex-1 rounded-lg border border-border px-3 text-sm"
+          placeholder="Version name"
+        />
+        <AppButton
+          variant="outline"
+          :loading="versionSaving"
+          :disabled="versionSaving"
+          @click="saveVersion"
+          >Save Version</AppButton
+        >
+      </div>
+      <p v-if="versionMessage" class="mt-2 text-sm text-text-muted" role="status">
+        {{ versionMessage }}
+      </p>
+      <ul v-if="versions.length" class="mt-4 space-y-2" aria-label="Saved Versions">
+        <li
+          v-for="version in versions"
+          :key="version.id"
+          class="rounded-lg border border-border px-3 py-2 text-sm text-text"
+        >
+          <RouterLink
+            :to="`/cv/${profileId}/version/${version.id}`"
+            class="font-semibold text-primary hover:underline"
+          >
+            {{ version.name }}
+          </RouterLink>
+          <span class="text-text-muted"
+            >· source revision {{ version.source_profile_revision }}</span
+          >
+        </li>
+      </ul>
+    </div>
+  </section>
 </template>

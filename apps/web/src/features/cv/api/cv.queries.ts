@@ -10,18 +10,21 @@ export function useCvProfilesQuery() {
   })
 }
 
-export function useCvProfileQuery(id: MaybeRef<number>) {
+export function useCvProfileQuery(id: MaybeRef<string>) {
   return useQuery({
     queryKey: ['cv-profiles', id],
     queryFn: () => getCvProfile(toValue(id)),
-    enabled: () => !!toValue(id),
+    enabled: () => {
+      const value = toValue(id)
+      return !!value && value !== 'new'
+    },
   })
 }
 
-export function useCvVersionsQuery(profileId: MaybeRef<number>) {
+export function useCvVersionsQuery(profileId: MaybeRef<string>) {
   return useQuery({
     queryKey: ['cv-versions', profileId],
     queryFn: () => getCvVersions(toValue(profileId)),
-    enabled: () => !!toValue(profileId),
+    enabled: () => !!toValue(profileId) && toValue(profileId) !== 'new',
   })
 }

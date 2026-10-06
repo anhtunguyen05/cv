@@ -18,7 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->statefulApi();
+        // The SPA reads this token to populate X-CSRF-TOKEN on mutating calls;
+        // keep the conventional XSRF-TOKEN cookie readable by JavaScript.
+        $middleware->encryptCookies(except: ['XSRF-TOKEN']);
+        // API mutators apply the explicit RequireCsrfToken contract below;
+        // exclude the same routes from Laravel's duplicate web/stateful check.
+        $middleware->preventRequestForgery(except: ['api/v1/*']);
         $middleware->trustProxies(at: env('TRUSTED_PROXIES'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {

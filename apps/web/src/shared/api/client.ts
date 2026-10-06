@@ -5,13 +5,13 @@ import { env } from '@/app/config/env'
 export interface ApiErrorPayload {
   code?: string
   message?: string
-  details?: Record<string, string | string[]>
+  details?: Record<string, string | string[] | Array<{ code?: string; message?: string }>>
 }
 
 export class ApiRequestError extends Error {
   readonly status: number
   readonly code?: string
-  readonly details?: Record<string, string | string[]>
+  readonly details?: Record<string, string | string[] | Array<{ code?: string; message?: string }>>
   readonly retryAfter?: number
 
   constructor(status: number, payload: ApiErrorPayload = {}, retryAfter?: number) {
@@ -38,6 +38,12 @@ export async function bootstrapCsrf(): Promise<void> {
   await ofetch('/sanctum/csrf-cookie', { credentials: 'include' })
 }
 
+export function clearProtectedStateOnExpiry(): void {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('careerfitcv:auth-expired'))
+  }
+}
+
 export const api = ofetch.create({
   baseURL: env.apiBaseUrl,
   credentials: 'include',
@@ -53,10 +59,20 @@ export const api = ofetch.create({
   },
   async onResponseError({ response }) {
     const payload = (response._data ?? {}) as ApiErrorPayload
-    throw new ApiRequestError(
+    const error = new ApiRequestError(
       response.status,
       payload,
       Number(response.headers.get('Retry-After') ?? '') || undefined,
     )
+    // A 401 from the login endpoint means invalid credentials, not an expired
+    // authenticated session. Only the API's explicit auth sentinel (or a CSRF
+    // expiry) may clear protected client state.
+    if (
+      response.status === 419 ||
+      (response.status === 401 && payload.code === 'UNAUTHENTICATED')
+    ) {
+      clearProtectedStateOnExpiry()
+    }
+    throw error
   },
 })

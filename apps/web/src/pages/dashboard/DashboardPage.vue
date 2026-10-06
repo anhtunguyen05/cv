@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import {
   Plus,
@@ -22,26 +21,6 @@ import Card from '@/shared/components/ui/card/Card.vue'
 import { useCvProfilesQuery } from '@/features/cv'
 
 const { data: cvProfiles, isLoading, isError, refetch } = useCvProfilesQuery()
-
-// Dynamic fallback sample profiles if API returns empty during early scaffold
-const sampleProfiles = ref([
-  {
-    id: '1',
-    title: 'Frontend Engineer (Vue 3 / TypeScript)',
-    target_role: 'Frontend Developer',
-    version: 'v1.2',
-    updated_at: new Date().toISOString(),
-    match_score: 88,
-  },
-  {
-    id: '2',
-    title: 'Fullstack Junior (Vue + Laravel API)',
-    target_role: 'Fullstack Engineer',
-    version: 'v1.0',
-    updated_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-    match_score: 74,
-  },
-])
 </script>
 
 <template>
@@ -99,7 +78,7 @@ const sampleProfiles = ref([
         </div>
         <div class="mt-3 flex items-baseline gap-2">
           <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">
-            {{ cvProfiles?.length || 2 }}
+            {{ cvProfiles?.length || 0 }}
           </span>
           <span
             class="text-xs font-semibold text-success-hover bg-success-muted border border-success-border px-2 py-0.5 rounded-full flex items-center gap-1"
@@ -193,7 +172,7 @@ const sampleProfiles = ref([
         <SkeletonCard v-if="isLoading" :rows="3" />
 
         <!-- Error State (only if no fallback demo profiles exist) -->
-        <Card v-else-if="isError && !sampleProfiles?.length">
+        <Card v-else-if="isError">
           <EmptyState
             title="Unable to load profiles"
             description="There was a connection issue loading CV data."
@@ -203,9 +182,15 @@ const sampleProfiles = ref([
         </Card>
 
         <!-- Profiles List -->
+        <Card v-else-if="!cvProfiles?.length">
+          <EmptyState
+            title="No CV Profiles yet"
+            description="Create a Profile to start building your trusted CV source."
+          />
+        </Card>
         <div v-else class="space-y-3">
           <div
-            v-for="profile in cvProfiles?.length ? cvProfiles : sampleProfiles"
+            v-for="profile in cvProfiles"
             :key="profile.id"
             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 p-4 sm:p-5 bg-white border border-border rounded-xl hover:border-primary-border hover:shadow-2xs transition-all group"
           >
@@ -223,7 +208,7 @@ const sampleProfiles = ref([
                   <span
                     class="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-surface-muted text-text-quiet border border-border"
                   >
-                    {{ (profile as any).version || 'v1.0' }}
+                    Revision {{ profile.revision }}
                   </span>
                 </div>
                 <div class="flex items-center gap-2.5 mt-1 text-xs text-text-muted">
@@ -232,9 +217,7 @@ const sampleProfiles = ref([
                     Updated {{ new Date(profile.updated_at).toLocaleDateString() }}
                   </span>
                   <span class="w-1 h-1 rounded-full bg-border-hover" />
-                  <span class="text-success-hover font-semibold">
-                    Fit: {{ (profile as any).match_score || 85 }}%
-                  </span>
+                  <span class="text-success-hover font-semibold"> Profile source </span>
                 </div>
               </div>
             </div>
