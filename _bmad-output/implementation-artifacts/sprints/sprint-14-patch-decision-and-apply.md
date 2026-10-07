@@ -45,3 +45,11 @@ the approved `E4-PREREQ-MATCH-001` report consumer contract.
 Keep explicit User approval as the only path to a new Version. Production provider activation remains deferred until the required Epic 5 controls are complete.
 
 All membership is recorded in this charter frontmatter. No Story lifecycle or task lifecycle is copied here. An external issue tracker may mirror permanent task keys under the mapping and verification rules in this directory README.
+
+## Approved planning baseline (2026-10-07)
+
+The fake-provider implementation baseline resolves the Epic 4 decision register
+for review, apply, and regeneration work. Sprint 14 begins only after Sprint 13
+has accepted the shared Interview/Evidence/Patch checkpoints and an integration
+owner is assigned before task start. `E4-PREREQ-OPS-001` continues to block only
+production-provider activation, never the deterministic fake path.

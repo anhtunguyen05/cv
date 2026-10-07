@@ -23,6 +23,9 @@ export const ROUTES = {
   MATCH_REPORTS: '/match',
   MATCH_REPORT: (matchId: string | number = ':matchId') => `/match/${matchId}`,
 
+  // Evidence
+  AI_INTERVIEW: (interviewId: string | number = ':id') => `/ai/interview/${interviewId}`,
+
   // Templates
   TEMPLATES: '/templates',
 } as const

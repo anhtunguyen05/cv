@@ -8,6 +8,7 @@ use App\Presentation\Http\Controllers\Cv\PreviewController;
 use App\Presentation\Http\Controllers\Cv\ProfileController;
 use App\Presentation\Http\Controllers\Cv\TemplateController;
 use App\Presentation\Http\Controllers\Cv\VersionController;
+use App\Presentation\Http\Controllers\Evidence\EvidenceInterviewController;
 use App\Presentation\Http\Controllers\HealthController;
 use App\Presentation\Http\Controllers\JobFit\AnalysisController;
 use App\Presentation\Http\Controllers\JobFit\JobDescriptionController;
@@ -112,4 +113,10 @@ Route::middleware([
         RequireCsrfToken::class,
         'throttle:job-fit-analysis',
     ]);
+    Route::post('/match-reports/{matchReport}/evidence-interviews', [EvidenceInterviewController::class, 'store'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-analysis',
+    ]);
+    Route::get('/evidence-interviews/{interview}', [EvidenceInterviewController::class, 'show']);
 });

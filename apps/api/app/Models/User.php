@@ -29,6 +29,11 @@ class User extends Authenticatable
         return $this->hasMany(CvVersion::class, 'user_id');
     }
 
+    public function evidenceInterviews(): HasMany
+    {
+        return $this->hasMany(EvidenceInterview::class, 'user_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

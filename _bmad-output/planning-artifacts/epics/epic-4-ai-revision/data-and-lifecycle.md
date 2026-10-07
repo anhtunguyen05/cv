@@ -58,3 +58,19 @@ Regeneration: rejected/invalid predecessor -> new generation attempt -> new Patc
 later edit/source/lifecycle revalidation; a malformed provider candidate remains
 a terminal generation attempt. No provider response can transition a Patch to
 `applied` or write a CV Version.
+
+## Approved implementation bindings (2026-10-07)
+
+- An Interview snapshots the first at most five `missing_skills`/`weak_evidence`
+  signal IDs in stored Match Report order and deterministic question text. Its
+  source tuple and question set never change; status is `active`, `completed`,
+  or `expired`.
+- An Evidence Answer stores one immutable original outcome. The only modes are
+  `answer` and `cannot_provide`; no correction/revision record is created in
+  MVP because a correction starts a new Interview.
+- A Patch has a monotonic revision for `If-Match` decisions. A user edit creates
+  a pending-validation revision, never mutates the source Version or the
+  provider candidate provenance.
+- Generation attempts use a deterministic fake and a 15-second synchronous
+  deadline, with one active attempt per Interview and five attempts per User per
+  minute. No queued job, raw prompt, or raw output becomes persistence.
