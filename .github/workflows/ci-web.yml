@@ -77,6 +77,10 @@ jobs:
         working-directory: apps/web
         run: npm ci
 
+      - name: Install Playwright Chromium
+        working-directory: apps/web
+        run: npx playwright install --with-deps chromium
+
       - name: Run disposable API and Playwright journey
         env:
           E1_RUN_ID: epic2${{ github.run_id }}
