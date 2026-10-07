@@ -26,7 +26,7 @@ owner IDs, deletion state, source IDs, rule versions, or deterministic keys.
 ## E2-DATA-002 — Analysis record
 
 - Store exact revision ID, Analysis schema version, analysis-rule version,
-  normalized validated signals, and creation timestamp.
+  normalized validated signals, deterministic key, and creation timestamp.
 - Enforce the approved uniqueness/deduplication key at database and application
   boundaries.
 - A failure does not produce a successful Analysis row with missing content.
@@ -40,6 +40,17 @@ owner IDs, deletion state, source IDs, rule versions, or deterministic keys.
   Analysis, and CV Version identity within one consistency boundary.
 - A repeated request follows the approved deduplication policy but never
   rewrites an existing report.
+
+## Existing migration reconciliation
+
+The existing Job Description, Analysis, and Match Report migrations are
+planning-era substrate, not accepted Epic 2 behavior. Before a feature branch
+uses them, `TASK-2-1-02` must run them against disposable PostgreSQL 16 and add
+forward-only migrations for every approved contract gap: `company`/`role`
+naming, Analysis schema version and signal state, report schema version,
+idempotency receipts/fingerprints, and the required indexes/constraints. No
+task may rewrite or assume an old migration is production-correct without that
+evidence.
 
 ## Job Description lifecycle
 

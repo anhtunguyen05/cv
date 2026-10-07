@@ -51,5 +51,37 @@ jobs:
       - name: Type-check
         run: npm run type-check
 
+      - name: Unit tests
+        run: npm run test:unit
+
       - name: Build
         run: npm run build-only
+
+  browser:
+    name: Browser journey
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install web dependencies
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        working-directory: apps/web
+        run: npx playwright install --with-deps chromium
+
+      - name: Run disposable API and Playwright journey
+        env:
+          E1_RUN_ID: epic2${{ github.run_id }}
+        run: ./scripts/e1-verify.sh e2e

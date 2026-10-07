@@ -3,7 +3,7 @@ story_key: 2-3-analyze-a-job-description
 title: Analyze a Job Description
 type: feature
 created: 2026-09-12
-story_owner: unassigned
+story_owner: Codex
 depends_on_stories:
   - 2-1-save-a-job-description
 source_story: _bmad-output/planning-artifacts/epics.md
@@ -20,9 +20,9 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`.
 
-**Planning blockers:** approved `E2-COORD-JD-001` checkpoint,
-`E2-DEC-001` through `E2-DEC-004`, `E2-DEC-007`, `E2-DEC-009`, and
-`E2-COORD-ANALYSIS-001`.
+**Planning checkpoint:** approved `E2-COORD-JD-001`, analysis decisions, and
+`E2-COORD-ANALYSIS-001` are implemented on `feat/epic-2-job-fit`; disposable
+PostgreSQL and the analysis Playwright journey have passed.
 
 ## Package map
 
@@ -81,7 +81,8 @@ schema versions, repeatability, duplicated/concurrent requests, stale/deleted
 sources, explicit retry/terminal failure, safe logs/rendering, frontend source
 distinction, versioned corpora, PostgreSQL persistence, and E2E analysis. Exact
 vocabulary, aliases, ordering, deterministic key, timeout/rate limit, and
-quality ownership remain open decisions.
+quality ownership is approved in the Epic decision register; expanded corpus
+and environment evidence remain open.
 
 ## Code map
 

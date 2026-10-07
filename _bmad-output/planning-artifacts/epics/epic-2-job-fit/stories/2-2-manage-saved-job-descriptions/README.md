@@ -3,7 +3,7 @@ story_key: 2-2-manage-saved-job-descriptions
 title: Manage saved Job Descriptions
 type: feature
 created: 2026-09-12
-story_owner: unassigned
+story_owner: Codex
 depends_on_stories:
   - 2-1-save-a-job-description
 source_story: _bmad-output/planning-artifacts/epics.md
@@ -20,8 +20,9 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`.
 
-**Planning blockers:** approved `E2-COORD-JD-001` checkpoint from Story 2.1,
-`E2-DEC-001` through `E2-DEC-003`, `E2-DEC-007` through `E2-DEC-009`.
+**Planning checkpoint:** approved `E2-COORD-JD-001` and Epic 2 decisions are
+implemented on `feat/epic-2-job-fit`; disposable PostgreSQL and the Playwright
+revision/delete/history journey have passed.
 
 ## Package map
 
@@ -77,9 +78,9 @@ or logically delete the resource while preserving pinned historical results.
 The package covers immutable revision creation, stale and competing updates,
 analysis invalidation for the new revision, logical deletion, active list,
 historical reproducibility, mixed ownership, delete/update/analyze races,
-accessible warnings, FE cache invalidation, PostgreSQL constraints, and E2E history.
-Exact concurrency, idempotency, pagination, deleted-source presentation, and
-tooling values remain open decisions.
+  accessible warnings, FE cache invalidation, PostgreSQL constraints, and E2E history.
+  Exact concurrency, idempotency, pagination, and deleted-source presentation
+  values are approved in the Epic decision register.
 
 ## Code map
 

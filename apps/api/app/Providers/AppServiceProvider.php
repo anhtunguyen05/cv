@@ -41,6 +41,20 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinutes(10, 3)->by($this->hashedKey('email', $email));
         });
+
+        RateLimiter::for('job-fit-analysis', function (Request $request): Limit {
+            $user = $request->user();
+            $owner = $user?->getAuthIdentifier() ?? 'guest';
+
+            return Limit::perMinute(10)->by($this->hashedKey('job-fit-analysis', $owner.'|'.($request->ip() ?? 'unknown')));
+        });
+
+        RateLimiter::for('job-fit-mutations', function (Request $request): Limit {
+            $user = $request->user();
+            $owner = $user?->getAuthIdentifier() ?? 'guest';
+
+            return Limit::perMinute(30)->by($this->hashedKey('job-fit-mutations', $owner.'|'.($request->ip() ?? 'unknown')));
+        });
     }
 
     private function hashedKey(string $type, string $value): string

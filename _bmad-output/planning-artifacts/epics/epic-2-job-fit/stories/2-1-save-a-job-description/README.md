@@ -3,7 +3,7 @@ story_key: 2-1-save-a-job-description
 title: Save a Job Description
 type: feature
 created: 2026-09-12
-story_owner: unassigned
+story_owner: Codex
 depends_on_stories:
   - 1-2-sign-in-and-sign-out
 source_story: _bmad-output/planning-artifacts/epics.md
@@ -20,8 +20,9 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`.
 
-**Planning blockers:** `E2-PREREQ-AUTH-001`, `E2-DEC-001` through
-`E2-DEC-003`, `E2-DEC-007` through `E2-DEC-009`, and `E2-COORD-JD-001`.
+**Planning checkpoint:** approved ownership, input, concurrency, and HTTP
+decisions are implemented on `feat/epic-2-job-fit`; disposable PostgreSQL and
+the save/reload Playwright journey have passed.
 
 ## Package map
 
@@ -75,19 +76,19 @@ metadata as one owned logical resource with an atomic immutable initial revision
 
 The package covers creation/reload, atomic initial revision, invalid and
 oversized input, duplicate/lost submission, authenticated ownership,
-non-disclosure, safe text rendering, UI states, FE/API mapping, PostgreSQL
-constraints, and browser verification. Exact input, HTTP, concurrency,
-deduplication, rate-limit, list/detail, and tooling values remain in the Epic
-decision register.
+  non-disclosure, safe text rendering, UI states, FE/API mapping, PostgreSQL
+  constraints, and browser verification. Exact input, HTTP, concurrency,
+  deduplication, rate-limit, list/detail, and tooling values are in the
+  approved Epic decision register.
 
 ## Code map
 
 - `apps/api/app/`, `database/migrations/` — aggregate, revision, repository,
   policy, application service, request/resource, and transaction.
-- `apps/api/routes/api.php` — proposed protected product routes.
+- `apps/api/routes/api.php` — implemented protected `/api/v1` product routes.
 - `apps/web/src/shared/api/`, `features/job-descriptions/`, `pages/`, router —
   transport, schema/state, create form, detail/reload, and errors.
-- API/PostgreSQL/Vitest/Playwright locations — planned verification only.
+- API/Vitest checks are implemented; PostgreSQL and Playwright remain explicit environment-gated verification.
 
 ## Spec change log
 

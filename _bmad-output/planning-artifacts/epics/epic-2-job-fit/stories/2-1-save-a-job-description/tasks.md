@@ -8,9 +8,9 @@ Return to the [Story overview](README.md). Story lifecycle comes from
 **Execution:**
 
 - [ ] TASK-2-1-01: Freeze Job Description create/read fixtures
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
+  - Status: `doing`
+  - Owner: `Codex`
+  - Branch/worktree: `feat/epic-2-job-fit`
   - Depends on: `none`
   - Covers: `AC-2-1-save-a-job-description-01`, `AC-2-1-save-a-job-description-02`, `AC-2-1-save-a-job-description-03`
   - Scope: 01. Freeze executable Job Description create/read fixtures: stable create/read/error/revision fixtures and promoted contract
@@ -21,9 +21,9 @@ Return to the [Story overview](README.md). Story lifecycle comes from
   - Verification: 01. Freeze executable Job Description create/read fixtures: validate fixture syntax and review against Global/Epic IDs.
 
 - [ ] TASK-2-1-02: Deliver owned Job Description create/read backend
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
+  - Status: `doing`
+  - Owner: `Codex`
+  - Branch/worktree: `feat/epic-2-job-fit`
   - Depends on: `TASK-2-1-01`
   - Covers: `AC-2-1-save-a-job-description-01`, `AC-2-1-save-a-job-description-02`, `AC-2-1-save-a-job-description-03`
   - Scope: 01. Implement Job Description aggregate and initial-revision persistence: migrations, models/entities, constraints, repository, atomic initial revision | 02. Implement owned create/read application services and policy: create/read use cases, canonicalization, ownership policy, dedupe/reconciliation | 03. Expose protected Job Description create/read API: Form Request, API Resource, controller, routes, exceptions, rate limit | 04. Verify Job Description backend contract and persistence: domain, Laravel feature/contract, policy, migration, PostgreSQL integration suites
@@ -34,9 +34,9 @@ Return to the [Story overview](README.md). Story lifecycle comes from
   - Verification: 01. Implement Job Description aggregate and initial-revision persistence: PHPUnit plus disposable-PostgreSQL migration, constraint, rollback, and reload checks. | 02. Implement owned create/read application services and policy: domain/application tests including two-User, timeout, and duplicate scenarios. | 03. Expose protected Job Description create/read API: Laravel feature/contract tests including malformed transport and limiter expiry. | 04. Verify Job Description backend contract and persistence: approved focused/full PHPUnit commands with disposable PostgreSQL result.
 
 - [ ] TASK-2-1-03: Deliver and verify save and reload journey
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
+  - Status: `doing`
+  - Owner: `Codex`
+  - Branch/worktree: `feat/epic-2-job-fit`
   - Depends on: `TASK-2-1-01`
   - Covers: `AC-2-1-save-a-job-description-01`, `AC-2-1-save-a-job-description-02`, `AC-2-1-save-a-job-description-03`
   - Scope: 01. Implement Job Description frontend adapter and create state: API/schema/error adapter, mutation/query state, cache and reconciliation | 02. Build accessible Job Description create and reload experience: create page/form, pending/errors, success navigation, owned detail rendering | 03. Verify save and reload journey end to end: browser save/reload/validation/foreign-access/retry scenarios
@@ -56,3 +56,10 @@ Shared Job Description files remain reserved by `E2-COORD-JD-001`.
 
 ## Coordination gate
 Task group 03 requires evidence for all three ACs and an approved aggregate/revision checkpoint reusable by Stories 2.2 and 2.3.
+
+## Implementation checkpoint (2026-10-07)
+
+Codex has implemented the API/UI path and focused SQLite feature coverage on
+`feat/epic-2-job-fit`. Disposable PostgreSQL 16 migration/constraint evidence
+passes, and the Playwright save/reload prerequisite journey passes as part of
+the three-test browser gate.

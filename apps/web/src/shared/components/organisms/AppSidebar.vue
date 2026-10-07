@@ -31,7 +31,7 @@ const navItems = [
   { label: 'Dashboard', to: ROUTES.DASHBOARD, icon: LayoutDashboard },
   { label: 'CV Editor', to: ROUTES.CV_EDIT('new'), icon: FileText },
   { label: 'Job Analysis', to: ROUTES.JD_NEW, icon: Briefcase },
-  { label: 'Match Reports', to: '/match/1', icon: BarChart2 },
+  { label: 'Match Reports', to: ROUTES.MATCH_REPORTS, icon: BarChart2 },
   { label: 'Templates', to: ROUTES.TEMPLATES, icon: LayoutTemplate },
 ]
 </script>

@@ -112,7 +112,9 @@ return new class extends Migration
         });
 
         // CHECK constraints
-        DB::statement("ALTER TABLE job_description_analyses ADD CONSTRAINT jda_status_check CHECK (status IN ('pending', 'running', 'succeeded', 'failed'))");
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE job_description_analyses ADD CONSTRAINT jda_status_check CHECK (status IN ('pending', 'running', 'succeeded', 'failed'))");
+        }
     }
 
     public function down(): void

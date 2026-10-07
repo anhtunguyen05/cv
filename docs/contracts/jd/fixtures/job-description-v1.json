@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "examples": [
+    {
+      "id": "jd-unicode-multiline-001",
+      "raw_text": "Kỹ sư Frontend\r\n\r\nYêu cầu:\r\n- Vue 3 và TypeScript",
+      "company": "Công ty Ví dụ",
+      "role": "Kỹ sư Frontend",
+      "expected_revision_number": 1
+    },
+    {
+      "id": "jd-optional-metadata-002",
+      "raw_text": "Responsibilities:\n- Build accessible interfaces.\nRequirements:\n- JavaScript.",
+      "company": null,
+      "role": null,
+      "expected_revision_number": 1
+    }
+  ],
+  "validation_cases": [
+    { "id": "blank", "raw_text": "   ", "expected_error": "VALIDATION_FAILED" },
+    { "id": "unsupported-field", "raw_text": "A source", "extra": "rejected", "expected_error": "VALIDATION_FAILED" }
+  ]
+}

@@ -25,6 +25,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::connection()->getDriverName() !== 'pgsql') {
+            return;
+        }
         // Add DEFERRABLE FK — not expressible via Blueprint
         DB::statement(<<<'SQL'
             ALTER TABLE job_descriptions
@@ -38,6 +41,9 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::connection()->getDriverName() !== 'pgsql') {
+            return;
+        }
         DB::statement('ALTER TABLE job_descriptions DROP CONSTRAINT IF EXISTS job_descriptions_current_revision_id_fk');
     }
 };

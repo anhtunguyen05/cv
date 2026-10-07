@@ -118,7 +118,9 @@ return new class extends Migration
         });
 
         // CHECK constraints
-        DB::statement('ALTER TABLE match_reports ADD CONSTRAINT mr_score_range CHECK (overall_score BETWEEN 0 AND 100)');
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE match_reports ADD CONSTRAINT mr_score_range CHECK (overall_score BETWEEN 0 AND 100)');
+        }
     }
 
     public function down(): void

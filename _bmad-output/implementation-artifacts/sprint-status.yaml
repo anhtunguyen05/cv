@@ -4,7 +4,7 @@
 # Story packages remain nested under their owning Epic; lifecycle lives here.
 
 generated: 09-01-2026 03:30
-last_updated: 10-06-2026
+last_updated: 10-07-2026 16:40
 project: CareerFitCV
 project_key: CAREERFITCV
 tracking_system: file-system
@@ -22,12 +22,12 @@ development_status:
   1-8-create-and-view-an-immutable-cv-version: done
   epic-1-retrospective: optional
 
-  epic-2: backlog
-  2-1-save-a-job-description: backlog
-  2-2-manage-saved-job-descriptions: backlog
-  2-3-analyze-a-job-description: backlog
-  2-4-generate-a-match-report: backlog
-  2-5-review-an-explainable-match-report: backlog
+  epic-2: in-progress
+  2-1-save-a-job-description: review
+  2-2-manage-saved-job-descriptions: review
+  2-3-analyze-a-job-description: review
+  2-4-generate-a-match-report: review
+  2-5-review-an-explainable-match-report: review
   epic-2-retrospective: optional
 
   epic-3: backlog

@@ -10,19 +10,23 @@ const props = defineProps<Props>()
 // SVG circle math
 const radius = 54
 const circumference = 2 * Math.PI * radius
-const offset = computed(() => circumference - (props.score / 100) * circumference)
+const safeScore = computed(() => {
+  const score = Number(props.score)
+  return Number.isFinite(score) ? Math.min(100, Math.max(0, score)) : 0
+})
+const offset = computed(() => circumference - (safeScore.value / 100) * circumference)
 
 const scoreColor = computed(() => {
-  if (props.score >= 80) return 'var(--color-success)'
-  if (props.score >= 60) return 'var(--color-primary)'
-  if (props.score >= 40) return 'var(--color-warning)'
+  if (safeScore.value >= 80) return 'var(--color-success)'
+  if (safeScore.value >= 60) return 'var(--color-primary)'
+  if (safeScore.value >= 40) return 'var(--color-warning)'
   return 'var(--color-danger)'
 })
 
 const scoreLabel = computed(() => {
-  if (props.score >= 80) return 'High Alignment'
-  if (props.score >= 60) return 'Solid Match'
-  if (props.score >= 40) return 'Moderate Fit'
+  if (safeScore.value >= 80) return 'High Alignment'
+  if (safeScore.value >= 60) return 'Solid Match'
+  if (safeScore.value >= 40) return 'Moderate Fit'
   return 'Low Coverage'
 })
 </script>
@@ -60,7 +64,7 @@ const scoreLabel = computed(() => {
         <span
           class="text-3xl sm:text-4xl font-extrabold text-text font-mono leading-none tracking-tight"
         >
-          {{ score }}
+          {{ safeScore.toFixed(1) }}
         </span>
         <span class="text-xs font-medium text-text-subtle mt-1">/ 100 PTS</span>
       </div>
@@ -70,7 +74,7 @@ const scoreLabel = computed(() => {
       <p class="text-xs sm:text-sm font-bold tracking-tight" :style="{ color: scoreColor }">
         {{ scoreLabel }}
       </p>
-      <p class="text-xs text-text-muted">ATS Evaluation Score</p>
+      <p class="text-xs text-text-muted">Deterministic fit score</p>
     </div>
   </div>
 </template>
