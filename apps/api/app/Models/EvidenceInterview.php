@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use LogicException;
 
 final class EvidenceInterview extends Model
@@ -41,7 +42,7 @@ final class EvidenceInterview extends Model
 
     protected static function booted(): void
     {
-        static::updating(static function (self $interview): void {
+        self::updating(static function (self $interview): void {
             foreach (self::IMMUTABLE_ATTRIBUTES as $attribute) {
                 if ($interview->isDirty($attribute)) {
                     throw new LogicException('Evidence Interview source snapshots are immutable.');
@@ -78,5 +79,15 @@ final class EvidenceInterview extends Model
     public function analysis(): BelongsTo
     {
         return $this->belongsTo(JobDescriptionAnalysis::class, 'analysis_id');
+    }
+
+    public function answers(): HasMany
+    {
+        return $this->hasMany(EvidenceAnswer::class, 'interview_id');
+    }
+
+    public function patches(): HasMany
+    {
+        return $this->hasMany(Patch::class, 'interview_id');
     }
 }

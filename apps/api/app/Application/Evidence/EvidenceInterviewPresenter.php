@@ -6,6 +6,7 @@ namespace App\Application\Evidence;
 
 use App\Application\Cv\ApiProblem;
 use App\Application\Cv\ProfileDocument;
+use App\Models\EvidenceAnswer;
 use App\Models\EvidenceInterview;
 
 final class EvidenceInterviewPresenter
@@ -49,6 +50,14 @@ final class EvidenceInterviewPresenter
             'expires_at' => $interview->expires_at?->toISOString(),
             'created_at' => $interview->created_at?->toISOString(),
             'updated_at' => $interview->updated_at?->toISOString(),
+            'answers' => $interview->relationLoaded('answers')
+                ? $interview->answers->map(static fn (EvidenceAnswer $answer): array => EvidenceAnswerPresenter::data($answer))->values()->all()
+                : [],
+            'progress' => [
+                'answered' => $interview->relationLoaded('answers') ? $interview->answers->count() : 0,
+                'total' => count($questions),
+                'remaining' => max(0, count($questions) - ($interview->relationLoaded('answers') ? $interview->answers->count() : 0)),
+            ],
         ];
     }
 

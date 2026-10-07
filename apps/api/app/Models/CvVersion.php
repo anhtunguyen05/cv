@@ -19,7 +19,9 @@ final class CvVersion extends Model
 
     protected $fillable = [
         'id', 'user_id', 'source_profile_id', 'source_profile_revision', 'name',
-        'snapshot_schema_version', 'snapshot', 'snapshot_hash', 'created_at',
+        'source_cv_version_id', 'source_match_report_id', 'source_interview_id',
+        'source_patch_id', 'snapshot_schema_version', 'snapshot', 'snapshot_hash',
+        'provenance', 'created_at',
     ];
 
     protected function casts(): array
@@ -27,6 +29,7 @@ final class CvVersion extends Model
         return [
             'source_profile_revision' => 'integer',
             'snapshot' => 'array',
+            'provenance' => 'array',
             'created_at' => 'immutable_datetime',
         ];
     }

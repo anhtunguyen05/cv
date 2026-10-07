@@ -132,6 +132,7 @@ final class EvidenceInterviewService
             $interview = EvidenceInterview::query()
                 ->where('id', $interviewId)
                 ->where('user_id', $user->getKey())
+                ->with('answers')
                 ->lockForUpdate()
                 ->first();
             if (! $interview instanceof EvidenceInterview) {
@@ -236,7 +237,6 @@ final class EvidenceInterviewService
         return array_slice($areas, 0, self::MAX_AREAS);
     }
 
-    /** @return MatchReport */
     private function findOwnedReport(User $user, string $matchReportId, bool $lock): MatchReport
     {
         if (! ProfileDocument::isUlid($matchReportId)) {

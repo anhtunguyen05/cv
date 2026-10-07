@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
-import { RouterLink, useRoute } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useMutation, useQuery } from '@tanstack/vue-query'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, RefreshCw, ShieldCheck } from 'lucide-vue-next'
-import { getEvidenceInterview } from '@/features/evidence/api/evidence.api'
+import { getEvidenceInterview, generatePatch, submitEvidenceAnswer } from '@/features/evidence/api/evidence.api'
 import { ApiRequestError } from '@/shared/api/client'
 import AppButton from '@/shared/components/atoms/AppButton.vue'
 import AppBadge from '@/shared/components/atoms/AppBadge.vue'
@@ -18,6 +18,31 @@ const interviewQuery = useQuery({
   enabled: computed(() => interviewId.value.length > 0),
   retry: (count, error) => isRetryable(error) && count < 2,
 })
+const answers = ref<Record<string, string>>({})
+const answerKeys = ref<Record<string, string>>({})
+const activeQuestion = ref<string | null>(null)
+const answerMutation = useMutation({
+  mutationFn: (input: { questionId: string; answer?: string; cannotProvide?: boolean }) => submitEvidenceAnswer(interviewId.value, {
+    question_id: input.questionId,
+    question_version: '1.0',
+    outcome: input.cannotProvide ? 'cannot_provide' : 'answer',
+    ...(input.cannotProvide ? {} : { answer: input.answer ?? '' }),
+  }, answerKeys.value[input.questionId] ??= crypto.randomUUID()),
+  onSuccess: ({ interview }, input) => {
+    interviewQuery.data.value = interview
+    delete answerKeys.value[input.questionId]
+    activeQuestion.value = null
+  },
+})
+const generationKey = ref<string | null>(null)
+const generationMutation = useMutation({
+  mutationFn: () => generatePatch(interviewId.value, generationKey.value ??= crypto.randomUUID()),
+  onSuccess: (patch) => {
+    generationKey.value = null
+    void router.push(ROUTES.PATCH_REVIEW(patch.id))
+  },
+})
+const router = useRouter()
 
 const retryable = computed(() => {
   const error = interviewQuery.error.value
@@ -26,6 +51,12 @@ const retryable = computed(() => {
 
 function isRetryable(error: unknown): boolean {
   return error instanceof ApiRequestError ? error.status === 429 || error.status >= 500 : true
+}
+
+function submitAnswer(questionId: string, cannotProvide = false): void {
+  activeQuestion.value = questionId
+  answerKeys.value[questionId] ??= crypto.randomUUID()
+  answerMutation.mutate({ questionId, answer: answers.value[questionId], cannotProvide })
 }
 
 const statusLabels = {
@@ -97,6 +128,9 @@ const statusVariants = {
               {{ interviewQuery.data.value.questions.length }} targeted question{{ interviewQuery.data.value.questions.length === 1 ? '' : 's' }}
               · Question set {{ interviewQuery.data.value.question_set_version }}
             </p>
+            <p class="text-xs text-text-muted" role="status">
+              {{ interviewQuery.data.value.progress?.answered ?? 0 }} of {{ interviewQuery.data.value.progress?.total ?? interviewQuery.data.value.questions.length }} outcomes saved
+            </p>
           </div>
           <AppBadge
             :label="statusLabels[interviewQuery.data.value.status]"
@@ -119,6 +153,28 @@ const statusVariants = {
               }}
             </p>
             <h3 class="text-sm sm:text-base font-semibold text-text">{{ question.question }}</h3>
+            <template v-if="interviewQuery.data.value.status === 'active' && !(interviewQuery.data.value.answers ?? []).some((answer) => answer.question_id === question.id)">
+              <label :for="`answer-${question.id}`" class="sr-only">Your answer</label>
+              <textarea
+                :id="`answer-${question.id}`"
+                v-model="answers[question.id]"
+                rows="4"
+                maxlength="4000"
+                class="w-full rounded-xl border border-border bg-white p-3 text-sm text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                placeholder="Share a specific, truthful example."
+              />
+              <div class="flex flex-wrap gap-2">
+                <AppButton type="button" size="sm" :loading="activeQuestion === question.id && answerMutation.isPending.value" :disabled="answerMutation.isPending.value" @click="submitAnswer(question.id)">
+                  Save answer
+                </AppButton>
+                <AppButton type="button" size="sm" variant="outline" :disabled="answerMutation.isPending.value" @click="submitAnswer(question.id, true)">
+                  I cannot provide evidence
+                </AppButton>
+              </div>
+            </template>
+            <p v-else-if="(interviewQuery.data.value.answers ?? []).some((answer) => answer.question_id === question.id)" class="text-xs text-text-muted" role="status">
+              This outcome is saved as immutable User Evidence.
+            </p>
           </article>
         </div>
 
@@ -130,6 +186,19 @@ const statusVariants = {
           This interview is {{ interviewQuery.data.value.status }} and cannot accept new answers.
           Return to the Match Report to start a fresh interview when the report has unresolved areas.
         </p>
+        <div v-if="answerMutation.isError.value" class="flex flex-wrap items-center gap-3 border-t border-border pt-3" role="alert">
+          <p class="text-sm text-danger-text">The answer could not be saved. Refresh the interview to reconcile its server-owned state.</p>
+          <AppButton type="button" size="sm" variant="outline" @click="interviewQuery.refetch()">
+            <RefreshCw :size="15" aria-hidden="true" /> Refresh interview
+          </AppButton>
+        </div>
+        <div v-if="interviewQuery.data.value.status === 'completed'" class="border-t border-border pt-4 space-y-2">
+          <p class="text-sm text-text-muted">All outcomes are recorded. Generate one bounded Patch proposal for your review.</p>
+          <AppButton type="button" :loading="generationMutation.isPending.value" :disabled="generationMutation.isPending.value" @click="generationMutation.mutate()">
+            Generate Patch proposal
+          </AppButton>
+          <p v-if="generationMutation.isError.value" class="text-sm text-danger-text" role="alert">The proposal could not be generated. You can retry safely.</p>
+        </div>
       </Card>
     </template>
   </div>

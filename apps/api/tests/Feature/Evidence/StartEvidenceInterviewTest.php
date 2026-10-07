@@ -212,9 +212,11 @@ final class StartEvidenceInterviewTest extends TestCase
     /** @return array{report:MatchReport,version:CvVersion,job:JobDescription,revision:JobDescriptionRevision,analysis:JobDescriptionAnalysis} */
     private function createReport(User $user, bool $withAreas): array
     {
+        $profileId = ProfileDocument::id();
+        $profileTitle = 'Primary '.$profileId;
         $profile = CvProfile::create([
-            'id' => ProfileDocument::id(), 'user_id' => $user->getKey(), 'title' => 'Primary',
-            'normalized_title' => 'Primary', 'revision' => 1, 'schema_version' => '1.0',
+            'id' => $profileId, 'user_id' => $user->getKey(), 'title' => $profileTitle,
+            'normalized_title' => $profileTitle, 'revision' => 1, 'schema_version' => '1.0',
             'document' => ProfileDocument::empty('Evidence User'),
         ]);
         $version = CvVersion::create([

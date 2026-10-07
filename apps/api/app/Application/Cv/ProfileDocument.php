@@ -51,4 +51,15 @@ final class ProfileDocument
     {
         return (string) Str::ulid();
     }
+
+    public static function normalizeText(string $value): string
+    {
+        $value = str_replace(["\r\n", "\r"], "\n", $value);
+        $value = preg_replace('/^[\s\p{Z}]+|[\s\p{Z}]+$/u', '', $value) ?? $value;
+        if (class_exists('Normalizer')) {
+            $value = \Normalizer::normalize($value, \Normalizer::FORM_C) ?: $value;
+        }
+
+        return $value;
+    }
 }
