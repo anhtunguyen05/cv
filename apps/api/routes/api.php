@@ -7,6 +7,9 @@ use App\Presentation\Http\Controllers\Auth\RegisterController;
 use App\Presentation\Http\Controllers\Cv\ProfileController;
 use App\Presentation\Http\Controllers\Cv\VersionController;
 use App\Presentation\Http\Controllers\HealthController;
+use App\Presentation\Http\Controllers\JobFit\AnalysisController;
+use App\Presentation\Http\Controllers\JobFit\JobDescriptionController;
+use App\Presentation\Http\Controllers\JobFit\MatchReportController;
 use App\Presentation\Http\Middleware\RejectBearerToken;
 use App\Presentation\Http\Middleware\RejectMalformedJson;
 use App\Presentation\Http\Middleware\RequireCsrfToken;
@@ -73,5 +76,36 @@ Route::middleware([
     Route::post('/cv-profiles/{profile}/versions', [VersionController::class, 'store'])->middleware([
         RejectMalformedJson::class,
         RequireCsrfToken::class,
+    ]);
+
+    Route::get('/job-descriptions', [JobDescriptionController::class, 'index']);
+    Route::get('/job-descriptions/{jobDescription}', [JobDescriptionController::class, 'show']);
+    Route::post('/job-descriptions', [JobDescriptionController::class, 'store'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-mutations',
+    ]);
+    Route::patch('/job-descriptions/{jobDescription}', [JobDescriptionController::class, 'update'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-mutations',
+    ]);
+    Route::delete('/job-descriptions/{jobDescription}', [JobDescriptionController::class, 'destroy'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-mutations',
+    ]);
+    Route::post('/job-descriptions/{jobDescription}/analyses', [AnalysisController::class, 'store'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-analysis',
+    ]);
+    Route::get('/job-descriptions/{jobDescription}/analyses/{analysis}', [AnalysisController::class, 'show']);
+    Route::get('/match-reports', [MatchReportController::class, 'index']);
+    Route::get('/match-reports/{matchReport}', [MatchReportController::class, 'show']);
+    Route::post('/match-reports', [MatchReportController::class, 'store'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-analysis',
     ]);
 });

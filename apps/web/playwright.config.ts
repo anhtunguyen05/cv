@@ -9,7 +9,9 @@ export default defineConfig({
   webServer: {
     command: `npm run dev -- --host 127.0.0.1 --port ${process.env.E1_WEB_PORT || '4173'}`,
     url: `http://127.0.0.1:${process.env.E1_WEB_PORT || '4173'}`,
-    reuseExistingServer: true,
+    // A stale Vite process can serve an older module graph and make a valid
+    // browser assertion fail before the application is reached.
+    reuseExistingServer: false,
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 })

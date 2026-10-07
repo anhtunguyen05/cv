@@ -93,8 +93,10 @@ return new class extends Migration
         });
 
         // CHECK constraints
-        DB::statement("ALTER TABLE cv_exports ADD CONSTRAINT cv_exports_status_check CHECK (status IN ('initiated', 'completed', 'failed'))");
-        DB::statement("ALTER TABLE cv_exports ADD CONSTRAINT cv_exports_type_check CHECK (export_type IN ('browser_print', 'pdf_worker', 'html_download'))");
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE cv_exports ADD CONSTRAINT cv_exports_status_check CHECK (status IN ('initiated', 'completed', 'failed'))");
+            DB::statement("ALTER TABLE cv_exports ADD CONSTRAINT cv_exports_type_check CHECK (export_type IN ('browser_print', 'pdf_worker', 'html_download'))");
+        }
     }
 
     public function down(): void

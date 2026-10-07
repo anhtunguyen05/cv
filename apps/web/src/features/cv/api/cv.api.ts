@@ -73,6 +73,19 @@ export async function getCvVersions(profileId?: string): Promise<CvVersion[]> {
   return response.data
 }
 
+export interface CvVersionPage {
+  items: CvVersion[]
+  total: number
+  lastPage: number
+}
+
+export async function getCvVersionsPage(page = 1, perPage = 20, profileId?: string): Promise<CvVersionPage> {
+  const params = new URLSearchParams({ page: String(page), per_page: String(perPage) })
+  if (profileId) params.set('profile_id', profileId)
+  const response = await api<Collection<CvVersion>>(`/cv-versions?${params.toString()}`)
+  return { items: response.data, total: response.meta.total, lastPage: response.meta.last_page }
+}
+
 export async function getCvVersion(id: string): Promise<CvVersion> {
   const response = await api<{ data: CvVersion }>(`/cv-versions/${encodeURIComponent(id)}`)
   return response.data

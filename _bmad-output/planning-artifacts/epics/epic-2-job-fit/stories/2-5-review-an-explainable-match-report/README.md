@@ -3,7 +3,7 @@ story_key: 2-5-review-an-explainable-match-report
 title: Review an explainable Match Report
 type: feature
 created: 2026-09-12
-story_owner: unassigned
+story_owner: Codex
 depends_on_stories:
   - 2-4-generate-a-match-report
 source_story: _bmad-output/planning-artifacts/epics.md
@@ -20,9 +20,9 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`.
 
-**Planning blockers:** approved `E2-COORD-MATCH-001` checkpoint from Story 2.4,
-`E2-PREREQ-VERSION-001`, `E2-DEC-001`, `E2-DEC-005`, `E2-DEC-006`,
-`E2-DEC-008`, `E2-DEC-009`, and `DISCOVERY-E2-001`.
+**Planning checkpoint:** approved report/source decisions and
+`E2-COORD-MATCH-001` are implemented on `feat/epic-2-job-fit`; the expanded
+quality corpus plus PostgreSQL/Playwright report review evidence have passed.
 
 ## Package map
 
@@ -81,7 +81,8 @@ context, stored-not-recomputed output, empty classifications, Weak Evidence,
 unsupported-claim prevention, recommendation section references, safe
 rendering, score semantics, loading/error states, keyboard/assistive order,
 component tests, and E2E review. Exact explanation schema, disclaimer, ordering,
-pagination, source summary, and quality evidence remain open decisions.
+pagination, source summary, and the deterministic quality baseline are
+approved.
 
 ## Code map
 

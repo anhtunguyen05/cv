@@ -3,7 +3,7 @@ story_key: 2-4-generate-a-match-report
 title: Generate a Match Report
 type: feature
 created: 2026-09-12
-story_owner: unassigned
+story_owner: Codex
 depends_on_stories:
   - 1-8-create-and-view-an-immutable-cv-version
   - 2-3-analyze-a-job-description
@@ -21,10 +21,10 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`.
 
-**Planning blockers:** `E2-PREREQ-VERSION-001`, approved
-`E2-COORD-ANALYSIS-001`, `E2-DEC-001`, `E2-DEC-004` through
-`E2-DEC-007`, `E2-DEC-009`, `DISCOVERY-E2-001`, and
-`E2-COORD-MATCH-001`.
+**Planning checkpoint:** approved CV Version/Analysis boundaries, matching
+decisions, and `E2-COORD-MATCH-001` are implemented on
+`feat/epic-2-job-fit`; the 40-reviewed/12-held-out corpus and PostgreSQL/
+Playwright evidence have passed.
 
 ## Package map
 
@@ -92,7 +92,8 @@ preconditions, mixed ownership, deterministic scoring/evidence/recommendations,
 rule versions, repeated/concurrent requests, stale source races, no partial
 report, safe UX, frontend adapters, PostgreSQL persistence, quality fixtures, and
 E2E generation. Exact weights, thresholds, rounding, aliases, explanation
-shape, request dedupe, timeout, and quality approval remain open.
+shape, request dedupe, timeout, and the deterministic quality baseline are
+approved in `DISCOVERY-E2-001`.
 
 ## Code map
 

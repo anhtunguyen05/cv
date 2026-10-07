@@ -70,7 +70,9 @@ return new class extends Migration
         });
 
         // CHECK constraint: title must not be blank
-        DB::statement('ALTER TABLE cv_profiles ADD CONSTRAINT cv_profiles_title_not_empty CHECK (LENGTH(TRIM(title)) > 0)');
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE cv_profiles ADD CONSTRAINT cv_profiles_title_not_empty CHECK (LENGTH(TRIM(title)) > 0)');
+        }
     }
 
     public function down(): void

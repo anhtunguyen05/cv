@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useQuery } from '@tanstack/vue-query'
 import {
   Plus,
   FileText,
@@ -19,8 +21,24 @@ import EmptyState from '@/shared/components/molecules/EmptyState.vue'
 import AppButton from '@/shared/components/atoms/AppButton.vue'
 import Card from '@/shared/components/ui/card/Card.vue'
 import { useCvProfilesQuery } from '@/features/cv'
+import { getJobDescriptions } from '@/features/jd/api/jd.api'
+import { getMatchReports } from '@/features/match/api/match.api'
 
 const { data: cvProfiles, isLoading, isError, refetch } = useCvProfilesQuery()
+const jobDescriptionPage = ref(1)
+const { data: jobDescriptionsResult, isLoading: isJdLoading, isError: isJdError, refetch: refetchJds } = useQuery({
+  queryKey: computed(() => ['job-descriptions', jobDescriptionPage.value]),
+  queryFn: () => getJobDescriptions(jobDescriptionPage.value),
+})
+const { data: matchReportsResult, isLoading: isMatchReportsLoading, isError: isMatchReportsError, refetch: refetchMatchReports } = useQuery({
+  queryKey: ['match-reports'],
+  queryFn: () => getMatchReports(),
+})
+const jobDescriptions = computed(() => jobDescriptionsResult.value?.items ?? [])
+const jobDescriptionTotal = computed(() => jobDescriptionsResult.value?.total ?? 0)
+const jobDescriptionTotalPages = computed(() => Math.max(1, Math.ceil(jobDescriptionTotal.value / 20)))
+const matchReports = computed(() => matchReportsResult.value?.items ?? [])
+const matchReportTotal = computed(() => matchReportsResult.value?.total ?? 0)
 </script>
 
 <template>
@@ -37,8 +55,8 @@ const { data: cvProfiles, isLoading, isError, refetch } = useCvProfilesQuery()
         </div>
         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">Candidate Workspace</h1>
         <p class="text-xs sm:text-sm text-text-muted mt-1 max-w-2xl leading-relaxed">
-          Manage your master CV profiles, evaluate job descriptions, and track ATS match scores with
-          verified evidence.
+          Manage your master CV profiles, evaluate job descriptions, and review source-pinned fit
+          reports with verified evidence.
         </p>
       </div>
 
@@ -91,38 +109,38 @@ const { data: cvProfiles, isLoading, isError, refetch } = useCvProfilesQuery()
         </p>
       </Card>
 
-      <!-- Card 2: Job Postings Scanned -->
+      <!-- Card 2: Saved Job Descriptions -->
       <Card
         padding="sm"
         class="relative overflow-hidden group hover:border-info-border transition-all"
       >
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-text-muted uppercase tracking-wider"
-            >Job Postings</span
+            >Saved Job Descriptions</span
           >
           <div class="w-9 h-9 rounded-lg bg-info-muted flex items-center justify-center text-info">
             <Briefcase :size="18" :stroke-width="1.5" />
           </div>
         </div>
         <div class="mt-3 flex items-baseline gap-2">
-          <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">3</span>
+          <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">{{ jobDescriptionTotal }}</span>
           <span
             class="text-xs font-semibold text-info bg-info-muted border border-info-border px-2 py-0.5 rounded-full"
-          >
-            Analyzed
+            >
+            Saved
           </span>
         </div>
-        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">Average skill confidence: 96%</p>
+        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">Open a saved source to edit or analyze it.</p>
       </Card>
 
-      <!-- Card 3: Average Fit Score -->
+      <!-- Card 3: Stored Match Reports -->
       <Card
         padding="sm"
         class="relative overflow-hidden group hover:border-success-border transition-all"
       >
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-text-muted uppercase tracking-wider"
-            >Average Match</span
+            >Match Reports</span
           >
           <div
             class="w-9 h-9 rounded-lg bg-success-muted flex items-center justify-center text-success-hover"
@@ -131,15 +149,18 @@ const { data: cvProfiles, isLoading, isError, refetch } = useCvProfilesQuery()
           </div>
         </div>
         <div class="mt-3 flex items-baseline gap-2">
-          <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">81%</span>
+          <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">{{ matchReportTotal }}</span>
           <span
             class="text-xs font-semibold text-success-hover bg-success-muted border border-success-border px-2 py-0.5 rounded-full"
-          >
-            +14% lift
+            >
+            Stored
           </span>
         </div>
-        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">
-          Above competitive benchmark for juniors
+        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">Reports retain the CV and Job Description sources used.</p>
+        <p v-if="isMatchReportsLoading" class="text-xs text-text-muted" role="status">Loading stored reports…</p>
+        <p v-else-if="isMatchReportsError" class="text-xs text-danger" role="alert">
+          Unable to load report totals.
+          <button type="button" class="underline" @click="refetchMatchReports()">Retry</button>
         </p>
       </Card>
     </div>
@@ -242,6 +263,43 @@ const { data: cvProfiles, isLoading, isError, refetch } = useCvProfilesQuery()
         </div>
       </div>
 
+      <!-- Saved Job Descriptions -->
+      <div class="lg:col-span-8 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">Saved Job Descriptions</h2>
+            <p class="text-xs sm:text-sm text-text-muted mt-0.5">Reload a source to edit, analyze, or remove it.</p>
+          </div>
+          <RouterLink :to="ROUTES.JD_NEW">
+            <span class="text-xs sm:text-sm font-semibold text-primary hover:text-primary-hover flex items-center gap-1.5 transition-colors">
+              Save another <ArrowRight :size="13" />
+            </span>
+          </RouterLink>
+        </div>
+
+        <SkeletonCard v-if="isJdLoading" :rows="2" />
+        <Card v-else-if="isJdError">
+          <EmptyState title="Unable to load saved Job Descriptions" description="There was a connection issue loading saved sources." action-label="Retry" @action="() => refetchJds()" />
+        </Card>
+        <Card v-else-if="!jobDescriptions?.length">
+          <EmptyState title="No saved Job Descriptions" description="Save a source to start a deterministic analysis." />
+        </Card>
+        <div v-else class="space-y-3">
+          <RouterLink v-for="job in jobDescriptions" :key="job.id" :to="ROUTES.JD_DETAIL(job.id)" class="flex items-center justify-between gap-4 p-4 bg-white border border-border rounded-xl hover:border-primary-border hover:shadow-2xs transition-all">
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-text truncate">{{ job.role || 'Untitled role' }}</p>
+              <p class="text-xs text-text-muted mt-1 truncate">{{ job.company || 'Company not specified' }} · Revision {{ job.current_revision?.revision_number || 0 }}</p>
+            </div>
+            <span class="text-xs text-text-muted whitespace-nowrap">{{ new Date(job.updated_at).toLocaleDateString() }}</span>
+          </RouterLink>
+          <nav v-if="jobDescriptionTotalPages > 1" class="flex items-center justify-between" aria-label="Saved Job Description pages">
+            <AppButton type="button" variant="outline" :disabled="jobDescriptionPage <= 1" @click="jobDescriptionPage -= 1">Previous</AppButton>
+            <span class="text-xs text-text-muted">Page {{ jobDescriptionPage }} of {{ jobDescriptionTotalPages }}</span>
+            <AppButton type="button" variant="outline" :disabled="jobDescriptionPage >= jobDescriptionTotalPages" @click="jobDescriptionPage += 1">Next</AppButton>
+          </nav>
+        </div>
+      </div>
+
       <!-- Right Column: Quick Suggestions & Quick Tools (4 cols) -->
       <div class="lg:col-span-4 space-y-5">
         <!-- Quick Actions Card -->
@@ -289,7 +347,8 @@ const { data: cvProfiles, isLoading, isError, refetch } = useCvProfilesQuery()
             </RouterLink>
 
             <RouterLink
-              to="/match/1"
+              v-if="matchReports?.[0]"
+              :to="ROUTES.MATCH_REPORT(matchReports[0].id)"
               class="block p-3 sm:p-3.5 rounded-xl border border-border bg-white hover:border-primary/40 hover:bg-surface transition-all group"
             >
               <p
@@ -302,9 +361,12 @@ const { data: cvProfiles, isLoading, isError, refetch } = useCvProfilesQuery()
                 />
               </p>
               <p class="text-xs text-text-muted mt-0.5 leading-relaxed">
-                Check skill coverage for ReactJS / Vue Intern.
+                Open the latest stored source-pinned comparison.
               </p>
             </RouterLink>
+            <div v-else-if="isMatchReportsError" class="p-3 sm:p-3.5 rounded-xl border border-danger-border bg-danger-muted text-xs text-danger" role="alert">
+              Latest report is unavailable. <button type="button" class="underline" @click="refetchMatchReports()">Retry</button>
+            </div>
           </div>
         </Card>
 

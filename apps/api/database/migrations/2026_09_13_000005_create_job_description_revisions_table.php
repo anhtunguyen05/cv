@@ -83,8 +83,10 @@ return new class extends Migration
         });
 
         // CHECK constraints
-        DB::statement('ALTER TABLE job_description_revisions ADD CONSTRAINT jdr_raw_text_not_empty CHECK (LENGTH(TRIM(raw_text)) > 0)');
-        DB::statement('ALTER TABLE job_description_revisions ADD CONSTRAINT jdr_revision_number_positive CHECK (revision_number > 0)');
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE job_description_revisions ADD CONSTRAINT jdr_raw_text_not_empty CHECK (LENGTH(TRIM(raw_text)) > 0)');
+            DB::statement('ALTER TABLE job_description_revisions ADD CONSTRAINT jdr_revision_number_positive CHECK (revision_number > 0)');
+        }
     }
 
     public function down(): void

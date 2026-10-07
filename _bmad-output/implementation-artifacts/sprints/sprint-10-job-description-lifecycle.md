@@ -1,20 +1,22 @@
 ---
 sprint_id: sprint-10-job-description-lifecycle
 title: Job Description Lifecycle
-status: draft
-start: null
+status: active
+start: 2026-10-07
 end: null
-facilitator: unassigned
-goal: Stories 2.1–2.2 have complete canonical AC-to-task/verification coverage for owned Job Descriptions, immutable revisions, and logical deletion.
-refinement_stories:
+facilitator: Codex
+goal: Implement and verify the Epic 2 Job Description lifecycle (Stories 2.1–2.2) on `feat/epic-2-job-fit`, preserving immutable revisions and logical deletion.
+refinement_stories: []
+committed_stories:
   - 2-1-save-a-job-description
   - 2-2-manage-saved-job-descriptions
-committed_stories: []
 capacity_assumptions:
   - One developer is assumed for this planning slice; available time and throughput have not been measured, so no calendar duration is forecast.
 constraints:
-  - Draft refinement only; all listed Stories remain backlog and no implementation commitment is implied.
-  - Keep unresolved decisions and prerequisites as Story-specific blockers; do not mark Stories ready-for-dev or committed.
+  - Disposable PostgreSQL 16 and the shared Playwright journey are completed
+    gates; manual accessibility review remains a human checkpoint.
+  - The deterministic quality baseline is approved as `DISCOVERY-E2-001` and
+    is retained for Epic 5 regression validation.
 ---
 
 # Sprint 10: Job Description Lifecycle
@@ -23,7 +25,7 @@ constraints:
 
 Stories 2.1–2.2 have complete canonical AC-to-task/verification coverage for owned Job Descriptions, immutable revisions, and logical deletion.
 
-The measurable done signal is 100% of canonical acceptance criteria mapped to task and verification coverage; no unreviewed BMAD findings remain unless recorded as named decisions; and every unresolved prerequisite remains visible as a blocker attached to its Story. The sprint stays a draft until scheduling and readiness decisions are made.
+The measurable done signal is 100% of canonical acceptance criteria mapped to task and verification coverage; no unreviewed BMAD findings remain unless recorded as named decisions; and every unresolved prerequisite remains visible as a blocker attached to its Story. Automated PostgreSQL/browser gates have passed; the sprint remains active for review and manual accessibility sign-off.
 
 ## Capacity and dates
 
@@ -34,8 +36,9 @@ One developer is assumed. Dates remain unset, and this forecast does not claim a
 - **2-1-save-a-job-description — Save a Job Description:** `E2-PREREQ-AUTH-001`, `E2-DEC-001` through `E2-DEC-003`, `E2-DEC-007` through `E2-DEC-009`, and `E2-COORD-JD-001`.
 - **2-2-manage-saved-job-descriptions — Manage saved Job Descriptions:** approved `E2-COORD-JD-001` checkpoint from Story 2.1, `E2-DEC-001` through `E2-DEC-003`, `E2-DEC-007` through `E2-DEC-009`.
 
-In Story 2.2, task group 03 remains blocked until Sprint 11 supplies the
-approved `E2-COORD-MATCH-001` report-view checkpoint from Story 2.5.
+In Story 2.2, task group 03 consumes the report-view checkpoint now present in
+the Epic 2 implementation; automated shared PostgreSQL/browser gates are
+complete.
 
 ## Dependencies and sequence
 

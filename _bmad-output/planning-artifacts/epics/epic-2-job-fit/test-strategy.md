@@ -21,12 +21,25 @@ Fixtures cover Unicode, multiline formatting, empty/oversized input, optional
 metadata, multiple revisions, logical deletion, stale updates, lost responses,
 ownership boundaries, and deterministic ordering.
 
+`TASK-2-1-01` promotes the immutable corpus to
+`docs/contracts/jd/fixtures/job-description-v1.json`; `TASK-2-3-01` promotes
+analysis examples to `docs/contracts/jd/fixtures/analysis-v1.json`; and
+`TASK-2-4-01` promotes matching examples to
+`docs/contracts/jd/fixtures/match-report-v1.json`. PHP and TypeScript consume
+these files directly; neither keeps a local variant.
+
 ## E2-TEST-002 — Analysis corpus
 
 A versioned corpus records raw input, expected normalized signals, explicit
 absent/unknown results, aliases, repeated terms, negation/qualification cases,
 and `analysis_rule_version`. Running the same fixture repeatedly must produce
 the same canonical result.
+
+The approved v1 corpus has at least 40 reviewed examples (at least 20 English
+and 20 Vietnamese/mixed-language) plus 12 held-out counterexamples. It covers
+required/preferred cues, aliases, negation, malformed source text, absent and
+unknown states, and Unicode normalization. Canonical JSON output must be byte
+identical across repeated runs for one pinned rule version.
 
 ## E2-TEST-003 — Match evaluation fixtures
 
@@ -35,8 +48,12 @@ matched/missing/Weak Evidence classifications, recommendations, score, and
 `matching_rule_version`. Tests include unsupported-claim counterexamples and
 rounding/tie-order cases.
 
-The quality threshold and fixture approval owner remain open under
-`E2-DEC-005`; repeatability alone does not prove useful or truthful matching.
+The approved gate has at least 40 reviewed evaluation fixtures and 12 held-out
+counterexamples. It requires no unsupported claim in any fixture, exact
+classification agreement for every reviewed signal, and score agreement within
+one point. Held-out cases are not used to tune vocabulary or weights. Pc
+approves the corpus; a named integration owner records command evidence.
+Repeatability alone does not prove useful or truthful matching.
 
 ## E2-TEST-004 — Historical reproducibility
 

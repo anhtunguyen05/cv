@@ -88,8 +88,22 @@ const router = createRouter({
       meta: { layout: 'AppLayout' },
       beforeEnter: requireAuth,
     },
+    {
+      path: '/jd/:id',
+      name: 'jd-detail',
+      component: () => import('@/pages/jd/JdInputPage.vue'),
+      meta: { layout: 'AppLayout' },
+      beforeEnter: requireAuth,
+    },
 
     // ── Match Report ───────────────────────────────
+    {
+      path: '/match',
+      name: 'match-reports',
+      component: () => import('@/pages/match/MatchReportListPage.vue'),
+      meta: { layout: 'AppLayout' },
+      beforeEnter: requireAuth,
+    },
     {
       path: '/match/:matchId',
       name: 'match-report',

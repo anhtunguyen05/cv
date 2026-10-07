@@ -8,9 +8,9 @@ Return to the [Story overview](README.md). Story lifecycle comes from
 **Execution:**
 
 - [ ] TASK-2-3-01: Freeze deterministic Analysis fixtures
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
+  - Status: `doing`
+  - Owner: `Codex`
+  - Branch/worktree: `feat/epic-2-job-fit`
   - Depends on: `none`
   - Covers: `AC-2-3-analyze-a-job-description-01`, `AC-2-3-analyze-a-job-description-02`, `AC-2-3-analyze-a-job-description-03`, `AC-2-3-analyze-a-job-description-04`
   - Scope: 01. Freeze Analysis schema, rule version, and fixture corpus: stable Analysis contract, vocabulary, deterministic examples, failures
@@ -21,9 +21,9 @@ Return to the [Story overview](README.md). Story lifecycle comes from
   - Verification: 01. Freeze Analysis schema, rule version, and fixture corpus: fixture/schema validation and product/architecture approval evidence.
 
 - [ ] TASK-2-3-02: Deliver deterministic Job Description Analysis backend
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
+  - Status: `doing`
+  - Owner: `Codex`
+  - Branch/worktree: `feat/epic-2-job-fit`
   - Depends on: `TASK-2-3-01`
   - Covers: `AC-2-3-analyze-a-job-description-01`, `AC-2-3-analyze-a-job-description-02`, `AC-2-3-analyze-a-job-description-03`, `AC-2-3-analyze-a-job-description-04`
   - Scope: 01. Implement deterministic Job Description parser and normalizer: local parser, vocabulary/aliases, normalization, ordering, result DTO validator | 02. Implement Analysis application service and persistence: current-source policy, deterministic key, repository, transaction, retry classification | 03. Expose Analyze and Analysis-read API operations: request/resource/controller/routes/policy/error/limit mapping | 04. Verify deterministic Analysis backend and corpus: domain/corpus/feature/policy/PostgreSQL repeatability and failure suite
@@ -34,9 +34,9 @@ Return to the [Story overview](README.md). Story lifecycle comes from
   - Verification: 01. Implement deterministic Job Description parser and normalizer: PHPUnit corpus, property/boundary, repeat-process, and no-provider tests. | 02. Implement Analysis application service and persistence: application/PostgreSQL concurrency, uniqueness, rollback, and failure tests. | 03. Expose Analyze and Analysis-read API operations: Laravel feature/contract tests for current, repeat, stale, deleted, foreign, and failure paths. | 04. Verify deterministic Analysis backend and corpus: approved PHPUnit/PostgreSQL commands across repeated clean processes.
 
 - [ ] TASK-2-3-03: Deliver and verify Analysis review journey
-  - Status: `todo`
-  - Owner: `unassigned`
-  - Branch/worktree: `unassigned`
+  - Status: `doing`
+  - Owner: `Codex`
+  - Branch/worktree: `feat/epic-2-job-fit`
   - Depends on: `TASK-2-3-01`
   - Covers: `AC-2-3-analyze-a-job-description-01`, `AC-2-3-analyze-a-job-description-02`, `AC-2-3-analyze-a-job-description-03`, `AC-2-3-analyze-a-job-description-04`
   - Scope: 01. Implement frontend Analysis adapter and revision-aware state: Analysis schema/error adapter, query/mutation keys, retry/stale state | 02. Build accessible Job Description Analysis review UI: Analyze action, raw/derived sections, signal groups, versions, stale/retry/failure states | 03. Verify Analyze journey end to end: browser analyze/reload/missing/retry/revision-change scenarios
@@ -53,6 +53,14 @@ Return to the [Story overview](README.md). Story lifecycle comes from
 
 
 Story 2.3 owns the Analysis boundary consumed by Stories 2.4 and 2.5.
+
+## Implementation checkpoint (2026-10-07)
+
+Codex has implemented deterministic rule `1.0.0`, normalized signal states,
+versioned persistence, analysis API/UI state, fixtures, and focused unit/
+feature coverage on `feat/epic-2-job-fit`. The 40-reviewed/12-held-out corpus,
+disposable PostgreSQL repeatability evidence, and Playwright analysis journey
+pass.
 
 ## Coordination gate
 Task group 03 requires all four ACs, approved deterministic fixtures, and a reusable immutable Analysis checkpoint.

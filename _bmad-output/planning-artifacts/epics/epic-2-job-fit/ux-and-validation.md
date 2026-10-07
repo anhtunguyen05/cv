@@ -18,6 +18,9 @@
   server output and never writable fields.
 - **E2-VAL-006:** Error `details` use stable field paths shared by fixtures and
   the web adapter. UI logic branches on code/path, never message text.
+- **E2-VAL-007:** The UI sends `Idempotency-Key` for every protected mutation
+  and `If-Match` for update/delete. On `409`, it retains input and asks the
+  User to reload; it never automatically replays a mutation.
 
 ## Shared interaction states
 
@@ -27,7 +30,7 @@ retryable failure, terminal failure, and successful reload states.
 | Surface | Required states |
 | --- | --- |
 | JD create/edit | pristine, dirty, validating, submitting, field/global error, stale conflict, ambiguous success reconciliation, saved |
-| JD list/detail | loading, empty, active item, deleted historical context, not found, failure, refresh |
+| JD list/detail | loading, empty, active item, not found, failure, refresh |
 | Analysis | not requested, analyzing, successful, retryable failure, terminal failure, stale because a new revision is current |
 | Comparison | source selection, missing CV Version, analysis required, submitting, conflict, success/navigation |
 | Match Report | loading, grouped classifications, empty group, deleted-source banner, not found, failure |
@@ -39,6 +42,7 @@ retryable failure, terminal failure, and successful reload states.
   source revision plus rule version in accessible detail.
 - Match Report output is labeled as deterministic comparison, not a hiring
   decision or guaranteed ATS result.
+- It never displays a pass/fail hiring threshold or predicted score increase.
 - A historical report shows the exact CV Version and Job Description revision;
   deleted parent state is clear without removing historical content.
 
@@ -58,3 +62,8 @@ Stories 2.1–2.3 share Job Description query/mutation state and revision-aware
 cache keys under `E2-COORD-JD-001`. Stories 2.3–2.5 share Analysis/Match schema
 adapters under `E2-COORD-ANALYSIS-001` and `E2-COORD-MATCH-001`. One integration
 owner serializes shared API client, route, and cache-invalidation changes.
+
+The baseline cache keys are `job-descriptions/page`, `job-description/{id}`,
+`analysis/{revisionId}/{ruleVersion}`, and `match-report/{id}`. A successful
+revision write invalidates only active JD list/detail and current-analysis
+selection; immutable historical reports are not recomputed or overwritten.

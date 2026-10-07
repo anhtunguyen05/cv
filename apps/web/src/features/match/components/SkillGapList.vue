@@ -16,9 +16,11 @@ type FilterTab = 'all' | 'matched' | 'weak' | 'missing'
 const activeTab = ref<FilterTab>('all')
 
 const allSkills = computed(() => [
+  ...props.missing.filter((s) => s.importance === 'required').map((s) => ({ ...s, category: 'missing' as const })),
+  ...props.weak.filter((s) => s.importance === 'required').map((s) => ({ ...s, category: 'weak' as const })),
+  ...props.missing.filter((s) => s.importance === 'preferred').map((s) => ({ ...s, category: 'missing' as const })),
+  ...props.weak.filter((s) => s.importance === 'preferred').map((s) => ({ ...s, category: 'weak' as const })),
   ...props.matched.map((s) => ({ ...s, category: 'matched' as const })),
-  ...props.weak.map((s) => ({ ...s, category: 'weak' as const })),
-  ...props.missing.map((s) => ({ ...s, category: 'missing' as const })),
 ])
 
 const filteredSkills = computed(() => {
@@ -35,6 +37,7 @@ const statusConfig = {
 
 <template>
   <div class="space-y-4">
+    <p id="evidence-list-heading" class="sr-only">Evidence groups: missing required, weak required, missing preferred, matched</p>
     <!-- Filter Tabs -->
     <div class="flex items-center gap-2 pb-2.5 border-b border-border overflow-x-auto">
       <button
@@ -46,6 +49,7 @@ const statusConfig = {
             : 'text-text-muted hover:bg-surface-muted hover:text-text border border-transparent',
         ]"
         @click="activeTab = 'all'"
+        :aria-pressed="activeTab === 'all'"
       >
         All ({{ allSkills.length }})
       </button>
@@ -59,6 +63,7 @@ const statusConfig = {
             : 'text-text-muted hover:bg-surface-muted hover:text-text border border-transparent',
         ]"
         @click="activeTab = 'matched'"
+        :aria-pressed="activeTab === 'matched'"
       >
         <span class="w-1.5 h-1.5 rounded-full bg-success" />
         Matched ({{ matched.length }})
@@ -72,7 +77,8 @@ const statusConfig = {
             ? 'bg-warning-muted text-warning-text border border-warning-border'
             : 'text-text-muted hover:bg-surface-muted hover:text-text border border-transparent',
         ]"
-        @click="activeTab === 'weak'"
+        @click="activeTab = 'weak'"
+        :aria-pressed="activeTab === 'weak'"
       >
         <span class="w-1.5 h-1.5 rounded-full bg-warning" />
         Weak ({{ weak.length }})
@@ -86,7 +92,8 @@ const statusConfig = {
             ? 'bg-danger-muted text-danger-text border border-danger-border'
             : 'text-text-muted hover:bg-surface-muted hover:text-text border border-transparent',
         ]"
-        @click="activeTab === 'missing'"
+        @click="activeTab = 'missing'"
+        :aria-pressed="activeTab === 'missing'"
       >
         <span class="w-1.5 h-1.5 rounded-full bg-danger" />
         Missing ({{ missing.length }})
@@ -94,10 +101,11 @@ const statusConfig = {
     </div>
 
     <!-- Skills List -->
-    <div class="space-y-2.5">
+    <div class="space-y-2.5" role="list" aria-labelledby="evidence-list-heading">
       <div
         v-for="item in filteredSkills"
-        :key="item.skill"
+        :key="`${item.category}:${item.signal_id}`"
+        role="listitem"
         class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl border border-border bg-white hover:border-border-hover hover:shadow-2xs transition-all"
       >
         <div class="flex items-start sm:items-center gap-3">
@@ -115,27 +123,15 @@ const statusConfig = {
             ]"
           />
           <div>
-            <span class="text-sm sm:text-[15px] font-bold text-text">{{ item.skill }}</span>
-            <p v-if="item.evidence" class="text-xs text-text-muted mt-0.5">
-              Evidence: <span class="font-medium text-text-secondary">{{ item.evidence }}</span>
+            <span class="text-sm sm:text-[15px] font-bold text-text">{{ item.label }}</span>
+            <p v-if="item.source_references.length" class="text-xs text-text-muted mt-0.5">
+              Source references:
+              <span class="font-medium text-text-secondary">{{ item.source_references.join(', ') }}</span>
             </p>
           </div>
         </div>
 
         <div class="flex items-center gap-2 self-end sm:self-auto flex-shrink-0">
-          <span
-            v-if="item.category === 'weak'"
-            class="text-xs font-mono font-semibold text-warning-text bg-warning-muted px-2 py-0.5 rounded-full border border-warning-border"
-          >
-            +6 pts
-          </span>
-          <span
-            v-else-if="item.category === 'missing'"
-            class="text-xs font-mono font-semibold text-danger-text bg-danger-muted px-2 py-0.5 rounded-full border border-danger-border"
-          >
-            +10 pts
-          </span>
-
           <AppBadge
             :variant="statusConfig[item.category].variant"
             :label="statusConfig[item.category].label"
@@ -143,6 +139,9 @@ const statusConfig = {
           />
         </div>
       </div>
+      <p v-if="filteredSkills.length === 0" class="rounded-xl border border-dashed border-border p-4 text-sm text-text-muted">
+        No evidence in this group.
+      </p>
     </div>
   </div>
 </template>

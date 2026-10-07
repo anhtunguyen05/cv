@@ -15,8 +15,10 @@ export const ROUTES = {
 
   // JD
   JD_NEW: '/jd/new',
+  JD_DETAIL: (id: string | number = ':id') => `/jd/${id}`,
 
   // Match
+  MATCH_REPORTS: '/match',
   MATCH_REPORT: (matchId: string | number = ':matchId') => `/match/${matchId}`,
 
   // Templates
