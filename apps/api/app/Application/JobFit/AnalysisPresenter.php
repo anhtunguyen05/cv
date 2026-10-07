@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\JobFit;
 
-use App\Models\JobDescriptionAnalysis;
 use App\Application\Cv\ApiProblem;
 use App\Application\Cv\ProfileDocument;
+use App\Models\JobDescriptionAnalysis;
 
 final class AnalysisPresenter
 {

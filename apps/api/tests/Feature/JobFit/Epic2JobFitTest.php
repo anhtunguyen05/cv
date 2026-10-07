@@ -241,7 +241,7 @@ final class Epic2JobFitTest extends TestCase
         $this->getJson('/api/v1/match-reports')->assertOk()->assertJsonPath('meta.total', 0);
         $this->app['auth']->forgetGuards();
         $this->actingAs($user, 'web')->withSession(['_token' => 'csrf-token']);
-    
+
         $this->deleteJson('/api/v1/job-descriptions/'.$jd['id'], [], [
             'X-CSRF-TOKEN' => 'csrf-token',
             'If-Match' => '"'.$updated['current_revision']['id'].'"',

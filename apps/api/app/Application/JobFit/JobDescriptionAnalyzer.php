@@ -7,6 +7,7 @@ namespace App\Application\JobFit;
 final class JobDescriptionAnalyzer
 {
     public const SCHEMA_VERSION = '1.0.0';
+
     public const RULE_VERSION = '1.0.0';
 
     /** @var array<string, array{label:string,aliases:array<int,string>}> */

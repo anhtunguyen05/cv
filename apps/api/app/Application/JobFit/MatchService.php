@@ -20,7 +20,9 @@ use Illuminate\Support\Facades\DB;
 final class MatchService
 {
     private const DEADLINE_SECONDS = 5.0;
+
     public const REPORT_SCHEMA_VERSION = '1.0.0';
+
     public const RULE_VERSION = '1.0.0';
 
     public function __construct(private readonly JobDescriptionAnalyzer $analyzer) {}
@@ -38,7 +40,7 @@ final class MatchService
             'matching_rule_version' => self::RULE_VERSION,
         ])."\n".$route);
 
-        return DB::transaction(function () use ($user, $idempotencyKey, $route, $cvVersionId, $jobDescriptionId, $hash): array {
+        return DB::transaction(function () use ($user, $idempotencyKey, $cvVersionId, $jobDescriptionId, $hash): array {
             if (! ProfileDocument::isUlid($cvVersionId) || ! ProfileDocument::isUlid($jobDescriptionId)) {
                 throw $this->notFound();
             }
@@ -309,6 +311,7 @@ final class MatchService
                     }
                     $walk($child, (string) $childKey);
                 }
+
                 return;
             }
             if (! is_string($value) || $value === '') {
