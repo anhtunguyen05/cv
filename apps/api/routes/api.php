@@ -4,7 +4,9 @@ use App\Presentation\Http\Controllers\Auth\CurrentAccountController;
 use App\Presentation\Http\Controllers\Auth\LoginController;
 use App\Presentation\Http\Controllers\Auth\LogoutController;
 use App\Presentation\Http\Controllers\Auth\RegisterController;
+use App\Presentation\Http\Controllers\Cv\PreviewController;
 use App\Presentation\Http\Controllers\Cv\ProfileController;
+use App\Presentation\Http\Controllers\Cv\TemplateController;
 use App\Presentation\Http\Controllers\Cv\VersionController;
 use App\Presentation\Http\Controllers\HealthController;
 use App\Presentation\Http\Controllers\JobFit\AnalysisController;
@@ -55,6 +57,8 @@ Route::middleware([
     Route::get('/cv-profiles', [ProfileController::class, 'index']);
     Route::get('/cv-profiles/{profile}', [ProfileController::class, 'show']);
     Route::get('/cv-versions', [VersionController::class, 'index']);
+    Route::get('/templates', [TemplateController::class, 'index']);
+    Route::get('/cv-versions/{cvVersion}/preview', [PreviewController::class, 'show']);
     Route::get('/cv-versions/{version}', [VersionController::class, 'show']);
 
     Route::post('/cv-profiles', [ProfileController::class, 'store'])->middleware([

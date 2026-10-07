@@ -1,8 +1,8 @@
 # Story 3.3: Export a reviewed CV — Contract Slice
 
 Return to the [Story overview](README.md). This slice refines
-`E3-CONTRACT-EXPORT-001` and `E3-CONTRACT-ERROR-001`; exact values require
-approval under `E3-DEC-003` through `E3-DEC-007`.
+`E3-CONTRACT-EXPORT-001` and `E3-CONTRACT-ERROR-001`; its approved values
+are recorded in `E3-DEC-003` through `E3-DEC-007` and await stable promotion.
 
 ## Operation matrix
 

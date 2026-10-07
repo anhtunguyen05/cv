@@ -20,9 +20,9 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`.
 
-**Planning blockers:** `E3-PREREQ-VERSION-001`, `E3-DEC-001` through
-`E3-DEC-004`, `E3-DEC-006`, `E3-DEC-007`, `E3-COORD-TEMPLATE-001`,
-`E3-COORD-RENDER-001`, and `E3-COORD-TEST-001`.
+**Planning blockers:** stable projection/renderer-contract promotion, canonical
+fixtures, and assigned `E3-COORD-TEMPLATE-001`, `E3-COORD-RENDER-001`, and
+`E3-COORD-TEST-001` owners. `E3-PREREQ-VERSION-001` is satisfied.
 
 ## Package map
 
