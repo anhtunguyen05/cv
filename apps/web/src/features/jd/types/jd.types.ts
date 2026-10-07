@@ -19,8 +19,14 @@ export interface JobDescriptionRevision {
 }
 
 export type SignalState = 'detected' | 'absent' | 'unknown'
-export interface SignalList<T = string> { state: SignalState; items: T[] }
-export interface SignalValue<T = string> { state: SignalState; value: T | null }
+export interface SignalList<T = string> {
+  state: SignalState
+  items: T[]
+}
+export interface SignalValue<T = string> {
+  state: SignalState
+  value: T | null
+}
 
 export interface JdAnalysis {
   id: string

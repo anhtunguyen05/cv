@@ -16,10 +16,18 @@ type FilterTab = 'all' | 'matched' | 'weak' | 'missing'
 const activeTab = ref<FilterTab>('all')
 
 const allSkills = computed(() => [
-  ...props.missing.filter((s) => s.importance === 'required').map((s) => ({ ...s, category: 'missing' as const })),
-  ...props.weak.filter((s) => s.importance === 'required').map((s) => ({ ...s, category: 'weak' as const })),
-  ...props.missing.filter((s) => s.importance === 'preferred').map((s) => ({ ...s, category: 'missing' as const })),
-  ...props.weak.filter((s) => s.importance === 'preferred').map((s) => ({ ...s, category: 'weak' as const })),
+  ...props.missing
+    .filter((s) => s.importance === 'required')
+    .map((s) => ({ ...s, category: 'missing' as const })),
+  ...props.weak
+    .filter((s) => s.importance === 'required')
+    .map((s) => ({ ...s, category: 'weak' as const })),
+  ...props.missing
+    .filter((s) => s.importance === 'preferred')
+    .map((s) => ({ ...s, category: 'missing' as const })),
+  ...props.weak
+    .filter((s) => s.importance === 'preferred')
+    .map((s) => ({ ...s, category: 'weak' as const })),
   ...props.matched.map((s) => ({ ...s, category: 'matched' as const })),
 ])
 
@@ -37,7 +45,9 @@ const statusConfig = {
 
 <template>
   <div class="space-y-4">
-    <p id="evidence-list-heading" class="sr-only">Evidence groups: missing required, weak required, missing preferred, matched</p>
+    <p id="evidence-list-heading" class="sr-only">
+      Evidence groups: missing required, weak required, missing preferred, matched
+    </p>
     <!-- Filter Tabs -->
     <div class="flex items-center gap-2 pb-2.5 border-b border-border overflow-x-auto">
       <button
@@ -126,7 +136,9 @@ const statusConfig = {
             <span class="text-sm sm:text-[15px] font-bold text-text">{{ item.label }}</span>
             <p v-if="item.source_references.length" class="text-xs text-text-muted mt-0.5">
               Source references:
-              <span class="font-medium text-text-secondary">{{ item.source_references.join(', ') }}</span>
+              <span class="font-medium text-text-secondary">{{
+                item.source_references.join(', ')
+              }}</span>
             </p>
           </div>
         </div>
@@ -139,7 +151,10 @@ const statusConfig = {
           />
         </div>
       </div>
-      <p v-if="filteredSkills.length === 0" class="rounded-xl border border-dashed border-border p-4 text-sm text-text-muted">
+      <p
+        v-if="filteredSkills.length === 0"
+        class="rounded-xl border border-dashed border-border p-4 text-sm text-text-muted"
+      >
         No evidence in this group.
       </p>
     </div>

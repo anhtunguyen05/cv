@@ -79,7 +79,11 @@ export interface CvVersionPage {
   lastPage: number
 }
 
-export async function getCvVersionsPage(page = 1, perPage = 20, profileId?: string): Promise<CvVersionPage> {
+export async function getCvVersionsPage(
+  page = 1,
+  perPage = 20,
+  profileId?: string,
+): Promise<CvVersionPage> {
   const params = new URLSearchParams({ page: String(page), per_page: String(perPage) })
   if (profileId) params.set('profile_id', profileId)
   const response = await api<Collection<CvVersion>>(`/cv-versions?${params.toString()}`)

@@ -29,6 +29,12 @@ export interface MatchReport {
   missing_skills: SkillMatch[]
   weak_evidence: SkillMatch[]
   recommendations: SectionRecommendation[]
-  source_summary: { company: string | null; role: string | null; revision_number: number | null; source_deleted: boolean; source_is_current: boolean }
+  source_summary: {
+    company: string | null
+    role: string | null
+    revision_number: number | null
+    source_deleted: boolean
+    source_is_current: boolean
+  }
   created_at: string
 }

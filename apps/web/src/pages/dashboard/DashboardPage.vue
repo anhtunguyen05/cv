@@ -26,17 +26,29 @@ import { getMatchReports } from '@/features/match/api/match.api'
 
 const { data: cvProfiles, isLoading, isError, refetch } = useCvProfilesQuery()
 const jobDescriptionPage = ref(1)
-const { data: jobDescriptionsResult, isLoading: isJdLoading, isError: isJdError, refetch: refetchJds } = useQuery({
+const {
+  data: jobDescriptionsResult,
+  isLoading: isJdLoading,
+  isError: isJdError,
+  refetch: refetchJds,
+} = useQuery({
   queryKey: computed(() => ['job-descriptions', jobDescriptionPage.value]),
   queryFn: () => getJobDescriptions(jobDescriptionPage.value),
 })
-const { data: matchReportsResult, isLoading: isMatchReportsLoading, isError: isMatchReportsError, refetch: refetchMatchReports } = useQuery({
+const {
+  data: matchReportsResult,
+  isLoading: isMatchReportsLoading,
+  isError: isMatchReportsError,
+  refetch: refetchMatchReports,
+} = useQuery({
   queryKey: ['match-reports'],
   queryFn: () => getMatchReports(),
 })
 const jobDescriptions = computed(() => jobDescriptionsResult.value?.items ?? [])
 const jobDescriptionTotal = computed(() => jobDescriptionsResult.value?.total ?? 0)
-const jobDescriptionTotalPages = computed(() => Math.max(1, Math.ceil(jobDescriptionTotal.value / 20)))
+const jobDescriptionTotalPages = computed(() =>
+  Math.max(1, Math.ceil(jobDescriptionTotal.value / 20)),
+)
 const matchReports = computed(() => matchReportsResult.value?.items ?? [])
 const matchReportTotal = computed(() => matchReportsResult.value?.total ?? 0)
 </script>
@@ -123,14 +135,18 @@ const matchReportTotal = computed(() => matchReportsResult.value?.total ?? 0)
           </div>
         </div>
         <div class="mt-3 flex items-baseline gap-2">
-          <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">{{ jobDescriptionTotal }}</span>
+          <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">{{
+            jobDescriptionTotal
+          }}</span>
           <span
             class="text-xs font-semibold text-info bg-info-muted border border-info-border px-2 py-0.5 rounded-full"
-            >
+          >
             Saved
           </span>
         </div>
-        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">Open a saved source to edit or analyze it.</p>
+        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">
+          Open a saved source to edit or analyze it.
+        </p>
       </Card>
 
       <!-- Card 3: Stored Match Reports -->
@@ -149,15 +165,21 @@ const matchReportTotal = computed(() => matchReportsResult.value?.total ?? 0)
           </div>
         </div>
         <div class="mt-3 flex items-baseline gap-2">
-          <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">{{ matchReportTotal }}</span>
+          <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">{{
+            matchReportTotal
+          }}</span>
           <span
             class="text-xs font-semibold text-success-hover bg-success-muted border border-success-border px-2 py-0.5 rounded-full"
-            >
+          >
             Stored
           </span>
         </div>
-        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">Reports retain the CV and Job Description sources used.</p>
-        <p v-if="isMatchReportsLoading" class="text-xs text-text-muted" role="status">Loading stored reports…</p>
+        <p class="text-xs text-text-muted mt-1.5 leading-relaxed">
+          Reports retain the CV and Job Description sources used.
+        </p>
+        <p v-if="isMatchReportsLoading" class="text-xs text-text-muted" role="status">
+          Loading stored reports…
+        </p>
         <p v-else-if="isMatchReportsError" class="text-xs text-danger" role="alert">
           Unable to load report totals.
           <button type="button" class="underline" @click="refetchMatchReports()">Retry</button>
@@ -267,11 +289,17 @@ const matchReportTotal = computed(() => matchReportsResult.value?.total ?? 0)
       <div class="lg:col-span-8 space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">Saved Job Descriptions</h2>
-            <p class="text-xs sm:text-sm text-text-muted mt-0.5">Reload a source to edit, analyze, or remove it.</p>
+            <h2 class="text-lg sm:text-xl font-bold text-text tracking-tight">
+              Saved Job Descriptions
+            </h2>
+            <p class="text-xs sm:text-sm text-text-muted mt-0.5">
+              Reload a source to edit, analyze, or remove it.
+            </p>
           </div>
           <RouterLink :to="ROUTES.JD_NEW">
-            <span class="text-xs sm:text-sm font-semibold text-primary hover:text-primary-hover flex items-center gap-1.5 transition-colors">
+            <span
+              class="text-xs sm:text-sm font-semibold text-primary hover:text-primary-hover flex items-center gap-1.5 transition-colors"
+            >
               Save another <ArrowRight :size="13" />
             </span>
           </RouterLink>
@@ -279,23 +307,59 @@ const matchReportTotal = computed(() => matchReportsResult.value?.total ?? 0)
 
         <SkeletonCard v-if="isJdLoading" :rows="2" />
         <Card v-else-if="isJdError">
-          <EmptyState title="Unable to load saved Job Descriptions" description="There was a connection issue loading saved sources." action-label="Retry" @action="() => refetchJds()" />
+          <EmptyState
+            title="Unable to load saved Job Descriptions"
+            description="There was a connection issue loading saved sources."
+            action-label="Retry"
+            @action="() => refetchJds()"
+          />
         </Card>
         <Card v-else-if="!jobDescriptions?.length">
-          <EmptyState title="No saved Job Descriptions" description="Save a source to start a deterministic analysis." />
+          <EmptyState
+            title="No saved Job Descriptions"
+            description="Save a source to start a deterministic analysis."
+          />
         </Card>
         <div v-else class="space-y-3">
-          <RouterLink v-for="job in jobDescriptions" :key="job.id" :to="ROUTES.JD_DETAIL(job.id)" class="flex items-center justify-between gap-4 p-4 bg-white border border-border rounded-xl hover:border-primary-border hover:shadow-2xs transition-all">
+          <RouterLink
+            v-for="job in jobDescriptions"
+            :key="job.id"
+            :to="ROUTES.JD_DETAIL(job.id)"
+            class="flex items-center justify-between gap-4 p-4 bg-white border border-border rounded-xl hover:border-primary-border hover:shadow-2xs transition-all"
+          >
             <div class="min-w-0">
               <p class="text-sm font-bold text-text truncate">{{ job.role || 'Untitled role' }}</p>
-              <p class="text-xs text-text-muted mt-1 truncate">{{ job.company || 'Company not specified' }} · Revision {{ job.current_revision?.revision_number || 0 }}</p>
+              <p class="text-xs text-text-muted mt-1 truncate">
+                {{ job.company || 'Company not specified' }} · Revision
+                {{ job.current_revision?.revision_number || 0 }}
+              </p>
             </div>
-            <span class="text-xs text-text-muted whitespace-nowrap">{{ new Date(job.updated_at).toLocaleDateString() }}</span>
+            <span class="text-xs text-text-muted whitespace-nowrap">{{
+              new Date(job.updated_at).toLocaleDateString()
+            }}</span>
           </RouterLink>
-          <nav v-if="jobDescriptionTotalPages > 1" class="flex items-center justify-between" aria-label="Saved Job Description pages">
-            <AppButton type="button" variant="outline" :disabled="jobDescriptionPage <= 1" @click="jobDescriptionPage -= 1">Previous</AppButton>
-            <span class="text-xs text-text-muted">Page {{ jobDescriptionPage }} of {{ jobDescriptionTotalPages }}</span>
-            <AppButton type="button" variant="outline" :disabled="jobDescriptionPage >= jobDescriptionTotalPages" @click="jobDescriptionPage += 1">Next</AppButton>
+          <nav
+            v-if="jobDescriptionTotalPages > 1"
+            class="flex items-center justify-between"
+            aria-label="Saved Job Description pages"
+          >
+            <AppButton
+              type="button"
+              variant="outline"
+              :disabled="jobDescriptionPage <= 1"
+              @click="jobDescriptionPage -= 1"
+              >Previous</AppButton
+            >
+            <span class="text-xs text-text-muted"
+              >Page {{ jobDescriptionPage }} of {{ jobDescriptionTotalPages }}</span
+            >
+            <AppButton
+              type="button"
+              variant="outline"
+              :disabled="jobDescriptionPage >= jobDescriptionTotalPages"
+              @click="jobDescriptionPage += 1"
+              >Next</AppButton
+            >
           </nav>
         </div>
       </div>
@@ -364,8 +428,13 @@ const matchReportTotal = computed(() => matchReportsResult.value?.total ?? 0)
                 Open the latest stored source-pinned comparison.
               </p>
             </RouterLink>
-            <div v-else-if="isMatchReportsError" class="p-3 sm:p-3.5 rounded-xl border border-danger-border bg-danger-muted text-xs text-danger" role="alert">
-              Latest report is unavailable. <button type="button" class="underline" @click="refetchMatchReports()">Retry</button>
+            <div
+              v-else-if="isMatchReportsError"
+              class="p-3 sm:p-3.5 rounded-xl border border-danger-border bg-danger-muted text-xs text-danger"
+              role="alert"
+            >
+              Latest report is unavailable.
+              <button type="button" class="underline" @click="refetchMatchReports()">Retry</button>
             </div>
           </div>
         </Card>
