@@ -5,6 +5,7 @@ import type {
   CvSectionKey,
   CvDocument,
   PersonalInformation,
+  CvPreview,
 } from '../types/cv.types'
 
 interface Collection<T> {
@@ -92,6 +93,18 @@ export async function getCvVersionsPage(
 
 export async function getCvVersion(id: string): Promise<CvVersion> {
   const response = await api<{ data: CvVersion }>(`/cv-versions/${encodeURIComponent(id)}`)
+  return response.data
+}
+
+export async function getCvPreview(
+  versionId: string,
+  templateId: string,
+  templateVersion: string,
+): Promise<CvPreview> {
+  const params = new URLSearchParams({ template_id: templateId, template_version: templateVersion })
+  const response = await api<{ data: CvPreview }>(
+    `/cv-versions/${encodeURIComponent(versionId)}/preview?${params.toString()}`,
+  )
   return response.data
 }
 

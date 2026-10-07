@@ -102,4 +102,22 @@ export interface CvVersion {
   created_at: string
 }
 
+export interface CvPreviewSection {
+  key: string
+  data: unknown
+}
+
+export interface CvPreview {
+  cv_version_id: string
+  template_id: string
+  template_version: string
+  template_name: string
+  renderer_version: string
+  version_name: string
+  snapshot_schema_version: string
+  source_profile_revision: number
+  sections: CvPreviewSection[]
+  rendered_at: string | null
+}
+
 export type CvSectionKey = keyof CvDocument

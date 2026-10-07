@@ -12,6 +12,8 @@ export const ROUTES = {
   // CV
   CV_EDIT: (id: string | number = ':id') => `/cv/${id}/edit`,
   CV_PREVIEW: (id: string | number = ':id') => `/cv/${id}/preview`,
+  CV_VERSION_TEMPLATES: (versionId: string = ':versionId') => `/cv-versions/${versionId}/templates`,
+  CV_VERSION_PREVIEW: (versionId: string = ':versionId') => `/cv-versions/${versionId}/preview`,
 
   // JD
   JD_NEW: '/jd/new',

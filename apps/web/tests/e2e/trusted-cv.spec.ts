@@ -28,6 +28,11 @@ test('registers an account and persists a Profile section and Version', async ({
   await expect(page.getByRole('status')).toContainText('Version saved.')
 
   await page.getByRole('link', { name: 'Backend baseline' }).click()
-  await expect(page).toHaveURL(/\/cv\/[0-9A-Z]{26}\/version\/[0-9A-Z]{26}$/)
+  await expect(page).toHaveURL(/\/cv-versions\/[0-9A-Z]{26}\/templates$/)
+  await expect(page.getByRole('heading', { name: 'Choose a template' })).toBeVisible()
+  await page.getByRole('button', { name: /Preview/ }).click()
+  await expect(page).toHaveURL(
+    /\/cv-versions\/[0-9A-Z]{26}\/preview\?template_id=[0-9A-Z]{26}&template_version=1\.0\.0$/,
+  )
   await expect(page.getByText('A durable professional summary.')).toBeVisible()
 })

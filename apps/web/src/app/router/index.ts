@@ -73,6 +73,20 @@ const router = createRouter({
       beforeEnter: requireAuth,
     },
     {
+      path: '/cv-versions/:versionId/templates',
+      name: 'cv-version-templates',
+      component: () => import('@/pages/templates/TemplatePickerPage.vue'),
+      meta: { layout: 'AppLayout' },
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/cv-versions/:versionId/preview',
+      name: 'cv-version-preview',
+      component: () => import('@/pages/cv/CvVersionPage.vue'),
+      meta: { layout: 'PreviewLayout' },
+      beforeEnter: requireAuth,
+    },
+    {
       path: '/cv/:id/version/:versionId',
       name: 'cv-version',
       component: () => import('@/pages/cv/CvVersionPage.vue'),

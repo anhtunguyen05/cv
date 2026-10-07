@@ -335,7 +335,7 @@ async function saveVersion() {
         <AppButton
           variant="outline"
           :loading="versionSaving"
-          :disabled="versionSaving"
+          :disabled="versionSaving || saving"
           @click="saveVersion"
           >Save Version</AppButton
         >
@@ -350,7 +350,7 @@ async function saveVersion() {
           class="rounded-lg border border-border px-3 py-2 text-sm text-text"
         >
           <RouterLink
-            :to="`/cv/${profileId}/version/${version.id}`"
+            :to="`/cv-versions/${version.id}/templates`"
             class="font-semibold text-primary hover:underline"
           >
             {{ version.name }}

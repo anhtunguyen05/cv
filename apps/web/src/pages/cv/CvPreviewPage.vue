@@ -1,44 +1,51 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
-import CvPreviewDocument from '@/features/cv/components/CvPreviewDocument.vue'
+import { computed } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+import { useCvVersionsQuery } from '@/features/cv/api/cv.queries'
 import AppButton from '@/shared/components/atoms/AppButton.vue'
-import { Edit3, ZoomIn, ZoomOut } from 'lucide-vue-next'
-import { useCvProfileQuery } from '@/features/cv/api/cv.queries'
 
 const route = useRoute()
-const cvId = computed(() => String(route.params.id))
-const { data, isLoading, isError } = useCvProfileQuery(cvId)
-const zoom = ref(100)
-const profile = computed(() => data.value)
+const profileId = computed(() => String(route.params.id))
+const versionsQuery = useCvVersionsQuery(profileId)
 </script>
 
 <template>
-  <div class="flex w-full flex-col items-center">
-    <div class="no-print mb-6 flex w-full max-w-[794px] items-center justify-between gap-4">
-      <RouterLink :to="`/cv/${cvId}/edit`"
-        ><AppButton size="sm" variant="outline"
-          ><Edit3 :size="14" /> Edit Sections</AppButton
-        ></RouterLink
+  <div class="mx-auto w-full max-w-2xl space-y-6">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-wider text-primary">Immutable preview</p>
+      <h1 class="mt-1 text-2xl font-bold text-text">Choose a saved CV Version</h1>
+      <p class="mt-2 text-sm text-text-muted">
+        Preview and export use only a saved snapshot, never the mutable Profile draft.
+      </p>
+    </div>
+    <p v-if="versionsQuery.isLoading.value" role="status">Loading saved Versions…</p>
+    <p v-else-if="versionsQuery.isError.value" role="alert" class="text-sm text-danger-text">
+      Unable to load saved Versions.
+    </p>
+    <div v-else-if="versionsQuery.data.value?.length" class="space-y-3">
+      <div
+        v-for="version in versionsQuery.data.value"
+        :key="version.id"
+        class="flex items-center justify-between gap-4 rounded-xl border border-border bg-white p-4"
       >
-      <div class="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-1.5">
-        <button type="button" aria-label="Zoom out" @click="zoom = Math.max(70, zoom - 10)">
-          <ZoomOut :size="15" />
-        </button>
-        <span class="text-xs font-mono">{{ zoom }}%</span>
-        <button type="button" aria-label="Zoom in" @click="zoom = Math.min(130, zoom + 10)">
-          <ZoomIn :size="15" />
-        </button>
+        <div>
+          <p class="font-semibold text-text">{{ version.name }}</p>
+          <p class="text-xs text-text-muted">
+            Source revision {{ version.source_profile_revision }}
+          </p>
+        </div>
+        <RouterLink :to="`/cv-versions/${version.id}/templates`">
+          <AppButton size="sm">Choose template</AppButton>
+        </RouterLink>
       </div>
     </div>
-    <p v-if="isLoading" role="status">Loading Profile…</p>
-    <p v-else-if="isError" role="alert">Unable to load this Profile.</p>
-    <div
-      v-else-if="profile"
-      class="overflow-x-auto pb-12"
-      :style="{ transform: `scale(${zoom / 100})`, transformOrigin: 'top center' }"
-    >
-      <CvPreviewDocument :data="profile" />
+    <div v-else class="rounded-xl border border-border bg-white p-5">
+      <p class="text-sm text-text-muted">
+        Create an immutable Version in the CV editor before previewing.
+      </p>
+      <RouterLink class="mt-4 inline-block" :to="`/cv/${profileId}/edit`"
+        ><AppButton size="sm" variant="outline">Open CV editor</AppButton></RouterLink
+      >
     </div>
   </div>
 </template>

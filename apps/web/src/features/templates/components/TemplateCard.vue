@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { CvTemplate } from '../types/template.types'
-import { Check, ShieldCheck } from 'lucide-vue-next'
+import { Check } from 'lucide-vue-next'
 import AppButton from '@/shared/components/atoms/AppButton.vue'
 
 interface Props {
@@ -46,7 +46,7 @@ function onMouseLeave() {
       ]"
       @mousemove="onMouseMove"
       @mouseleave="onMouseLeave"
-      @click="emit('select', template)"
+      role="group"
     >
       <!-- Spotlight overlay -->
       <div
@@ -61,14 +61,6 @@ function onMouseLeave() {
       <div
         class="bg-surface aspect-[3/4] p-4 flex items-center justify-center overflow-hidden relative border-b border-border"
       >
-        <!-- Top ATS tag -->
-        <div
-          class="absolute top-3 left-3 z-20 flex items-center gap-1.5 text-xs font-semibold text-success-text bg-success-muted border border-success-border px-2.5 py-0.5 rounded-full shadow-2xs"
-        >
-          <ShieldCheck :size="12" />
-          <span>98% ATS Score</span>
-        </div>
-
         <!-- Selected indicator pill -->
         <div
           v-if="selected"
@@ -123,7 +115,10 @@ function onMouseLeave() {
       <div class="p-4 bg-white space-y-1 flex-1 flex flex-col justify-between">
         <div>
           <h3 class="text-sm sm:text-base font-bold text-text">{{ template.name }}</h3>
-          <p class="text-xs text-text-muted mt-0.5">{{ template.type }}</p>
+          <p class="text-xs text-text-muted mt-0.5">
+            {{ template.description || 'Application-ready CV layout' }}
+          </p>
+          <p class="mt-1 font-mono text-[11px] text-text-subtle">v{{ template.version }}</p>
         </div>
 
         <div class="pt-3">
@@ -131,6 +126,7 @@ function onMouseLeave() {
             :variant="selected ? 'default' : 'outline'"
             size="sm"
             class="w-full"
+            :aria-pressed="selected"
             @click.stop="emit('select', template)"
           >
             {{ selected ? 'Selected' : 'Use Template' }}
