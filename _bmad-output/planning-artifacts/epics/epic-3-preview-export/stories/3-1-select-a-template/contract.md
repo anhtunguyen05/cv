@@ -1,8 +1,8 @@
 # Story 3.1: Select a Template — Contract Slice
 
 Return to the [Story overview](README.md). This slice refines
-`E3-CONTRACT-TEMPLATE-001` and `E3-CONTRACT-ERROR-001`; exact values require
-approval under `E3-DEC-001` through `E3-DEC-003`.
+`E3-CONTRACT-TEMPLATE-001` and `E3-CONTRACT-ERROR-001`; its approved values
+are recorded in `E3-DEC-001` through `E3-DEC-003` and await stable promotion.
 
 ## Operation matrix
 

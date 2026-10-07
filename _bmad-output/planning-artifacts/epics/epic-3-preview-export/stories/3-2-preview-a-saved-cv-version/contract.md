@@ -1,8 +1,8 @@
 # Story 3.2: Preview a saved CV Version — Contract Slice
 
 Return to the [Story overview](README.md). This slice refines
-`E3-CONTRACT-PREVIEW-001` and `E3-CONTRACT-ERROR-001`; exact values require
-approval under `E3-DEC-001` through `E3-DEC-004`.
+`E3-CONTRACT-PREVIEW-001` and `E3-CONTRACT-ERROR-001`; its approved values
+are recorded in `E3-DEC-001` through `E3-DEC-004` and await stable promotion.
 
 ## Operation matrix
 

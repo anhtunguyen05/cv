@@ -19,8 +19,8 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`.
 
-**Planning blockers:** `E3-DEC-001` through `E3-DEC-003`, `E3-DEC-006`,
-`E3-DEC-007`, `E3-COORD-TEMPLATE-001`, and `E3-COORD-TEST-001`.
+**Planning blockers:** stable catalog-contract promotion, canonical fixtures,
+and assigned `E3-COORD-TEMPLATE-001` and `E3-COORD-TEST-001` owners.
 
 ## Package map
 
@@ -66,8 +66,9 @@ select one exact entry without creating a Preview or Export as a side effect.
 The package covers catalog behavior, stable identity/version, availability and
 compatibility, stale selection, safe metadata, authorization, complete chooser
 states, FE/API mapping, accessibility, fixtures, and browser verification.
-Exact API, Template publication, selection persistence, and test matrix values
-remain in the Epic decision register.
+The approved API, publication, selection, and test-matrix baseline is in the
+Epic decision register; stable contract promotion and fixture creation remain
+implementation checkpoints.
 
 ## Code map
 

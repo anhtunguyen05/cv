@@ -19,9 +19,9 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`.
 
-**Planning blockers:** `E3-PREREQ-VERSION-001`, `E3-DEC-003` through
-`E3-DEC-007`, `E3-COORD-RENDER-001`, `E3-COORD-PRINT-001`, and
-`E3-COORD-TEST-001`.
+**Planning blockers:** stable browser-print-contract promotion, canonical
+fixtures, and assigned `E3-COORD-RENDER-001`, `E3-COORD-PRINT-001`, and
+`E3-COORD-TEST-001` owners. `E3-PREREQ-VERSION-001` is satisfied.
 
 ## Package map
 
@@ -74,12 +74,13 @@ server/worker dependencies.
 The package covers reviewed-source equality, browser capability, preparation,
 print styling, cancel/unknown outcome, retry, no-provider/no-worker scope,
 ownership, safe content, multi-tab/source races, accessibility, print fixtures,
-and E2E evidence. Exact browser matrix and artifact acceptance remain open.
+and E2E evidence. The approved browser matrix and unknown browser-artifact
+outcome are recorded in the Epic decision register; fixtures remain to be made.
 
 ## Code map
 
 - `apps/web/src/` — reviewed source state, print route/control, styles, and errors.
 - `apps/api/app/`, `routes/api.php` — existing authorized Version/Preview source
-  boundary and optional intent-only audit if approved.
+  boundary; MVP has no Export audit endpoint or persistence write.
 - Shared print/fixture paths are reserved through `E3-COORD-PRINT-001` and
   `E3-COORD-TEST-001` before implementation.
