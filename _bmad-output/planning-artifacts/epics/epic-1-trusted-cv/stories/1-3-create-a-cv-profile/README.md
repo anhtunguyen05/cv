@@ -20,8 +20,9 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`; this story package does not carry a second lifecycle status.
 
-**Planning blockers:** `E1-DEC-003` through `E1-DEC-005`,
-`E1-DEC-007`, `E1-DEC-008`, and `E1-COORD-PROFILE-001`.
+**Execution blockers:** one assigned `E1-COORD-PROFILE-001` owner/branch for
+the shared persistence and fixture corpus, authentication boundary evidence,
+and the approved `E1-COORD-TEST-001` harness. The Profile decisions are approved.
 
 ## Package map
 
@@ -77,7 +78,7 @@ approved personal-information fields, then retrieve the same owned resource.
 Create/reload, invalid, cross-user, duplicate and expiry behavior are covered.
 Shared Profile/error contracts, aggregate transaction, ownership, layered
 validation, accessible form states, API mapping, and all test layers are
-referenced; exact schema and concurrency remain open decisions.
+referenced; exact schema and concurrency are normative in `profile-v1.md`.
 
 ## Code Map
 

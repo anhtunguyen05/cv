@@ -7,8 +7,17 @@ import type {
   AuthUser,
 } from '../types/auth.types'
 
-export function login(credentials: LoginCredentials): Promise<AuthResponse> {
-  return api<AuthResponse>('/auth/login', { method: 'POST', body: credentials })
+export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
+  await bootstrapCsrf()
+  try {
+    return await api<AuthResponse>('/auth/login', { method: 'POST', body: credentials })
+  } catch (error) {
+    if (error instanceof ApiRequestError && error.status === 419) {
+      await bootstrapCsrf()
+      return api<AuthResponse>('/auth/login', { method: 'POST', body: credentials })
+    }
+    throw error
+  }
 }
 
 export function register(credentials: RegisterCredentials): Promise<AuthResponse> {

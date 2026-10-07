@@ -14,7 +14,7 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Covers: `AC-1-3-create-a-cv-profile-01`, `AC-1-3-create-a-cv-profile-02`, `AC-1-3-create-a-cv-profile-03`, `AC-1-3-create-a-cv-profile-04`, `AC-1-3-create-a-cv-profile-05`
   - Scope: 01. Add executable Profile and personal-information fixtures: stable Profile contract fixtures
   - Coordination: `E1-COORD-PROFILE-001`
-  - Blocked by: `E1-DEC-003`; `E1-DEC-004`; `E1-DEC-005`
+  - Blocked by: none for contract definition; `profile-v1` is approved. Implementation requires one `E1-COORD-PROFILE-001` owner/branch before its shared fixture corpus is changed.
   - Outcome: 01. Add executable Profile and personal-information fixtures: Add executable Profile and personal-information fixtures.
   - Acceptance: 01. Add executable Profile and personal-information fixtures: fixtures freeze fields, paths, errors, ownership and create/reload shapes.
   - Verification: 01. Add executable Profile and personal-information fixtures: schema validation and rule/AC review.
@@ -40,7 +40,7 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Covers: `AC-1-3-create-a-cv-profile-01`, `AC-1-3-create-a-cv-profile-02`, `AC-1-3-create-a-cv-profile-03`, `AC-1-3-create-a-cv-profile-04`, `AC-1-3-create-a-cv-profile-05`
   - Scope: 01. Implement Profile create frontend adapter and form: feature API/schema/mutation/page/form | 02. Verify Profile create end to end: browser create/reload/error/cross-user journey
   - Coordination: `E1-COORD-PROFILE-001`, `E1-COORD-TEST-001`
-  - Blocked by: `E1-DEC-007`; `E1-DEC-008`
+  - Blocked by: implementation of the approved `E1-COORD-TEST-001` harness and the backend acceptance gate from `TASK-1-3-02`.
   - Outcome: 01. Implement Profile create frontend adapter and form: Implement Profile create frontend adapter and form. | 02. Verify Profile create end to end: Verify Profile create end to end.
   - Acceptance: 01. Implement Profile create frontend adapter and form: accessible create/pending/error/reconcile/success states preserve valid values. | 02. Verify Profile create end to end: critical path and meaningful failures pass on disposable data. | Integrated journey acceptance closes only after `TASK-1-3-02` is done with backend evidence.
   - Verification: 01. Implement Profile create frontend adapter and form: type-check and component tests after enablement. | 02. Verify Profile create end to end: approved Playwright command. | Run the cross-layer journey check after `TASK-1-3-02` passes its backend acceptance.

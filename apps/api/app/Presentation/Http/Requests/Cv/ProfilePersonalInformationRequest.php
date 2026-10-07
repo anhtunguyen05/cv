@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Presentation\Http\Requests\Cv;
+
+use App\Application\Cv\ProfileDocumentValidator;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
+
+final class ProfilePersonalInformationRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return ['personal_information' => ['required', 'array']];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            foreach (ProfileDocumentValidator::validatePersonal($this->input('personal_information')) as $field => $messages) {
+                foreach ($messages as $message) {
+                    $validator->errors()->add($field, $message);
+                }
+            }
+            $this->rejectUnknown($validator, ['personal_information']);
+        });
+    }
+
+    private function rejectUnknown(Validator $validator, array $keys): void
+    {
+        if (array_diff(array_keys($this->all()), $keys) !== []) {
+            $validator->errors()->add('body', 'The request contains unsupported fields.');
+        }
+    }
+}

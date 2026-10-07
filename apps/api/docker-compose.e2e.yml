@@ -1,0 +1,63 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /var/www
+    environment:
+      APP_ENV: testing
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      APP_DEBUG: "false"
+      APP_URL: http://nginx
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_DATABASE: careerfitcv
+      DB_USERNAME: careerfitcv
+      DB_PASSWORD: careerfitcv
+      CACHE_STORE: redis
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      SESSION_DRIVER: database
+      SESSION_SECURE_COOKIE: "false"
+      SANCTUM_STATEFUL_DOMAINS: 127.0.0.1:${E1_WEB_PORT:-4173},localhost:${E1_WEB_PORT:-4173}
+      LOG_CHANNEL: stderr
+    volumes:
+      - .:/var/www
+      - ../../docs:/workspace/docs:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "${E1_API_PORT:-18080}:80"
+    volumes:
+      - .:/var/www:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: careerfitcv
+      POSTGRES_USER: careerfitcv
+      POSTGRES_PASSWORD: careerfitcv
+    volumes:
+      - e1_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U careerfitcv -d careerfitcv"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+
+volumes:
+  e1_pg:
+    name: careerfitcv-e1-pg-${E1_RUN_ID:-local}

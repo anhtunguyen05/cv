@@ -14,7 +14,7 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01`, `AC-1-8-create-and-view-an-immutable-cv-version-02`, `AC-1-8-create-and-view-an-immutable-cv-version-03`, `AC-1-8-create-and-view-an-immutable-cv-version-04`, `AC-1-8-create-and-view-an-immutable-cv-version-05`
   - Scope: 01. Add executable Version snapshot fixtures: snapshot/create/detail/list/error fixtures
   - Coordination: `E1-COORD-VERSION-001`
-  - Blocked by: `E1-DEC-003`; `E1-DEC-004`; `E1-DEC-006`
+  - Blocked by: none for contract definition; `profile-v1` and `version-v1` are approved. Implementation requires one `E1-COORD-VERSION-001` owner/branch before its shared fixture corpus is changed.
   - Outcome: 01. Add executable Version snapshot fixtures: Add executable Version snapshot fixtures.
   - Acceptance: 01. Add executable Version snapshot fixtures: complete schema/version, name, source, order and failures are frozen.
   - Verification: 01. Add executable Version snapshot fixtures: fixture syntax, completeness and cross-Epic consumer review.
@@ -40,7 +40,7 @@ Return to the [story overview](README.md). Story lifecycle comes from `sprint-st
   - Covers: `AC-1-8-create-and-view-an-immutable-cv-version-01`, `AC-1-8-create-and-view-an-immutable-cv-version-02`, `AC-1-8-create-and-view-an-immutable-cv-version-03`, `AC-1-8-create-and-view-an-immutable-cv-version-04`, `AC-1-8-create-and-view-an-immutable-cv-version-05`
   - Scope: 01. Implement Version frontend adapter and state: feature API/schema/query/mutation/error/cache mapping | 02. Build accessible Version create/list/detail UI: pages/components/routes and stale/error/empty states | 03. Verify Version journey end to end: browser create/reload/list/Profile-edit/reopen/foreign-access path
   - Coordination: `E1-COORD-VERSION-001`, `E1-COORD-TEST-001`
-  - Blocked by: `E1-DEC-007`; `E1-DEC-008`
+  - Blocked by: implementation of the approved `E1-COORD-TEST-001` harness and backend acceptance from `TASK-1-8-02`.
   - Outcome: 01. Implement Version frontend adapter and state: Implement Version frontend adapter and state. | 02. Build accessible Version create/list/detail UI: Build accessible Version create/list/detail UI. | 03. Verify Version journey end to end: Verify Version journey end to end.
   - Acceptance: 01. Implement Version frontend adapter and state: approved fixtures map to stable create/list/detail states without live-Profile substitution. | 02. Build accessible Version create/list/detail UI: keyboard-usable UI clearly distinguishes immutable Version from mutable Profile. | 03. Verify Version journey end to end: critical path proves snapshot remains unchanged after Profile edits. | Integrated journey acceptance closes only after `TASK-1-8-02` is done with backend evidence.
   - Verification: 01. Implement Version frontend adapter and state: type-check and adapter/state tests. | 02. Build accessible Version create/list/detail UI: component tests and manual accessibility review. | 03. Verify Version journey end to end: approved Playwright command on disposable PostgreSQL 16 data. | Run the cross-layer journey check after `TASK-1-8-02` passes its backend acceptance.

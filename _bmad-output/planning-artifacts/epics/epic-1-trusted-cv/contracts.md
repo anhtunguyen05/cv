@@ -1,9 +1,10 @@
 # Epic 1 Shared Contracts
 
-These contracts are proposed planning agreements. Global HTTP envelope,
+These contracts are approved Epic 1 planning agreements. Global HTTP envelope,
 versioning, field naming, timestamp, error, and framework-failure behavior come
-from `docs/contracts/common/http.md` and are not repeated here. Open values are
-owned by `decisions.md`.
+from `docs/contracts/common/http.md` and are not repeated here. The detailed,
+stable Profile and Version contracts are `docs/contracts/cv/profile-v1.md` and
+`docs/contracts/cv/version-v1.md`; `decisions.md` records their approval.
 
 ## E1-CONTRACT-USER-001 — Public User
 
@@ -30,9 +31,9 @@ and internal verification/security metadata.
 | Sign out | `POST /api/v1/auth/logout` | `204` | `UNAUTHENTICATED` or idempotent success per decision |
 
 All browser requests use the Sanctum stateful cookie and CSRF boundary defined
-by `AD-13` and `SEC-STD-001`/`SEC-STD-002`. Exact topology, routes, statuses,
-field limits, duplicate semantics, throttle policy, and logout idempotency
-remain open under `E1-DEC-001`, `E1-DEC-002`, and `E1-DEC-009`.
+by `AD-13` and `SEC-STD-001`/`SEC-STD-002`. The approved authentication
+decisions in `decisions.md` own topology, routes, statuses, field limits,
+duplicate semantics, throttle policy, and logout idempotency.
 
 ## E1-CONTRACT-PROFILE-001 — CV Profile resource
 
@@ -58,8 +59,9 @@ remain open under `E1-DEC-001`, `E1-DEC-002`, and `E1-DEC-009`.
 - `User` ownership is never accepted as a writable payload field.
 - Create/update responses use `data`; validation uses field-keyed `details`
   whose keys follow the approved nested path convention.
-- The exact fields, required/optional rules, content limits, write granularity,
-  concurrency token, and list/detail endpoint set remain open decisions.
+- Exact fields, required/optional rules, content limits, write granularity,
+  concurrency token, and list/detail endpoint set are normative in
+  `docs/contracts/cv/profile-v1.md`.
 
 ## E1-CONTRACT-VERSION-001 — Immutable CV Version
 
@@ -92,7 +94,8 @@ remain open under `E1-DEC-001`, `E1-DEC-002`, and `E1-DEC-009`.
 | Hidden/absent Profile or Version | `404 RESOURCE_NOT_FOUND` | Show non-disclosing not-found state |
 | Stale Profile update | `409 PROFILE_UPDATE_CONFLICT` | Preserve edits and offer controlled reload/retry |
 | Invalid Version source state | `409 PROFILE_NOT_VERSIONABLE` | Keep User on Profile/Version form with safe reason |
+| Reused create idempotency key with a changed request | `409 IDEMPOTENCY_KEY_REUSED` | Stop automatic retry; retain the request, require a new key, and offer controlled reconciliation |
 
 Malformed bodies, unauthenticated sessions, expired session/CSRF state,
 throttling, missing routes, and unexpected failures reuse global codes. The
-table is not final until the corresponding Epic decisions are approved.
+table is normative for the approved Epic 1 scope.

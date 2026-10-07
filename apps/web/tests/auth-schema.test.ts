@@ -11,6 +11,9 @@ describe('registration validation', () => {
     })
 
     expect(result.success).toBe(false)
-    if (!result.success) expect(result.error.flatten().fieldErrors.password).toContain('Password must be at least 12 characters')
+    if (!result.success)
+      expect(result.error.flatten().fieldErrors.password).toContain(
+        'Password must be at least 12 characters',
+      )
   })
 })

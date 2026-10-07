@@ -35,17 +35,23 @@ describe('registration transport', () => {
   })
 
   it('bootstraps CSRF and returns the public user on success', async () => {
-    api.mockResolvedValue({ data: { user: { id: '1', name: credentials.name, email: credentials.email } } })
+    api.mockResolvedValue({
+      data: { user: { id: '1', name: credentials.name, email: credentials.email } },
+    })
     const { register } = await import('@/features/auth/api/auth.api')
 
-    await expect(register(credentials)).resolves.toEqual(expect.objectContaining({ data: expect.any(Object) }))
+    await expect(register(credentials)).resolves.toEqual(
+      expect.objectContaining({ data: expect.any(Object) }),
+    )
     expect(bootstrapCsrf).toHaveBeenCalledTimes(1)
     expect(api).toHaveBeenCalledWith('/auth/register', { method: 'POST', body: credentials })
   })
 
   it('refreshes CSRF and retries once after an expired session', async () => {
     const { ApiRequestError } = await import('@/shared/api/client')
-    api.mockRejectedValueOnce(new ApiRequestError(419)).mockResolvedValueOnce({ data: { user: {} } })
+    api
+      .mockRejectedValueOnce(new ApiRequestError(419))
+      .mockResolvedValueOnce({ data: { user: {} } })
     const { register } = await import('@/features/auth/api/auth.api')
 
     await register(credentials)
@@ -55,17 +61,25 @@ describe('registration transport', () => {
 
   it('preserves duplicate-email and throttling errors for the form layer', async () => {
     const { ApiRequestError } = await import('@/shared/api/client')
-    api.mockRejectedValue(new ApiRequestError(429, { code: 'THROTTLED', details: { email: 'Try later' } }, 30))
+    api.mockRejectedValue(
+      new ApiRequestError(429, { code: 'THROTTLED', details: { email: 'Try later' } }, 30),
+    )
     const { register } = await import('@/features/auth/api/auth.api')
 
     await expect(register(credentials)).rejects.toMatchObject({ status: 429, retryAfter: 30 })
   })
 
   it('exposes current-account lookup for lost-response reconciliation', async () => {
-    api.mockResolvedValue({ data: { user: { id: '1', name: credentials.name, email: credentials.email } } })
+    api.mockResolvedValue({
+      data: { user: { id: '1', name: credentials.name, email: credentials.email } },
+    })
     const { getMe } = await import('@/features/auth/api/auth.api')
 
-    await expect(getMe()).resolves.toEqual({ id: '1', name: credentials.name, email: credentials.email })
+    await expect(getMe()).resolves.toEqual({
+      id: '1',
+      name: credentials.name,
+      email: credentials.email,
+    })
     expect(api).toHaveBeenCalledWith('/auth/me')
   })
 })

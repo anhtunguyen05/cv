@@ -20,8 +20,8 @@ context:
 
 **Lifecycle:** Read only from `_bmad-output/implementation-artifacts/sprint-status.yaml`; this story package does not carry a second lifecycle status.
 
-**Planning blockers:** `E1-DEC-003` through `E1-DEC-005`,
-`E1-DEC-007`, `E1-DEC-008`, and `E1-COORD-PROFILE-001`.
+**Execution blockers:** the Profile persistence/fixture checkpoint from Story
+1.3 and the approved `E1-COORD-TEST-001` harness. The Profile decisions are approved.
 
 ## Package map
 
@@ -71,7 +71,7 @@ add/edit/remove behavior to the owned mutable Profile.
 Add/edit/remove, malformed, stale/foreign, reload and Version-regression paths
 are explicit. Shared Profile contract, aggregate transaction, ownership,
 nested validation, accessible repeated editor, mapping and all test layers are
-referenced; field/date semantics remain human-gated.
+referenced; field/date semantics are normative in `profile-v1.md`.
 
 ## Code Map
 

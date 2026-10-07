@@ -8,6 +8,14 @@ use Illuminate\Http\JsonResponse;
 
 final class ApiResponse
 {
+    public static function data(array $data, int $status = 200): JsonResponse
+    {
+        $response = response()->json(['data' => $data], $status);
+        $response->headers->set('Cache-Control', 'private, no-store');
+
+        return $response;
+    }
+
     public static function error(
         string $code,
         string $message,
@@ -20,6 +28,9 @@ final class ApiResponse
             $payload['details'] = $details;
         }
 
-        return response()->json($payload, $status);
+        $response = response()->json($payload, $status);
+        $response->headers->set('Cache-Control', 'private, no-store');
+
+        return $response;
     }
 }

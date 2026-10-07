@@ -41,6 +41,8 @@ COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 
 COPY . /var/www
 
+RUN composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
 RUN chown -R www-data:www-data \
     /var/www/storage \
     /var/www/bootstrap/cache

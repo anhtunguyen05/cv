@@ -60,9 +60,10 @@ immutable Version --update/delete-----> unsupported in Epic 1
 - **E1-DATA-009:** Timestamps are stored in UTC; ordering does not rely on a
   timestamp alone when two records can share a timestamp value.
 
-## Open data design
+## Approved data design
 
-`E1-DEC-003` and `E1-DEC-004` must freeze the Profile schema, relational/JSON
-split, nested item fields, limits, and canonicalization. `E1-DEC-005` must
-freeze optimistic concurrency and write granularity. `E1-DEC-006` must freeze
-the snapshot schema/versioning and name policy.
+`E1-DEC-003` through `E1-DEC-005` approve the Profile schema,
+relational/JSON split, nested item fields, limits, canonicalization,
+optimistic concurrency, and write granularity in
+`docs/contracts/cv/profile-v1.md`. `E1-DEC-006` approves the Version snapshot
+schema/versioning and name policy in `docs/contracts/cv/version-v1.md`.

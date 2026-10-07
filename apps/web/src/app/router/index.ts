@@ -6,7 +6,7 @@ import { ApiRequestError } from '@/shared/api/client'
 import { ROUTES } from '@/shared/constants/routes'
 
 // Protected routes validate the cookie-backed current account on first access.
-async function requireAuth() {
+async function requireAuth(to: { fullPath: string }) {
   const authStore = useAuthStore(pinia)
   if (authStore.isAuthenticated) return true
 
@@ -16,7 +16,7 @@ async function requireAuth() {
   } catch (error) {
     if (error instanceof ApiRequestError && [401, 419].includes(error.status)) {
       authStore.clearAuth()
-      return { path: ROUTES.LOGIN }
+      return { path: ROUTES.LOGIN, query: { return_to: to.fullPath } }
     }
     return false
   }
@@ -69,6 +69,13 @@ const router = createRouter({
       path: '/cv/:id/preview',
       name: 'cv-preview',
       component: () => import('@/pages/cv/CvPreviewPage.vue'),
+      meta: { layout: 'PreviewLayout' },
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/cv/:id/version/:versionId',
+      name: 'cv-version',
+      component: () => import('@/pages/cv/CvVersionPage.vue'),
       meta: { layout: 'PreviewLayout' },
       beforeEnter: requireAuth,
     },

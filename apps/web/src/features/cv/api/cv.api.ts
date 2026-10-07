@@ -1,40 +1,95 @@
 import { api } from '@/shared/api/client'
-import type { CvProfile, CvVersion } from '../types/cv.types'
+import type {
+  CvProfile,
+  CvVersion,
+  CvSectionKey,
+  CvDocument,
+  PersonalInformation,
+} from '../types/cv.types'
 
-// CV Profiles
-export function getCvProfiles(): Promise<CvProfile[]> {
-  return api<CvProfile[]>('/cv-profiles')
+interface Collection<T> {
+  data: T[]
+  meta: { current_page: number; per_page: number; total: number; last_page: number }
+  links: Record<string, string | null>
+}
+const uuid = () => crypto.randomUUID()
+
+export async function getCvProfiles(): Promise<CvProfile[]> {
+  const response = await api<Collection<CvProfile>>('/cv-profiles')
+  return response.data
 }
 
-export function getCvProfile(id: number): Promise<CvProfile> {
-  return api<CvProfile>(`/cv-profiles/${id}`)
+export async function getCvProfile(id: string): Promise<CvProfile> {
+  const response = await api<{ data: CvProfile }>(`/cv-profiles/${encodeURIComponent(id)}`)
+  return response.data
 }
 
-export function createCvProfile(data: Partial<CvProfile>): Promise<CvProfile> {
-  return api<CvProfile>('/cv-profiles', { method: 'POST', body: data })
+export async function createCvProfile(
+  title: string,
+  personal_information: PersonalInformation,
+): Promise<CvProfile> {
+  const response = await api<{ data: CvProfile }>('/cv-profiles', {
+    method: 'POST',
+    body: { title, personal_information },
+    headers: { 'Idempotency-Key': uuid() },
+  })
+  return response.data
 }
 
-export function updateCvProfile(id: number, data: Partial<CvProfile>): Promise<CvProfile> {
-  return api<CvProfile>(`/cv-profiles/${id}`, { method: 'PUT', body: data })
+export async function updateCvSection(
+  id: string,
+  section: CvSectionKey,
+  value: CvDocument[CvSectionKey],
+  revision: number,
+): Promise<CvProfile> {
+  const path = section === 'personal_information' ? 'personal-information' : section
+  const response = await api<{ data: CvProfile }>(
+    `/cv-profiles/${encodeURIComponent(id)}/${path}`,
+    {
+      method: 'PUT',
+      body: { [section]: value },
+      headers: { 'If-Match': `"${revision}"` },
+    },
+  )
+  return response.data
 }
 
-export function deleteCvProfile(id: number): Promise<void> {
-  return api<void>(`/cv-profiles/${id}`, { method: 'DELETE' })
+export async function updateCvTitle(
+  id: string,
+  title: string,
+  revision: number,
+): Promise<CvProfile> {
+  const response = await api<{ data: CvProfile }>(`/cv-profiles/${encodeURIComponent(id)}/title`, {
+    method: 'PUT',
+    body: { title },
+    headers: { 'If-Match': `"${revision}"` },
+  })
+  return response.data
 }
 
-// CV Versions
-export function getCvVersions(profileId: number): Promise<CvVersion[]> {
-  return api<CvVersion[]>(`/cv-profiles/${profileId}/versions`)
+export async function getCvVersions(profileId?: string): Promise<CvVersion[]> {
+  const query = profileId ? `?profile_id=${encodeURIComponent(profileId)}` : ''
+  const response = await api<Collection<CvVersion>>(`/cv-versions${query}`)
+  return response.data
 }
 
-export function getCvVersion(id: number): Promise<CvVersion> {
-  return api<CvVersion>(`/cv-versions/${id}`)
+export async function getCvVersion(id: string): Promise<CvVersion> {
+  const response = await api<{ data: CvVersion }>(`/cv-versions/${encodeURIComponent(id)}`)
+  return response.data
 }
 
-export function createCvVersion(profileId: number, data: Partial<CvVersion>): Promise<CvVersion> {
-  return api<CvVersion>(`/cv-profiles/${profileId}/versions`, { method: 'POST', body: data })
-}
-
-export function updateCvVersion(id: number, data: Partial<CvVersion>): Promise<CvVersion> {
-  return api<CvVersion>(`/cv-versions/${id}`, { method: 'PUT', body: data })
+export async function createCvVersion(
+  profileId: string,
+  name: string,
+  revision: number,
+): Promise<CvVersion> {
+  const response = await api<{ data: CvVersion }>(
+    `/cv-profiles/${encodeURIComponent(profileId)}/versions`,
+    {
+      method: 'POST',
+      body: { name },
+      headers: { 'If-Match': `"${revision}"`, 'Idempotency-Key': uuid() },
+    },
+  )
+  return response.data
 }
