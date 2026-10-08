@@ -52,6 +52,17 @@ const sectionKeys: CvSectionKey[] = [
 const equal = (left: unknown, right: unknown): boolean =>
   JSON.stringify(left) === JSON.stringify(right)
 
+function isSectionComplete(key: CvSectionKey, value: CvDocument[CvSectionKey]): boolean {
+  if (key === 'personal_information') {
+    return Boolean((value as PersonalInformation).full_name.trim())
+  }
+  if (key === 'summary') {
+    return Boolean((value as string | null)?.trim())
+  }
+
+  return Array.isArray(value) && value.length > 0
+}
+
 export function useCvEditorDraft() {
   const activeSection = ref<CvSectionKey>('personal_information')
   const title = ref('')
@@ -215,22 +226,17 @@ export function useCvEditorDraft() {
   }
 
   const completedSections = computed<CvSectionKey[]>(() => {
-    // Include the active textarea draft even before a save commits it into the
-    // structured document used by the other sections.
-    const document = captureDocument()
     const completed: CvSectionKey[] = []
-    if (document.personal_information.full_name.trim()) completed.push('personal_information')
-    if (document.summary?.trim()) completed.push('summary')
-    for (const section of [
-      'skills',
-      'education',
-      'experience',
-      'projects',
-      'certificates',
-      'languages',
-      'activities',
-    ] as const) {
-      if (document[section].length > 0) completed.push(section)
+    for (const key of sectionKeys) {
+      let value = editableDocument.value[key]
+      if (key === activeSection.value) {
+        try {
+          value = sectionValue()
+        } catch {
+          // Keep the last valid committed value while malformed text remains editable.
+        }
+      }
+      if (isSectionComplete(key, value)) completed.push(key)
     }
     return completed
   })

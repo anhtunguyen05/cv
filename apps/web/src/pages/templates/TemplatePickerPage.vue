@@ -15,11 +15,15 @@ const {
   templatesQuery,
   versionsQuery,
   savedVersions,
+  versionPage,
+  versionTotalPages,
   filtered,
   onSelect,
   applyTemplate,
   openDashboard,
   resetSearchOrOpenDashboard,
+  previousVersionPage,
+  nextVersionPage,
 } = useTemplatePickerController()
 </script>
 
@@ -72,6 +76,29 @@ const {
           <span class="mt-1 block text-xs text-text-muted">Saved {{ version.created_at }}</span>
         </RouterLink>
       </div>
+      <nav
+        v-if="versionTotalPages > 1"
+        class="flex items-center justify-between"
+        aria-label="Saved Version pages"
+      >
+        <Button
+          size="sm"
+          variant="outline"
+          :disabled="versionPage <= 1"
+          @click="previousVersionPage"
+          >Previous</Button
+        >
+        <span class="text-xs text-text-muted"
+          >Page {{ versionPage }} of {{ versionTotalPages }}</span
+        >
+        <Button
+          size="sm"
+          variant="outline"
+          :disabled="versionPage >= versionTotalPages"
+          @click="nextVersionPage"
+          >Next</Button
+        >
+      </nav>
     </div>
     <EmptyState
       v-else-if="!versionId"

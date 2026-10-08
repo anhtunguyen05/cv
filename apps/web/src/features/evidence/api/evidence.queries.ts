@@ -16,6 +16,7 @@ export function useEvidenceInterviewQuery(interviewId: MaybeRef<string>) {
     queryFn: () => getEvidenceInterview(toValue(interviewId)),
     enabled: computed(() => Boolean(toValue(interviewId))),
     retry: retryEvidenceRequest,
+    staleTime: 5_000,
   })
 }
 
@@ -25,5 +26,6 @@ export function usePatchQuery(patchId: MaybeRef<string>) {
     queryFn: () => getPatch(toValue(patchId)),
     enabled: computed(() => Boolean(toValue(patchId))),
     retry: retryEvidenceRequest,
+    staleTime: 30_000,
   })
 }

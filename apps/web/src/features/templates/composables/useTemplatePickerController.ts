@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAllCvVersionsQuery } from '@/features/cv/api/cv.queries'
+import { useCvVersionsPageQuery } from '@/features/cv/api/cv.queries'
 import { ROUTES } from '@/shared/constants/routes'
 import { useTemplatesQuery } from '../api/templates.queries'
 import type { CvTemplate } from '../types/template.types'
@@ -13,10 +13,15 @@ export function useTemplatePickerController() {
   const versionId = computed(() =>
     typeof route.params.versionId === 'string' ? route.params.versionId : '',
   )
-  const templatesQuery = useTemplatesQuery()
-  const versionsQuery = useAllCvVersionsQuery(computed(() => !versionId.value))
+  const versionPage = ref(1)
+  const templatesQuery = useTemplatesQuery(computed(() => Boolean(versionId.value)))
+  const versionsQuery = useCvVersionsPageQuery(
+    versionPage,
+    undefined,
+    computed(() => !versionId.value),
+  )
   const templates = computed(() => templatesQuery.data.value ?? [])
-  const savedVersions = computed(() => versionsQuery.data.value ?? [])
+  const savedVersions = computed(() => versionsQuery.data.value?.items ?? [])
   const filtered = computed(() => {
     const query = search.value.toLowerCase().trim()
     return query
@@ -70,6 +75,15 @@ export function useTemplatePickerController() {
     else openDashboard()
   }
 
+  function previousVersionPage(): void {
+    if (versionPage.value > 1) versionPage.value -= 1
+  }
+
+  function nextVersionPage(): void {
+    const lastPage = versionsQuery.data.value?.lastPage ?? 1
+    if (versionPage.value < lastPage) versionPage.value += 1
+  }
+
   return {
     search,
     selected,
@@ -77,10 +91,14 @@ export function useTemplatePickerController() {
     templatesQuery,
     versionsQuery,
     savedVersions,
+    versionPage,
+    versionTotalPages: computed(() => versionsQuery.data.value?.lastPage ?? 1),
     filtered,
     onSelect,
     applyTemplate,
     openDashboard,
     resetSearchOrOpenDashboard,
+    previousVersionPage,
+    nextVersionPage,
   }
 }

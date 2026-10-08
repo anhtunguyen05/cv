@@ -78,6 +78,30 @@ defineProps<{ controller: DashboardController }>()
           >
         </div>
       </div>
+      <nav
+        v-if="controller.cvProfileTotalPages.value > 1"
+        class="flex items-center justify-between"
+        aria-label="CV Profile pages"
+      >
+        <Button
+          type="button"
+          variant="outline"
+          :disabled="controller.cvProfilePage.value <= 1"
+          @click="controller.previousProfilePage"
+          >Previous</Button
+        >
+        <span class="text-xs text-text-muted"
+          >Page {{ controller.cvProfilePage.value }} of
+          {{ controller.cvProfileTotalPages.value }}</span
+        >
+        <Button
+          type="button"
+          variant="outline"
+          :disabled="controller.cvProfilePage.value >= controller.cvProfileTotalPages.value"
+          @click="controller.nextProfilePage"
+          >Next</Button
+        >
+      </nav>
     </div>
   </section>
 </template>

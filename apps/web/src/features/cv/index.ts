@@ -1,6 +1,8 @@
 export type {
   CvProfile,
+  CvProfileSummary,
   CvVersion,
+  CvVersionSummary,
   CvDocument,
   CvSectionKey,
   PersonalInformation,

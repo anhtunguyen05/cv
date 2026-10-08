@@ -23,10 +23,14 @@ const {
   versionMessage,
   versionSaving,
   versions,
+  versionPage,
+  versionTotalPages,
   profileLoadError,
   selectSection,
   save,
   saveVersion,
+  previousVersionPage,
+  nextVersionPage,
 } = useCvEditorController()
 </script>
 
@@ -181,6 +185,33 @@ const {
           >
         </li>
       </ul>
+      <nav
+        v-if="versionTotalPages > 1"
+        class="mt-4 flex items-center justify-between"
+        aria-label="Saved Version pages"
+      >
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          :disabled="versionPage <= 1"
+          @click="previousVersionPage"
+        >
+          Previous
+        </Button>
+        <span class="text-xs text-text-muted"
+          >Page {{ versionPage }} of {{ versionTotalPages }}</span
+        >
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          :disabled="versionPage >= versionTotalPages"
+          @click="nextVersionPage"
+        >
+          Next
+        </Button>
+      </nav>
     </div>
   </section>
 </template>

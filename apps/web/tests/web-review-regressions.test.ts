@@ -5,6 +5,7 @@ import SearchInput from '@/shared/components/molecules/SearchInput.vue'
 import CvSectionNav from '@/features/cv/components/CvSectionNav.vue'
 import { useCvEditorDraft } from '@/features/cv/composables/useCvEditorDraft'
 import { useJdDraft } from '@/features/jd/composables/useJdDraft'
+import { countCodePoints, limitCodePoints } from '@/features/jd/utils/textLimits'
 import { cvProfileSchema } from '@/features/cv/schemas/cv.schemas'
 import { cvTemplateSchema } from '@/features/templates/schemas/template.schemas'
 import { jdAnalysisSchema } from '@/features/jd/schemas/jd.schemas'
@@ -146,6 +147,33 @@ describe('web review regressions', () => {
     draft.sectionText.value = 'A locally drafted summary'
 
     expect(draft.completedSections.value).toContain('summary')
+  })
+
+  it('keeps the last committed completion when the active draft is malformed', () => {
+    const draft = useCvEditorDraft()
+    draft.editableDocument.value.projects = [
+      {
+        id: 'project-1',
+        name: 'Committed project',
+        role: null,
+        url: null,
+        start_date: null,
+        end_date: null,
+        technologies: [],
+        highlights: [],
+      },
+    ]
+    draft.setActiveSection('projects')
+    draft.sectionText.value = '{ malformed'
+
+    expect(draft.completedSections.value).toContain('projects')
+    expect(() => draft.completedSections.value).not.toThrow()
+  })
+
+  it('limits Unicode input by code point without splitting surrogate pairs', () => {
+    expect(countCodePoints('A😀é')).toBe(4)
+    expect(limitCodePoints('😀ABC', 1)).toBe('😀')
+    expect(limitCodePoints('plain text', 50)).toBe('plain text')
   })
 
   it('resets JD draft state when the resource changes', () => {

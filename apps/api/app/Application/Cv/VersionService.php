@@ -91,7 +91,12 @@ final class VersionService
             $query->where('source_profile_id', $profileId);
         }
 
-        return $query->orderByDesc('created_at')->orderByDesc('id')->paginate($perPage, ['*'], 'page', $page);
+        return $query
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate($perPage, [
+                'id', 'user_id', 'source_profile_id', 'source_profile_revision', 'name', 'created_at',
+            ], 'page', $page);
     }
 
     private function assertRevision(CvProfile $profile, string $ifMatch): void
