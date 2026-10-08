@@ -3,7 +3,13 @@ import { computed, ref } from 'vue'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import { ArrowLeft, Check, RefreshCw, X } from 'lucide-vue-next'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { approvePatch, editPatch, getPatch, regeneratePatch, rejectPatch } from '@/features/evidence/api/evidence.api'
+import {
+  approvePatch,
+  editPatch,
+  getPatch,
+  regeneratePatch,
+  rejectPatch,
+} from '@/features/evidence/api/evidence.api'
 import type { Patch } from '@/features/evidence/types/evidence.types'
 import { ApiRequestError } from '@/shared/api/client'
 import { ROUTES } from '@/shared/constants/routes'
@@ -18,7 +24,7 @@ const legacyCvId = computed(() => String(route.params.id || ''))
 const draft = ref('')
 const idempotencyKeys = ref<Record<string, string>>({})
 function mutationKey(action: string): string {
-  return idempotencyKeys.value[action] ??= crypto.randomUUID()
+  return (idempotencyKeys.value[action] ??= crypto.randomUUID())
 }
 function clearMutationKey(action: string): void {
   delete idempotencyKeys.value[action]
@@ -30,24 +36,49 @@ const query = useQuery({
   retry: (count, error) => isRetryable(error) && count < 2,
 })
 const edit = useMutation({
-  mutationFn: () => editPatch(patchId.value, query.data.value?.revision ?? 0, draft.value, mutationKey('edit')),
-  onSuccess: (patch) => { clearMutationKey('edit'); query.data.value = patch; draft.value = patch.new_value },
-  onError: (error) => { if (error instanceof ApiRequestError && error.status === 409) void query.refetch() },
+  mutationFn: () =>
+    editPatch(patchId.value, query.data.value?.revision ?? 0, draft.value, mutationKey('edit')),
+  onSuccess: (patch) => {
+    clearMutationKey('edit')
+    query.data.value = patch
+    draft.value = patch.new_value
+  },
+  onError: (error) => {
+    if (error instanceof ApiRequestError && error.status === 409) void query.refetch()
+  },
 })
 const reject = useMutation({
-  mutationFn: () => rejectPatch(patchId.value, query.data.value?.revision ?? 0, mutationKey('reject')),
-  onSuccess: (patch) => { clearMutationKey('reject'); query.data.value = patch },
-  onError: (error) => { if (error instanceof ApiRequestError && error.status === 409) void query.refetch() },
+  mutationFn: () =>
+    rejectPatch(patchId.value, query.data.value?.revision ?? 0, mutationKey('reject')),
+  onSuccess: (patch) => {
+    clearMutationKey('reject')
+    query.data.value = patch
+  },
+  onError: (error) => {
+    if (error instanceof ApiRequestError && error.status === 409) void query.refetch()
+  },
 })
 const approve = useMutation({
-  mutationFn: () => approvePatch(patchId.value, query.data.value?.revision ?? 0, mutationKey('approve')),
-  onSuccess: (patch) => { clearMutationKey('approve'); query.data.value = patch },
-  onError: (error) => { if (error instanceof ApiRequestError && error.status === 409) void query.refetch() },
+  mutationFn: () =>
+    approvePatch(patchId.value, query.data.value?.revision ?? 0, mutationKey('approve')),
+  onSuccess: (patch) => {
+    clearMutationKey('approve')
+    query.data.value = patch
+  },
+  onError: (error) => {
+    if (error instanceof ApiRequestError && error.status === 409) void query.refetch()
+  },
 })
 const regenerate = useMutation({
-  mutationFn: () => regeneratePatch(patchId.value, query.data.value?.revision ?? 0, mutationKey('regenerate')),
-  onSuccess: (patch) => { clearMutationKey('regenerate'); void router.push(ROUTES.PATCH_REVIEW(patch.id)) },
-  onError: (error) => { if (error instanceof ApiRequestError && error.status === 409) void query.refetch() },
+  mutationFn: () =>
+    regeneratePatch(patchId.value, query.data.value?.revision ?? 0, mutationKey('regenerate')),
+  onSuccess: (patch) => {
+    clearMutationKey('regenerate')
+    void router.push(ROUTES.PATCH_REVIEW(patch.id))
+  },
+  onError: (error) => {
+    if (error instanceof ApiRequestError && error.status === 409) void query.refetch()
+  },
 })
 
 function confirmDecision(message: string, action: () => void): void {
@@ -74,15 +105,28 @@ function sourceValue(value: Patch['old_value']): string {
   <div class="space-y-6 max-w-4xl mx-auto" aria-live="polite">
     <div class="space-y-3 pb-4 border-b border-border/80">
       <RouterLink
-        :to="query.data.value ? ROUTES.AI_INTERVIEW(query.data.value.interview_id) : (legacyCvId ? ROUTES.CV_EDIT(legacyCvId) : ROUTES.MATCH_REPORTS)"
+        :to="
+          query.data.value
+            ? ROUTES.AI_INTERVIEW(query.data.value.interview_id)
+            : legacyCvId
+              ? ROUTES.CV_EDIT(legacyCvId)
+              : ROUTES.MATCH_REPORTS
+        "
         class="inline-flex items-center gap-2 text-sm font-medium text-text-muted hover:text-text"
       >
         <ArrowLeft :size="16" aria-hidden="true" />
         <span>Return to source</span>
       </RouterLink>
-      <p class="text-xs font-bold uppercase tracking-wider text-primary">Evidence-based AI revision</p>
-      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">Review proposed improvement</h1>
-      <p class="text-sm text-text-muted">The current CV source, User Evidence, and provider proposal remain separate. Nothing is applied until you explicitly approve it.</p>
+      <p class="text-xs font-bold uppercase tracking-wider text-primary">
+        Evidence-based AI revision
+      </p>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">
+        Review proposed improvement
+      </h1>
+      <p class="text-sm text-text-muted">
+        The current CV source, User Evidence, and provider proposal remain separate. Nothing is
+        applied until you explicitly approve it.
+      </p>
     </div>
 
     <Card v-if="query.isLoading.value" class="space-y-3" aria-label="Loading Patch proposal">
@@ -91,67 +135,183 @@ function sourceValue(value: Patch['old_value']): string {
     </Card>
     <Card v-else-if="query.isError.value" class="space-y-3" role="alert">
       <h2 class="text-lg font-bold text-text">Unable to load this proposal</h2>
-      <p class="text-sm text-text-muted">{{ query.error.value instanceof Error ? query.error.value.message : 'The proposal could not be loaded.' }}</p>
-      <AppButton v-if="isRetryable(query.error.value)" type="button" variant="outline" @click="query.refetch()"><RefreshCw :size="15" aria-hidden="true" /> Retry</AppButton>
-      <RouterLink v-else :to="ROUTES.MATCH_REPORTS" class="text-sm font-semibold text-primary hover:underline">Return to Match Reports</RouterLink>
+      <p class="text-sm text-text-muted">
+        {{
+          query.error.value instanceof Error
+            ? query.error.value.message
+            : 'The proposal could not be loaded.'
+        }}
+      </p>
+      <AppButton
+        v-if="isRetryable(query.error.value)"
+        type="button"
+        variant="outline"
+        @click="query.refetch()"
+        ><RefreshCw :size="15" aria-hidden="true" /> Retry</AppButton
+      >
+      <RouterLink
+        v-else
+        :to="ROUTES.MATCH_REPORTS"
+        class="text-sm font-semibold text-primary hover:underline"
+        >Return to Match Reports</RouterLink
+      >
     </Card>
     <Card v-else-if="!patchId" class="space-y-3" role="status">
       <h2 class="text-lg font-bold text-text">Choose a Patch proposal</h2>
-      <p class="text-sm text-text-muted">Open a server-created proposal from an Evidence interview to review it here.</p>
-      <RouterLink :to="ROUTES.MATCH_REPORTS" class="text-sm font-semibold text-primary hover:underline">Return to Match Reports</RouterLink>
+      <p class="text-sm text-text-muted">
+        Open a server-created proposal from an Evidence interview to review it here.
+      </p>
+      <RouterLink
+        :to="ROUTES.MATCH_REPORTS"
+        class="text-sm font-semibold text-primary hover:underline"
+        >Return to Match Reports</RouterLink
+      >
     </Card>
     <template v-else-if="query.data.value">
       <Card class="space-y-5">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p class="text-xs text-text-muted">Patch revision {{ query.data.value.revision }}</p>
-            <h2 class="text-lg font-bold text-text">{{ query.data.value.target.section }} · {{ query.data.value.target.field }}</h2>
+            <h2 class="text-lg font-bold text-text">
+              {{ query.data.value.target.section }} · {{ query.data.value.target.field }}
+            </h2>
           </div>
-          <AppBadge :label="query.data.value.status" :variant="query.data.value.status === 'pending' ? 'warning' : 'muted'" />
+          <AppBadge
+            :label="query.data.value.status"
+            :variant="query.data.value.status === 'pending' ? 'warning' : 'muted'"
+          />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div class="rounded-xl border border-danger-border bg-danger-muted/60 p-4 space-y-2">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-danger-text">Current CV source</h3>
-            <p class="whitespace-pre-wrap text-danger-strong">{{ sourceValue(query.data.value.old_value) }}</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-danger-text">
+              Current CV source
+            </h3>
+            <p class="whitespace-pre-wrap text-danger-strong">
+              {{ sourceValue(query.data.value.old_value) }}
+            </p>
           </div>
           <div class="rounded-xl border border-success-border bg-success-muted/60 p-4 space-y-2">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-success-text">Provider proposal</h3>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-success-text">
+              Provider proposal
+            </h3>
             <p class="whitespace-pre-wrap text-success-strong">{{ query.data.value.new_value }}</p>
           </div>
         </div>
         <p class="text-sm text-text-muted">Reason: {{ query.data.value.reason }}</p>
 
-        <div v-if="query.data.value.evidence?.length" class="rounded-xl border border-border bg-surface-muted/40 p-4 space-y-2">
+        <div
+          v-if="query.data.value.evidence?.length"
+          class="rounded-xl border border-border bg-surface-muted/40 p-4 space-y-2"
+        >
           <h3 class="text-xs font-bold uppercase tracking-wider text-text-muted">User Evidence</h3>
-          <p v-for="evidence in query.data.value.evidence" :key="evidence.id" class="text-sm text-text">{{ evidence.outcome === 'answer' ? evidence.answer : 'Cannot provide evidence' }}</p>
+          <p
+            v-for="evidence in query.data.value.evidence"
+            :key="evidence.id"
+            class="text-sm text-text"
+          >
+            {{ evidence.outcome === 'answer' ? evidence.answer : 'Cannot provide evidence' }}
+          </p>
         </div>
 
-        <div v-if="query.data.value.allowed_actions.includes('edit')" class="border-t border-border pt-4 space-y-3">
-          <label for="patch-edit" class="text-sm font-semibold text-text">Edit the proposed value (optional)</label>
-          <textarea id="patch-edit" v-model="draft" rows="4" class="w-full rounded-xl border border-border p-3 text-sm" @focus="startEdit" />
+        <div
+          v-if="query.data.value.allowed_actions.includes('edit')"
+          class="border-t border-border pt-4 space-y-3"
+        >
+          <label for="patch-edit" class="text-sm font-semibold text-text"
+            >Edit the proposed value (optional)</label
+          >
+          <textarea
+            id="patch-edit"
+            v-model="draft"
+            rows="4"
+            class="w-full rounded-xl border border-border p-3 text-sm"
+            @focus="startEdit"
+          />
           <div class="flex flex-wrap gap-2">
-            <AppButton type="button" variant="outline" :disabled="edit.isPending.value" @click="edit.mutate()">Save edit</AppButton>
-            <AppButton type="button" variant="outline" :disabled="reject.isPending.value" @click="confirmDecision('Reject this Patch proposal? It will remain available for lineage-linked regeneration.', () => reject.mutate())"><X :size="15" aria-hidden="true" /> Reject</AppButton>
-            <AppButton type="button" :loading="approve.isPending.value" :disabled="approve.isPending.value" @click="confirmDecision('Approve this Patch into one new immutable CV Version?', () => approve.mutate())"><Check :size="15" aria-hidden="true" /> Approve into new CV Version</AppButton>
+            <AppButton
+              type="button"
+              variant="outline"
+              :disabled="edit.isPending.value"
+              @click="edit.mutate()"
+              >Save edit</AppButton
+            >
+            <AppButton
+              type="button"
+              variant="outline"
+              :disabled="reject.isPending.value"
+              @click="
+                confirmDecision(
+                  'Reject this Patch proposal? It will remain available for lineage-linked regeneration.',
+                  () => reject.mutate(),
+                )
+              "
+              ><X :size="15" aria-hidden="true" /> Reject</AppButton
+            >
+            <AppButton
+              type="button"
+              :loading="approve.isPending.value"
+              :disabled="approve.isPending.value"
+              @click="
+                confirmDecision('Approve this Patch into one new immutable CV Version?', () =>
+                  approve.mutate(),
+                )
+              "
+              ><Check :size="15" aria-hidden="true" /> Approve into new CV Version</AppButton
+            >
           </div>
-          <p class="text-xs text-text-muted">Approval is an explicit action and creates one immutable CV Version.</p>
+          <p class="text-xs text-text-muted">
+            Approval is an explicit action and creates one immutable CV Version.
+          </p>
         </div>
-        <div v-else-if="query.data.value.allowed_actions.includes('regenerate')" class="border-t border-border pt-4 space-y-3">
-          <p class="text-sm text-text-muted">This Patch is {{ query.data.value.status }}. You can request a predecessor-linked regeneration.</p>
-          <AppButton type="button" :loading="regenerate.isPending.value" :disabled="regenerate.isPending.value" @click="regenerate.mutate()">Regenerate proposal</AppButton>
+        <div
+          v-else-if="query.data.value.allowed_actions.includes('regenerate')"
+          class="border-t border-border pt-4 space-y-3"
+        >
+          <p class="text-sm text-text-muted">
+            This Patch is {{ query.data.value.status }}. You can request a predecessor-linked
+            regeneration.
+          </p>
+          <AppButton
+            type="button"
+            :loading="regenerate.isPending.value"
+            :disabled="regenerate.isPending.value"
+            @click="regenerate.mutate()"
+            >Regenerate proposal</AppButton
+          >
         </div>
-        <p v-else-if="query.data.value.status === 'pending_validation'" class="border-t border-border pt-4 text-sm text-text-muted" role="status">
+        <p
+          v-else-if="query.data.value.status === 'pending_validation'"
+          class="border-t border-border pt-4 text-sm text-text-muted"
+          role="status"
+        >
           This proposal is still being validated. Refresh shortly for the next server-owned action.
         </p>
-        <p v-if="edit.isError.value || reject.isError.value || approve.isError.value || regenerate.isError.value" class="text-sm text-danger-text" role="alert">This action could not be committed. Refresh the proposal and retry if it is still available.</p>
-        <p v-if="query.data.value.status === 'applied'" class="text-sm text-success-text" role="status">
+        <p
+          v-if="
+            edit.isError.value ||
+            reject.isError.value ||
+            approve.isError.value ||
+            regenerate.isError.value
+          "
+          class="text-sm text-danger-text"
+          role="alert"
+        >
+          This action could not be committed. Refresh the proposal and retry if it is still
+          available.
+        </p>
+        <p
+          v-if="query.data.value.status === 'applied'"
+          class="text-sm text-success-text"
+          role="status"
+        >
           Applied to immutable CV Version
           <RouterLink
             v-if="query.data.value.applied_version_id"
             :to="ROUTES.CV_VERSION_PREVIEW(query.data.value.applied_version_id)"
             class="font-semibold underline"
-          >{{ query.data.value.applied_version_id }}</RouterLink>.
+            >{{ query.data.value.applied_version_id }}</RouterLink
+          >.
         </p>
       </Card>
     </template>

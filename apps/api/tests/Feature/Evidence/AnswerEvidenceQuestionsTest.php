@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Evidence;
 
 use App\Models\EvidenceAnswer;
+use App\Models\EvidenceInterview;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 final class AnswerEvidenceQuestionsTest extends TestCase
@@ -53,11 +55,11 @@ final class AnswerEvidenceQuestionsTest extends TestCase
                 ...($index === 0 ? [] : ['answer' => 'Built reliable software for the stored signal.']),
             ], [
                 'X-CSRF-TOKEN' => 'csrf-token',
-                'Idempotency-Key' => (string) \Illuminate\Support\Str::uuid(),
+                'Idempotency-Key' => (string) Str::uuid(),
             ])->assertCreated();
         }
 
-        $completedInterview = \App\Models\EvidenceInterview::query()->findOrFail($interview['id']);
+        $completedInterview = EvidenceInterview::query()->findOrFail($interview['id']);
         self::assertSame('completed', $completedInterview->status);
         self::assertSame(2, EvidenceAnswer::query()->where('interview_id', $interview['id'])->count());
         self::assertSame(1, EvidenceAnswer::query()->where('outcome', 'cannot_provide')->count());

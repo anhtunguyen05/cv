@@ -50,8 +50,8 @@ return new class extends Migration
             DB::statement("ALTER TABLE evidence_interviews ADD CONSTRAINT ei_question_set_version_valid CHECK (question_set_version = '1.0')");
             DB::statement("ALTER TABLE evidence_interviews ADD CONSTRAINT ei_areas_array CHECK (jsonb_typeof(areas) = 'array')");
             DB::statement("ALTER TABLE evidence_interviews ADD CONSTRAINT ei_questions_array CHECK (jsonb_typeof(questions) = 'array')");
-            DB::statement("ALTER TABLE evidence_interviews ADD CONSTRAINT ei_areas_count_valid CHECK (jsonb_array_length(areas) BETWEEN 1 AND 5)");
-            DB::statement("ALTER TABLE evidence_interviews ADD CONSTRAINT ei_questions_count_valid CHECK (jsonb_array_length(questions) BETWEEN 1 AND 5)");
+            DB::statement('ALTER TABLE evidence_interviews ADD CONSTRAINT ei_areas_count_valid CHECK (jsonb_array_length(areas) BETWEEN 1 AND 5)');
+            DB::statement('ALTER TABLE evidence_interviews ADD CONSTRAINT ei_questions_count_valid CHECK (jsonb_array_length(questions) BETWEEN 1 AND 5)');
         }
     }
 

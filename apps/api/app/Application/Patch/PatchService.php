@@ -165,39 +165,39 @@ final class PatchService
 
         try {
             $result = DB::transaction(function () use ($user, $state, $proposal): array {
-            $patch = Patch::query()->create([
-                'id' => ProfileDocument::id(),
-                'user_id' => $user->getKey(),
-                'source_cv_version_id' => $state['context']['version']->getKey(),
-                'match_report_id' => $state['context']['report']->getKey(),
-                'interview_id' => $state['context']['interview']->getKey(),
-                'predecessor_patch_id' => $state['predecessor']?->getKey(),
-                'status' => 'pending',
-                'revision' => 1,
-                'patch_schema_version' => self::PATCH_SCHEMA_VERSION,
-                'prompt_version' => self::PROMPT_VERSION,
-                'provider_model_version' => self::PROVIDER_MODEL_VERSION,
-                'target' => $proposal['target'],
-                'old_value' => $proposal['old_value'],
-                'new_value' => $proposal['new_value'],
-                'reason' => $proposal['reason'],
-                'evidence_source_ids' => $proposal['evidence_source_ids'],
-                'provenance' => [
-                    'source' => [
-                        'cv_version_id' => (string) $state['context']['version']->getKey(),
-                        'match_report_id' => (string) $state['context']['report']->getKey(),
-                        'interview_id' => (string) $state['context']['interview']->getKey(),
-                    ],
-                    'provider' => ['kind' => 'deterministic_fake', 'model_version' => self::PROVIDER_MODEL_VERSION],
+                $patch = Patch::query()->create([
+                    'id' => ProfileDocument::id(),
+                    'user_id' => $user->getKey(),
+                    'source_cv_version_id' => $state['context']['version']->getKey(),
+                    'match_report_id' => $state['context']['report']->getKey(),
+                    'interview_id' => $state['context']['interview']->getKey(),
+                    'predecessor_patch_id' => $state['predecessor']?->getKey(),
+                    'status' => 'pending',
+                    'revision' => 1,
+                    'patch_schema_version' => self::PATCH_SCHEMA_VERSION,
+                    'prompt_version' => self::PROMPT_VERSION,
+                    'provider_model_version' => self::PROVIDER_MODEL_VERSION,
+                    'target' => $proposal['target'],
+                    'old_value' => $proposal['old_value'],
+                    'new_value' => $proposal['new_value'],
+                    'reason' => $proposal['reason'],
                     'evidence_source_ids' => $proposal['evidence_source_ids'],
-                    'decisions' => [],
-                ],
-                'source_snapshot_hash' => (string) $state['context']['version']->snapshot_hash,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-            $body = ['data' => PatchPresenter::data($patch->fresh(['sourceVersion', 'interview.answers']))];
-            CvIdempotency::record($user, $state['operation'], $state['idempotency_key'], $state['hash'], $body, 201);
+                    'provenance' => [
+                        'source' => [
+                            'cv_version_id' => (string) $state['context']['version']->getKey(),
+                            'match_report_id' => (string) $state['context']['report']->getKey(),
+                            'interview_id' => (string) $state['context']['interview']->getKey(),
+                        ],
+                        'provider' => ['kind' => 'deterministic_fake', 'model_version' => self::PROVIDER_MODEL_VERSION],
+                        'evidence_source_ids' => $proposal['evidence_source_ids'],
+                        'decisions' => [],
+                    ],
+                    'source_snapshot_hash' => (string) $state['context']['version']->snapshot_hash,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+                $body = ['data' => PatchPresenter::data($patch->fresh(['sourceVersion', 'interview.answers']))];
+                CvIdempotency::record($user, $state['operation'], $state['idempotency_key'], $state['hash'], $body, 201);
                 $this->finishAttempt((string) $state['attempt_id'], 'succeeded', null, (string) $patch->getKey());
 
                 return ['body' => $body, 'status' => 201, 'replayed' => false];

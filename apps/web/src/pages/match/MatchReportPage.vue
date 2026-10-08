@@ -46,13 +46,18 @@ const interviewMutation = useMutation({
 
 const interviewError = computed(() => interviewMutation.error.value)
 const interviewNotNeeded = computed(
-  () => interviewError.value instanceof ApiRequestError && interviewError.value.code === 'INTERVIEW_NOT_NEEDED',
+  () =>
+    interviewError.value instanceof ApiRequestError &&
+    interviewError.value.code === 'INTERVIEW_NOT_NEEDED',
 )
 const interviewConflict = computed(
-  () => interviewError.value instanceof ApiRequestError && interviewError.value.code === 'EVIDENCE_SESSION_CONFLICT',
+  () =>
+    interviewError.value instanceof ApiRequestError &&
+    interviewError.value.code === 'EVIDENCE_SESSION_CONFLICT',
 )
 const conflictInterviewId = computed(() => {
-  const details = interviewError.value instanceof ApiRequestError ? interviewError.value.details : undefined
+  const details =
+    interviewError.value instanceof ApiRequestError ? interviewError.value.details : undefined
   return details && typeof details.interview_id === 'string' ? details.interview_id : undefined
 })
 
@@ -197,7 +202,11 @@ const priorityLabels: Record<SectionRecommendation['priority'], string> = {
 
           <Card class="space-y-4" aria-labelledby="interview-cta-title">
             <div class="flex items-start gap-3">
-              <ShieldCheck :size="20" class="text-primary mt-0.5 flex-shrink-0" aria-hidden="true" />
+              <ShieldCheck
+                :size="20"
+                class="text-primary mt-0.5 flex-shrink-0"
+                aria-hidden="true"
+              />
               <div class="space-y-1">
                 <h2 id="interview-cta-title" class="text-lg sm:text-xl font-bold text-text">
                   Strengthen your evidence
@@ -211,8 +220,11 @@ const priorityLabels: Record<SectionRecommendation['priority'], string> = {
 
             <div v-if="unresolvedAreaCount > 0 && !interviewNotNeeded" class="space-y-3">
               <p class="text-sm text-text-secondary">
-                {{ unresolvedAreaCount }} unresolved area{{ unresolvedAreaCount === 1 ? '' : 's' }} found;
-                the first {{ interviewAreaCount }} will be included, with one question per area.
+                {{ unresolvedAreaCount }} unresolved area{{
+                  unresolvedAreaCount === 1 ? '' : 's'
+                }}
+                found; the first {{ interviewAreaCount }} will be included, with one question per
+                area.
               </p>
               <AppButton
                 type="button"
@@ -220,7 +232,11 @@ const priorityLabels: Record<SectionRecommendation['priority'], string> = {
                 :aria-busy="interviewMutation.isPending.value"
                 @click="startInterview"
               >
-                {{ interviewMutation.isPending.value ? 'Starting interview…' : 'Start Evidence interview' }}
+                {{
+                  interviewMutation.isPending.value
+                    ? 'Starting interview…'
+                    : 'Start Evidence interview'
+                }}
               </AppButton>
             </div>
 
@@ -233,7 +249,11 @@ const priorityLabels: Record<SectionRecommendation['priority'], string> = {
               No interview is needed for this report because it has no unresolved evidence areas.
             </div>
 
-            <div v-if="interviewMutation.isError.value && !interviewNotNeeded" class="space-y-3" role="alert">
+            <div
+              v-if="interviewMutation.isError.value && !interviewNotNeeded"
+              class="space-y-3"
+              role="alert"
+            >
               <p class="text-sm text-danger-text">
                 {{
                   interviewConflict
