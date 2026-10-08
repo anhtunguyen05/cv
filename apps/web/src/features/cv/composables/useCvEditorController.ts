@@ -21,11 +21,12 @@ export function useCvEditorController() {
   const versionName = ref('')
   const versionMessage = ref('')
   const versionSaving = ref(false)
+  const versionPage = ref(1)
   const profileRouteGeneration = ref(0)
   const createdRouteId = ref('')
-  const operations = useCvEditorOperations(profileId)
+  const operations = useCvEditorOperations(profileId, versionPage)
   const { profileQuery, versionsQuery } = operations
-  const versions = computed(() => versionsQuery.data.value ?? [])
+  const versions = computed(() => versionsQuery.data.value?.items ?? [])
 
   function loadProfile(profile: CvProfile | undefined): void {
     if (!profile || profile.id !== profileId.value) return
@@ -65,6 +66,7 @@ export function useCvEditorController() {
       return
     }
     currentProfile.value = null
+    versionPage.value = 1
     draft.reset()
     saving.value = false
     versionSaving.value = false
@@ -157,7 +159,6 @@ export function useCvEditorController() {
         let profile = await operations.createProfile(submission.title, personalInformation)
         if (!requestIsCurrent(requestedId, generation)) return
         operations.cacheProfile(profile)
-        void operations.invalidateProfiles()
         if (submission.section !== 'personal_information') {
           profile = await operations.updateSection(
             profile.id,
@@ -176,6 +177,7 @@ export function useCvEditorController() {
         currentProfile.value = profile
         draft.applyMutationResult(profile, submission, localAtResponse)
         operations.cacheProfile(profile)
+        await operations.invalidateProfiles()
         createdRouteId.value = profile.id
         saving.value = false
         await router.replace(ROUTES.CV_EDIT(profile.id))
@@ -197,7 +199,6 @@ export function useCvEditorController() {
         currentProfile.value = profile
         draft.applySavedTitle(profile)
         operations.cacheProfile(profile)
-        void operations.invalidateProfiles()
       }
       if (sectionDirty && sectionValue !== undefined) {
         profile = await operations.updateSection(
@@ -217,13 +218,13 @@ export function useCvEditorController() {
         draft.applyMutationResult(profile, submission, localAtResponse)
         operations.cacheProfile(profile)
       }
-      void operations.invalidateProfiles()
+      if (titleWasSaved || sectionDirty) await operations.invalidateProfiles()
     } catch (error) {
       if (!requestIsCurrent(requestedId, generation)) return
       if (titleWasSaved) {
         errorMessage.value =
           'The Profile title was saved, but the section was not. Review and retry.'
-        void operations.invalidateProfiles()
+        await operations.invalidateProfiles()
       } else applyError(error)
       if (error instanceof ApiRequestError && error.status === 409) {
         await reconcileConflict(requestedId, generation)
@@ -250,9 +251,8 @@ export function useCvEditorController() {
     try {
       await operations.createVersion(profile.id, versionName.value.trim(), profile.revision)
       if (!requestIsCurrent(profile.id, generation)) return
-      await versionsQuery.refetch()
+      await operations.invalidateVersions()
       if (!requestIsCurrent(profile.id, generation)) return
-      void operations.invalidateVersions()
       versionMessage.value = 'Version saved.'
       versionName.value = ''
     } catch (error) {
@@ -287,10 +287,19 @@ export function useCvEditorController() {
     versionName,
     versionMessage,
     versionSaving,
+    versionPage,
+    versionTotalPages: computed(() => versionsQuery.data.value?.lastPage ?? 1),
     versions,
     profileLoadError: profileQuery.isError,
     selectSection,
     save,
     saveVersion,
+    previousVersionPage: () => {
+      if (versionPage.value > 1) versionPage.value -= 1
+    },
+    nextVersionPage: () => {
+      const lastPage = versionsQuery.data.value?.lastPage ?? 1
+      if (versionPage.value < lastPage) versionPage.value += 1
+    },
   }
 }

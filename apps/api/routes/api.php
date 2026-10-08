@@ -8,6 +8,7 @@ use App\Presentation\Http\Controllers\Cv\PreviewController;
 use App\Presentation\Http\Controllers\Cv\ProfileController;
 use App\Presentation\Http\Controllers\Cv\TemplateController;
 use App\Presentation\Http\Controllers\Cv\VersionController;
+use App\Presentation\Http\Controllers\Dashboard\SummaryController;
 use App\Presentation\Http\Controllers\Evidence\EvidenceInterviewController;
 use App\Presentation\Http\Controllers\HealthController;
 use App\Presentation\Http\Controllers\JobFit\AnalysisController;
@@ -57,6 +58,7 @@ Route::middleware([
     'auth:sanctum',
 ])->prefix('v1')->group(function (): void {
     Route::get('/cv-profiles', [ProfileController::class, 'index']);
+    Route::get('/dashboard/summary', SummaryController::class);
     Route::get('/cv-profiles/{profile}', [ProfileController::class, 'show']);
     Route::get('/cv-versions', [VersionController::class, 'index']);
     Route::get('/templates', [TemplateController::class, 'index']);

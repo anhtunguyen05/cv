@@ -92,6 +92,14 @@ export interface CvProfile extends CvDocument {
   updated_at: string
 }
 
+export interface CvProfileSummary {
+  id: string
+  title: string
+  revision: number
+  created_at: string
+  updated_at: string
+}
+
 export interface CvVersion {
   id: string
   name: string
@@ -99,6 +107,14 @@ export interface CvVersion {
   source_profile_revision: number
   snapshot_schema_version: string
   snapshot: CvDocument & { title: string }
+  created_at: string
+}
+
+export interface CvVersionSummary {
+  id: string
+  name: string
+  source_profile_id: string
+  source_profile_revision: number
   created_at: string
 }
 

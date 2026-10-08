@@ -31,10 +31,14 @@ final class ProfileController extends Controller
         } catch (ApiProblem $problem) {
             return $this->problem($problem);
         }
-        $profiles = $user->cvProfiles()->orderByDesc('updated_at')->orderByDesc('id')->paginate($perPage, ['*'], 'page', $page)->appends($request->query());
+        $profiles = $user->cvProfiles()
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->paginate($perPage, ['id', 'user_id', 'title', 'revision', 'created_at', 'updated_at'], 'page', $page)
+            ->appends($request->query());
 
         $response = response()->json([
-            'data' => array_map(static fn ($profile): array => ProfilePresenter::data($profile), $profiles->items()),
+            'data' => array_map(static fn ($profile): array => ProfilePresenter::summary($profile), $profiles->items()),
             'meta' => [
                 'current_page' => $profiles->currentPage(),
                 'per_page' => $profiles->perPage(),

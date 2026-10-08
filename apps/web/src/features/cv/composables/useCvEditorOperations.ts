@@ -1,14 +1,15 @@
 import { useQueryClient } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
+import { dashboardQueryKeys } from '@/features/dashboard/api/dashboard.keys'
 import { createCvProfile, createCvVersion, updateCvSection, updateCvTitle } from '../api/cv.api'
 import { cvQueryKeys } from '../api/cv.keys'
 import { useCvProfileQuery, useCvVersionsQuery } from '../api/cv.queries'
 import type { CvDocument, CvProfile, CvSectionKey, PersonalInformation } from '../types/cv.types'
 
-export function useCvEditorOperations(profileId: MaybeRef<string>) {
+export function useCvEditorOperations(profileId: MaybeRef<string>, versionPage: MaybeRef<number>) {
   const queryClient = useQueryClient()
   const profileQuery = useCvProfileQuery(profileId)
-  const versionsQuery = useCvVersionsQuery(profileId)
+  const versionsQuery = useCvVersionsQuery(profileId, versionPage)
 
   function cacheProfile(profile: CvProfile): void {
     queryClient.setQueryData(cvQueryKeys.profile(profile.id), profile)
@@ -30,7 +31,11 @@ export function useCvEditorOperations(profileId: MaybeRef<string>) {
     createVersion: (id: string, name: string, revision: number) =>
       createCvVersion(id, name, revision),
     cacheProfile,
-    invalidateProfiles: () => queryClient.invalidateQueries({ queryKey: cvQueryKeys.profiles() }),
+    invalidateProfiles: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: cvQueryKeys.profiles() }),
+        queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.summary() }),
+      ]),
     invalidateVersions: () =>
       queryClient.invalidateQueries({ queryKey: cvQueryKeys.versionsRoot() }),
   }

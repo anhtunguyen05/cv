@@ -1,10 +1,18 @@
 import { api } from '@/shared/api/client'
 import { paginatedResponseSchema } from '@/shared/schemas/pagination.schemas'
-import { cvPreviewSchema, cvProfileSchema, cvVersionSchema } from '../schemas/cv.schemas'
+import {
+  cvPreviewSchema,
+  cvProfileSchema,
+  cvProfileSummarySchema,
+  cvVersionSchema,
+  cvVersionSummarySchema,
+} from '../schemas/cv.schemas'
 import type { PageResult } from '@/shared/types/api.types'
 import type {
   CvProfile,
+  CvProfileSummary,
   CvVersion,
+  CvVersionSummary,
   CvSectionKey,
   CvDocument,
   PersonalInformation,
@@ -13,10 +21,12 @@ import type {
 
 const uuid = () => crypto.randomUUID()
 
-export async function getCvProfiles(): Promise<PageResult<CvProfile>> {
-  const response = paginatedResponseSchema.parse(await api<unknown>('/cv-profiles'))
+export async function getCvProfiles(page = 1, perPage = 20): Promise<PageResult<CvProfileSummary>> {
+  const response = paginatedResponseSchema.parse(
+    await api<unknown>('/cv-profiles', { query: { page, per_page: perPage } }),
+  )
   return {
-    items: response.data.map((item) => cvProfileSchema.parse(item)),
+    items: response.data.map((item) => cvProfileSummarySchema.parse(item)),
     page: response.meta.page ?? response.meta.current_page ?? 1,
     perPage: response.meta.per_page,
     total: response.meta.total,
@@ -71,24 +81,18 @@ export async function updateCvTitle(
   return cvProfileSchema.parse(response.data)
 }
 
-export async function getCvVersions(profileId?: string): Promise<CvVersion[]> {
-  const query = profileId ? `?profile_id=${encodeURIComponent(profileId)}` : ''
-  const response = paginatedResponseSchema.parse(await api<unknown>(`/cv-versions${query}`))
-  return response.data.map((item) => cvVersionSchema.parse(item))
-}
-
 export async function getCvVersionsPage(
   page = 1,
   perPage = 20,
   profileId?: string,
-): Promise<PageResult<CvVersion>> {
+): Promise<PageResult<CvVersionSummary>> {
   const params = new URLSearchParams({ page: String(page), per_page: String(perPage) })
   if (profileId) params.set('profile_id', profileId)
   const response = paginatedResponseSchema.parse(
     await api<unknown>(`/cv-versions?${params.toString()}`),
   )
   return {
-    items: response.data.map((item) => cvVersionSchema.parse(item)),
+    items: response.data.map((item) => cvVersionSummarySchema.parse(item)),
     page: response.meta.page ?? response.meta.current_page ?? page,
     perPage: response.meta.per_page,
     total: response.meta.total,

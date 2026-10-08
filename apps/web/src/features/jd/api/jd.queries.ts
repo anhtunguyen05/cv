@@ -7,6 +7,7 @@ export function useJobDescriptionsQuery(page: MaybeRef<number>, perPage = 20) {
   return useQuery({
     queryKey: computed(() => jdQueryKeys.list(toValue(page), perPage)),
     queryFn: () => getJobDescriptions(toValue(page), perPage),
+    staleTime: 30_000,
   })
 }
 
@@ -16,6 +17,7 @@ export function useJobDescriptionQuery(id: MaybeRef<string>) {
     queryFn: () => getJobDescription(toValue(id)),
     enabled: computed(() => Boolean(toValue(id))),
     retry: false,
+    staleTime: 15_000,
   })
 }
 
@@ -25,5 +27,6 @@ export function useJobDescriptionAnalysisQuery(id: MaybeRef<string>, analysisId:
     queryFn: () => getJobDescriptionAnalysis(toValue(id), toValue(analysisId)),
     enabled: computed(() => Boolean(toValue(id)) && Boolean(toValue(analysisId))),
     retry: false,
+    staleTime: 15_000,
   })
 }

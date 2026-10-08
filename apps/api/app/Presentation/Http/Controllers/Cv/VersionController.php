@@ -47,7 +47,7 @@ final class VersionController extends Controller
             $versions = $this->versions->list($request->user(), $page, $perPage, $profileId)->appends($request->query());
 
             $response = response()->json([
-                'data' => array_map(static fn ($version): array => VersionPresenter::data($version), $versions->items()),
+                'data' => array_map(static fn ($version): array => VersionPresenter::summary($version), $versions->items()),
                 'meta' => [
                     'current_page' => $versions->currentPage(),
                     'per_page' => $versions->perPage(),

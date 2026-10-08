@@ -8,6 +8,18 @@ use App\Models\CvVersion;
 
 final class VersionPresenter
 {
+    /** @return array<string,mixed> */
+    public static function summary(CvVersion $version): array
+    {
+        return [
+            'id' => (string) $version->getKey(),
+            'name' => $version->name,
+            'source_profile_id' => (string) $version->source_profile_id,
+            'source_profile_revision' => (int) $version->source_profile_revision,
+            'created_at' => $version->created_at?->toISOString(),
+        ];
+    }
+
     public static function data(CvVersion $version): array
     {
         return [

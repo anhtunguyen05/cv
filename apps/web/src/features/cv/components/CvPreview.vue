@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { useCvVersionsQuery } from '@/features/cv/api/cv.queries'
+import { useCvVersionsPageQuery } from '@/features/cv/api/cv.queries'
 import Button from '@/shared/components/ui/button/Button.vue'
 import { ROUTES } from '@/shared/constants/routes'
 
 const route = useRoute()
 const profileId = computed(() => String(route.params.id))
-const versionsQuery = useCvVersionsQuery(profileId)
+const versionPage = ref(1)
+const versionsQuery = useCvVersionsPageQuery(versionPage, profileId)
+const versions = computed(() => versionsQuery.data.value?.items ?? [])
+const lastPage = computed(() => versionsQuery.data.value?.lastPage ?? 1)
 </script>
 
 <template>
@@ -23,9 +26,9 @@ const versionsQuery = useCvVersionsQuery(profileId)
     <p v-else-if="versionsQuery.isError.value" role="alert" class="text-sm text-danger-text">
       Unable to load saved Versions.
     </p>
-    <div v-else-if="versionsQuery.data.value?.length" class="space-y-3">
+    <div v-else-if="versions.length" class="space-y-3">
       <div
-        v-for="version in versionsQuery.data.value"
+        v-for="version in versions"
         :key="version.id"
         class="flex items-center justify-between gap-4 rounded-xl border border-border bg-white p-4"
       >
@@ -39,6 +42,27 @@ const versionsQuery = useCvVersionsQuery(profileId)
           <Button size="sm">Choose template</Button>
         </RouterLink>
       </div>
+      <nav
+        v-if="lastPage > 1"
+        class="flex items-center justify-between"
+        aria-label="Saved Version pages"
+      >
+        <Button
+          size="sm"
+          variant="outline"
+          :disabled="versionPage <= 1"
+          @click="versionPage -= 1"
+          >Previous</Button
+        >
+        <span class="text-xs text-text-muted">Page {{ versionPage }} of {{ lastPage }}</span>
+        <Button
+          size="sm"
+          variant="outline"
+          :disabled="versionPage >= lastPage"
+          @click="versionPage += 1"
+          >Next</Button
+        >
+      </nav>
     </div>
     <div v-else class="rounded-xl border border-border bg-white p-5">
       <p class="text-sm text-text-muted">

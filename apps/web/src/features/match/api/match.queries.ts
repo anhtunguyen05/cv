@@ -10,6 +10,7 @@ export function useMatchReportsQuery(page: MaybeRef<number> = 1, perPage = 20) {
     queryFn: () => getMatchReports(toValue(page), perPage),
     retry: (count, error) =>
       error instanceof ApiRequestError && [429, 503].includes(error.status) && count < 2,
+    staleTime: 30_000,
   })
 }
 
@@ -23,5 +24,7 @@ export function useMatchReportQuery(id: MaybeRef<string>) {
         !(error instanceof ApiRequestError) || error.status === 429 || error.status >= 500
       return retryable && count < 2
     },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   })
 }

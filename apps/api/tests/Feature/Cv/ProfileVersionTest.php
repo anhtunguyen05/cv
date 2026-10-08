@@ -30,6 +30,35 @@ final class ProfileVersionTest extends TestCase
         $this->getJson('/api/v1/cv-profiles', ['Accept' => 'application/json'])->assertOk()->assertJsonCount(1, 'data');
     }
 
+    public function test_profile_and_version_collections_return_metadata_only_pages(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'web')->withSession(['_token' => 'csrf-token']);
+        $profile = $this->postJson('/api/v1/cv-profiles', $this->createPayload(), $this->createHeaders('abababab-abab-4aba-8aba-abababababab'))
+            ->assertCreated()->json('data');
+
+        $profileList = $this->getJson('/api/v1/cv-profiles?page=1&per_page=1')->assertOk();
+        $profileList->assertJsonPath('meta.current_page', 1)
+            ->assertJsonPath('meta.per_page', 1)
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.id', $profile['id'])
+            ->assertJsonMissingPath('data.0.personal_information');
+
+        $this->postJson('/api/v1/cv-profiles/'.$profile['id'].'/versions', ['name' => 'Baseline'], [
+            'X-CSRF-TOKEN' => 'csrf-token', 'If-Match' => '"1"', 'Idempotency-Key' => 'acacacac-acac-4aca-8aca-acacacacacac',
+        ])->assertCreated();
+        $this->postJson('/api/v1/cv-profiles/'.$profile['id'].'/versions', ['name' => 'Second'], [
+            'X-CSRF-TOKEN' => 'csrf-token', 'If-Match' => '"1"', 'Idempotency-Key' => 'adadadad-adad-4ada-8ada-adadadadadad',
+        ])->assertCreated();
+
+        $versionList = $this->getJson('/api/v1/cv-versions?page=2&per_page=1')->assertOk();
+        $versionList->assertJsonPath('meta.current_page', 2)
+            ->assertJsonPath('meta.per_page', 1)
+            ->assertJsonPath('meta.total', 2)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonMissingPath('data.0.snapshot');
+    }
+
     public function test_guest_and_foreign_owner_cannot_discover_a_profile(): void
     {
         $owner = User::factory()->create();

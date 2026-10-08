@@ -3,15 +3,18 @@ import { useRoute, useRouter } from 'vue-router'
 import { ApiRequestError } from '@/shared/api/client'
 import { useCvVersionsPageQuery } from '@/features/cv/api/cv.queries'
 import { matchQueryKeys } from '@/features/match/api/match.keys'
+import { dashboardQueryKeys } from '@/features/dashboard/api/dashboard.keys'
 import { ROUTES } from '@/shared/constants/routes'
 import { jdQueryKeys } from '../api/jd.keys'
 import { useJobDescriptionAnalysisQuery, useJobDescriptionQuery } from '../api/jd.queries'
 import { useJdDraft } from './useJdDraft'
 import { useJdWorkflowMutations } from './useJdWorkflowMutations'
+import { countCodePoints, limitCodePoints } from '../utils/textLimits'
 
 const ANALYSIS_RULE_VERSION = '1.0.0'
 const analysisStorageKey = (revisionId: string, ruleVersion = ANALYSIS_RULE_VERSION) =>
   `careerfitcv:analysis:${revisionId}:${ruleVersion}`
+
 
 export function useJdEditorController() {
   const route = useRoute()
@@ -51,7 +54,7 @@ export function useJdEditorController() {
         )
           return
         storedAnalysisId.value = result.id
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && window.localStorage) {
           window.localStorage.setItem(
             analysisStorageKey(result.job_description_revision_id, result.analysis_rule_version),
             result.id,
@@ -73,13 +76,16 @@ export function useJdEditorController() {
         if (jobDescriptionId.value) {
           queryClient.removeQueries({ queryKey: jdQueryKeys.analysisRoot(jobDescriptionId.value) })
         }
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && window.localStorage) {
           if (previousRevisionId)
             window.localStorage.removeItem(analysisStorageKey(previousRevisionId))
           if (jd.current_revision)
             window.localStorage.removeItem(analysisStorageKey(jd.current_revision.id))
         }
-        await queryClient.invalidateQueries({ queryKey: jdQueryKeys.all })
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: jdQueryKeys.all }),
+          queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.summary() }),
+        ])
         if (request.generation !== routeGeneration.value) return
         if (!jobDescriptionId.value) {
           createdRouteId.value = jd.id
@@ -97,7 +103,10 @@ export function useJdEditorController() {
           report.job_description_id !== request.jobDescriptionId
         )
           return
-        await queryClient.invalidateQueries({ queryKey: matchQueryKeys.all })
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: matchQueryKeys.all }),
+          queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.summary() }),
+        ])
         if (
           request.generation !== routeGeneration.value ||
           request.jobDescriptionId !== jobDescriptionId.value
@@ -117,7 +126,10 @@ export function useJdEditorController() {
           return
         if (pendingDeleteKey === request.idempotencyKey) pendingDeleteKey = null
         queryClient.removeQueries({ queryKey: jdQueryKeys.detail(deletedId) })
-        await queryClient.invalidateQueries({ queryKey: jdQueryKeys.all })
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: jdQueryKeys.all }),
+          queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.summary() }),
+        ])
         if (request.generation !== routeGeneration.value || deletedId !== jobDescriptionId.value)
           return
         jdDraft.reset()
@@ -139,10 +151,8 @@ export function useJdEditorController() {
     undefined,
     computed(() => Boolean(current.value && analysis.value)),
   )
-  const charCount = computed(() => [...rawText.value].length)
-  const overLimit = computed(
-    () => charCount.value > 50000 || new TextEncoder().encode(rawText.value).length > 204800,
-  )
+  const charCount = computed(() => countCodePoints(rawText.value))
+  const overLimit = computed(() => charCount.value > 50000)
 
   function fieldError(field: 'raw_text' | 'company' | 'role'): string {
     const error = saveMutation.error.value
@@ -245,7 +255,6 @@ export function useJdEditorController() {
     })
   }
 
-  const limitCodePoints = (value: string, limit: number) => [...value].slice(0, limit).join('')
   const setCompany = (value: string) => {
     company.value = limitCodePoints(value, 160)
   }
@@ -347,7 +356,7 @@ export function useJdEditorController() {
     current,
     (jd) => {
       const revisionId = jd?.current_revision?.id
-      if (!revisionId || typeof window === 'undefined') {
+      if (!revisionId || typeof window === 'undefined' || !window.localStorage) {
         storedAnalysisId.value = ''
         return
       }

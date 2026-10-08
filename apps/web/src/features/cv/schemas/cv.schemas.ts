@@ -96,6 +96,14 @@ export const cvProfileSchema = cvDocumentObjectSchema.extend({
   updated_at: z.string().min(1),
 })
 
+export const cvProfileSummarySchema = z.object({
+  id: z.string().min(1),
+  title: z.string(),
+  revision: z.number().int().nonnegative(),
+  created_at: z.string().min(1),
+  updated_at: z.string().min(1),
+})
+
 export const cvVersionSchema = z.object({
   id: z.string().min(1),
   name: z.string(),
@@ -103,6 +111,14 @@ export const cvVersionSchema = z.object({
   source_profile_revision: z.number().int().nonnegative(),
   snapshot_schema_version: z.string().min(1),
   snapshot: cvDocumentObjectSchema.extend({ title: z.string() }),
+  created_at: z.string().min(1),
+})
+
+export const cvVersionSummarySchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  source_profile_id: z.string().min(1),
+  source_profile_revision: z.number().int().nonnegative(),
   created_at: z.string().min(1),
 })
 
