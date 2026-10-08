@@ -1,10 +1,5 @@
 import { useQuery } from '@tanstack/vue-query'
-import {
-  getCvPreview,
-  getCvProfiles,
-  getCvProfile,
-  getCvVersionsPage,
-} from './cv.api'
+import { getCvPreview, getCvProfiles, getCvProfile, getCvVersionsPage } from './cv.api'
 import { cvQueryKeys } from './cv.keys'
 import { computed, toValue, type MaybeRef } from 'vue'
 

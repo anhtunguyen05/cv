@@ -26,7 +26,9 @@ export function useDashboardController() {
 
   return {
     cvProfiles: computed(() => profilesQuery.data.value?.items ?? []),
-    cvProfileTotal: computed(() => summaryQuery.data.value?.cv_profiles ?? profilesQuery.data.value?.total ?? 0),
+    cvProfileTotal: computed(
+      () => summaryQuery.data.value?.cv_profiles ?? profilesQuery.data.value?.total ?? 0,
+    ),
     cvProfilePage: profilePage,
     cvProfileTotalPages: computed(() => profilesQuery.data.value?.lastPage ?? 1),
     previousProfilePage,
@@ -39,7 +41,8 @@ export function useDashboardController() {
     nextJdPage,
     jobDescriptions: computed(() => jobDescriptionsQuery.data.value?.items ?? []),
     jobDescriptionTotal: computed(
-      () => summaryQuery.data.value?.job_descriptions ?? jobDescriptionsQuery.data.value?.total ?? 0,
+      () =>
+        summaryQuery.data.value?.job_descriptions ?? jobDescriptionsQuery.data.value?.total ?? 0,
     ),
     jobDescriptionTotalPages: computed(() => jobDescriptionsQuery.data.value?.lastPage ?? 1),
     isJdLoading: jobDescriptionsQuery.isLoading,

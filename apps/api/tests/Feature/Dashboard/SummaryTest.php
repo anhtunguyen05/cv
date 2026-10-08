@@ -13,8 +13,8 @@ use Tests\TestCase;
 
 final class SummaryTest extends TestCase
 {
-    use RefreshDatabase;
     use CreatesEpic4Context;
+    use RefreshDatabase;
 
     public function test_summary_returns_authenticated_owner_scoped_counts_without_report_payload(): void
     {

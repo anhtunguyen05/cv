@@ -15,7 +15,6 @@ const ANALYSIS_RULE_VERSION = '1.0.0'
 const analysisStorageKey = (revisionId: string, ruleVersion = ANALYSIS_RULE_VERSION) =>
   `careerfitcv:analysis:${revisionId}:${ruleVersion}`
 
-
 export function useJdEditorController() {
   const route = useRoute()
   const router = useRouter()

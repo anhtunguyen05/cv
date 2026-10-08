@@ -47,11 +47,7 @@ const lastPage = computed(() => versionsQuery.data.value?.lastPage ?? 1)
         class="flex items-center justify-between"
         aria-label="Saved Version pages"
       >
-        <Button
-          size="sm"
-          variant="outline"
-          :disabled="versionPage <= 1"
-          @click="versionPage -= 1"
+        <Button size="sm" variant="outline" :disabled="versionPage <= 1" @click="versionPage -= 1"
           >Previous</Button
         >
         <span class="text-xs text-text-muted">Page {{ versionPage }} of {{ lastPage }}</span>
