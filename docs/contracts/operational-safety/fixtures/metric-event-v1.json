@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "metric_version": "1.0.0",
+  "non_authoritative": true,
+  "metric_names": {
+    "operation_invocations_total": {"type": "counter", "unit": "count", "max_value": 1000},
+    "operation_duration_ms": {"type": "histogram", "unit": "milliseconds", "max_value": 60000},
+    "operation_outcomes_total": {"type": "counter", "unit": "count", "max_value": 1000},
+    "dependency_health_ratio": {"type": "gauge", "unit": "ratio", "max_value": 1}
+  },
+  "label_allowlist": {
+    "operation": ["matching", "provider", "patch", "export", "job", "system"],
+    "environment": ["development", "test", "staging", "production", "local-ci-disposable"]
+  },
+  "status_allowlist": ["succeeded", "failed", "timed_out", "cancelled", "no_data", "unavailable"],
+  "failure_category_allowlist": ["none", "timeout", "rate_limited", "transport", "malformed", "validation", "cancelled", "dependency", "unknown"],
+  "data_states": {
+    "observed": "value is numeric and observation_present is true",
+    "no_data": "value is null, status is no_data, and no observation is fabricated",
+    "telemetry_unavailable": "value is null, status is unavailable, and failure_category is dependency"
+  },
+  "forbidden": ["user identifiers", "resource identifiers", "provider names", "raw content", "prompts", "secrets", "emails", "free-text errors", "stack traces"],
+  "sink": "vendor-neutral pure event builder; persistence and emission are outside this contract"
+}

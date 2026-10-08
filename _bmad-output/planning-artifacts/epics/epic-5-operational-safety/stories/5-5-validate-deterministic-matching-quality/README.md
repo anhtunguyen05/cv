@@ -21,7 +21,7 @@ context:
 
 **Delivery classification:** MVP baseline.
 
-**Planning blockers:** `E5-PREREQ-MATCH-001`, `E5-DEC-006`, `E5-DEC-008`,
+**Planning blockers:** `E5-PREREQ-MATCH-001`, `E5-DEC-008`,
 `E5-COORD-QUALITY-001`, `E5-COORD-TEST-001`, and `DISCOVERY-E2-001`.
 
 ## Package map

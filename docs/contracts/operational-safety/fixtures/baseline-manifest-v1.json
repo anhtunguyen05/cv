@@ -1,0 +1,212 @@
+{
+  "manifest_version": "1.0.0",
+  "baseline_id": "epic-5-operational-safety-v1",
+  "source_sha": "e27910f1e3f760ec87e6773c31310b955b195780",
+  "environment": "local-ci-disposable",
+  "freshness_window_days": 7,
+  "scope": {
+    "included_stories": [
+      "5-1-audit-ai-tool-calls-safely",
+      "5-2-handle-provider-and-background-failures",
+      "5-3-retain-and-delete-user-data-safely",
+      "5-4-monitor-operational-health",
+      "5-5-validate-deterministic-matching-quality",
+      "5-6-decide-whether-multi-agent-orchestration-is-justified",
+      "5-7-verify-the-operational-safety-baseline"
+    ],
+    "excluded_stories": [],
+    "required_decisions": [
+      "E5-DEC-001",
+      "E5-DEC-002",
+      "E5-DEC-003",
+      "E5-DEC-004",
+      "E5-DEC-005",
+      "E5-DEC-006",
+      "E5-DEC-007",
+      "E5-DEC-008",
+      "E5-DEC-009"
+    ]
+  },
+  "sources": [
+    {
+      "path": "_bmad-output/implementation-artifacts/spec-5-1-audit-redaction-boundary.md",
+      "sha256": "f9c2792b6ec37a4246dd540f9ffeda014f782fd010201f8b6a2f820bb4dbbd78"
+    },
+    {
+      "path": "_bmad-output/implementation-artifacts/spec-5-2-provider-failure-policy.md",
+      "sha256": "fd5d24901aa0abb60d5cb231c155033ec620409e20c7c875d0b4f98dd00520fd"
+    },
+    {
+      "path": "_bmad-output/implementation-artifacts/spec-5-2-provider-recovery-mvp.md",
+      "sha256": "663492fd02de1be4e9c214b98e67c7392f55c132dcd252d3bff453f0d168be76"
+    },
+    {
+      "path": "_bmad-output/implementation-artifacts/spec-5-3-retention-disposable-safety.md",
+      "sha256": "8b3ed7b26e6cc24dda6be7a3a972c0e858b845ddfc2b9a7d71ee2400ffda7e9c"
+    },
+    {
+      "path": "_bmad-output/implementation-artifacts/spec-5-4-telemetry-safety.md",
+      "sha256": "0a4674bcba612f2e9d21e65f8ade63c7a815a3be69dc03a0263d70f9a6f09071"
+    },
+    {
+      "path": "_bmad-output/implementation-artifacts/spec-5-5-validate-deterministic-matching-quality.md",
+      "sha256": "f389c72cf31e3e8298e7bce931cb290dfa3f96e8863233af4ae00b08f657dd12"
+    },
+    {
+      "path": "_bmad-output/implementation-artifacts/spec-5-6-orchestration-measurement-plan.md",
+      "sha256": "009857cc8c315d137da74dac4d8c4fa432a34dc5714f4d16d1fbb56f50d52d2e"
+    },
+    {
+      "path": "_bmad-output/implementation-artifacts/spec-5-7-operational-safety-manifest-validator.md",
+      "sha256": "d57bbdec52a1e954bf70814c3e1a2871dc01c23c93915d13d62c9d60efb209d6"
+    },
+    {
+      "path": "docs/contracts/jd/fixtures/match-quality-evaluation-v1.json",
+      "sha256": "46cfb3806866202da71f2453da5482a64606819b358025d6240eab96b45add81"
+    },
+    {
+      "path": "docs/contracts/operational-safety/fixtures/metric-event-v1.json",
+      "sha256": "5cdcd607a9c04104d4d3317d159a52cfa07a85c426f2b241a53807a6e83b94b7"
+    },
+    {
+      "path": "docs/contracts/operational-safety/fixtures/retention-policy-v1.json",
+      "sha256": "a12a0da0b256623c4d9ef596c917abcb3aeb6e374de0130f34dd6f5e48c62c46"
+    },
+    {
+      "path": "docs/contracts/operational-safety/fixtures/orchestration-measurement-plan-v1.json",
+      "sha256": "7d1b330c86457ecbb0528a2cf41b96a80bcee8798e51be53e2b7bc19435758e0"
+    },
+    {
+      "path": "docs/contracts/operational-safety/fixtures/orchestration-workloads-v1.json",
+      "sha256": "fe2de21e45f09c918ad5f982aec41a49d74b375cbd9ec281b08cdd00bdb639d8"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "story-5-1-audit-runtime",
+      "story_key": "5-1-audit-ai-tool-calls-safely",
+      "owner": "user-directed-codex",
+      "command": "php artisan test --compact tests/Feature/OperationalSafety/OperationalAuditEventStoreTest.php",
+      "result": "pass",
+      "recorded_at": "2026-10-08T00:00:00+00:00",
+      "artifact": {
+        "path": "_bmad-output/implementation-artifacts/spec-5-1-audit-redaction-boundary.md",
+        "sha256": "f9c2792b6ec37a4246dd540f9ffeda014f782fd010201f8b6a2f820bb4dbbd78",
+        "access": "private",
+        "canary_scan": "pass"
+      }
+    },
+    {
+      "id": "story-5-2-provider-recovery",
+      "story_key": "5-2-handle-provider-and-background-failures",
+      "owner": "user-directed-codex",
+      "command": "php artisan test --compact tests/Feature/OperationalSafety/ProviderFailureClassifierTest.php tests/Feature/OperationalSafety/ProviderRetryPolicyTest.php",
+      "result": "pass",
+      "recorded_at": "2026-10-08T00:00:00+00:00",
+      "artifact": {
+        "path": "_bmad-output/implementation-artifacts/spec-5-2-provider-recovery-mvp.md",
+        "sha256": "663492fd02de1be4e9c214b98e67c7392f55c132dcd252d3bff453f0d168be76",
+        "access": "private",
+        "canary_scan": "pass"
+      }
+    },
+    {
+      "id": "story-5-3-retention-safety",
+      "story_key": "5-3-retain-and-delete-user-data-safely",
+      "owner": "user-directed-codex",
+      "command": "php artisan test --compact tests/Feature/OperationalSafety/RetentionPolicyEvaluatorTest.php",
+      "result": "pass",
+      "recorded_at": "2026-10-08T00:00:00+00:00",
+      "artifact": {
+        "path": "docs/contracts/operational-safety/fixtures/retention-policy-v1.json",
+        "sha256": "a12a0da0b256623c4d9ef596c917abcb3aeb6e374de0130f34dd6f5e48c62c46",
+        "access": "private",
+        "canary_scan": "pass"
+      }
+    },
+    {
+      "id": "story-5-4-telemetry-safety",
+      "story_key": "5-4-monitor-operational-health",
+      "owner": "user-directed-codex",
+      "command": "php artisan test --compact tests/Feature/OperationalSafety/PrivacySafeMetricEventBuilderTest.php",
+      "result": "pass",
+      "recorded_at": "2026-10-08T00:00:00+00:00",
+      "artifact": {
+        "path": "docs/contracts/operational-safety/fixtures/metric-event-v1.json",
+        "sha256": "5cdcd607a9c04104d4d3317d159a52cfa07a85c426f2b241a53807a6e83b94b7",
+        "access": "private",
+        "canary_scan": "pass"
+      }
+    },
+    {
+      "id": "story-5-5-matching-quality",
+      "story_key": "5-5-validate-deterministic-matching-quality",
+      "owner": "user-directed-codex",
+      "command": "php artisan match:quality --json",
+      "result": "pass",
+      "recorded_at": "2026-10-08T00:00:00+00:00",
+      "artifact": {
+        "path": "docs/contracts/jd/fixtures/match-quality-evaluation-v1.json",
+        "sha256": "46cfb3806866202da71f2453da5482a64606819b358025d6240eab96b45add81",
+        "access": "private",
+        "canary_scan": "pass"
+      }
+    },
+    {
+      "id": "story-5-6-orchestration-defer",
+      "story_key": "5-6-decide-whether-multi-agent-orchestration-is-justified",
+      "owner": "user-directed-codex",
+      "command": "php artisan safety:orchestration-plan",
+      "result": "pass",
+      "recorded_at": "2026-10-08T00:00:00+00:00",
+      "artifact": {
+        "path": "_bmad-output/implementation-artifacts/spec-5-6-orchestration-measurement-plan.md",
+        "sha256": "009857cc8c315d137da74dac4d8c4fa432a34dc5714f4d16d1fbb56f50d52d2e",
+        "access": "private",
+        "canary_scan": "pass"
+      }
+    },
+    {
+      "id": "story-5-7-baseline-validator",
+      "story_key": "5-7-verify-the-operational-safety-baseline",
+      "owner": "user-directed-codex",
+      "command": "php artisan safety:baseline",
+      "result": "pass",
+      "recorded_at": "2026-10-08T00:00:00+00:00",
+      "artifact": {
+        "path": "_bmad-output/implementation-artifacts/spec-5-7-operational-safety-manifest-validator.md",
+        "sha256": "d57bbdec52a1e954bf70814c3e1a2871dc01c23c93915d13d62c9d60efb209d6",
+        "access": "private",
+        "canary_scan": "pass"
+      }
+    }
+  ],
+  "decisions": [
+    {"id": "E5-DEC-001", "status": "approved"},
+    {"id": "E5-DEC-002", "status": "approved"},
+    {"id": "E5-DEC-003", "status": "approved"},
+    {"id": "E5-DEC-004", "status": "approved"},
+    {"id": "E5-DEC-005", "status": "approved"},
+    {"id": "E5-DEC-006", "status": "approved"},
+    {"id": "E5-DEC-007", "status": "approved"},
+    {"id": "E5-DEC-008", "status": "approved"},
+    {"id": "E5-DEC-009", "status": "approved"}
+  ],
+  "gaps": [
+    {
+      "id": "E5-GAP-DISPOSABLE-MVP",
+      "owner": "release-owner",
+      "risk": "Production provider, operator, vendor telemetry, external processors, and destructive deletion are disabled.",
+      "action": "Approve production topology and rerun the baseline before release."
+    }
+  ],
+  "waivers": [
+    {
+      "id": "E5-WAIVER-DISPOSABLE-MVP",
+      "gap_id": "E5-GAP-DISPOSABLE-MVP",
+      "owner": "release-owner",
+      "expires_at": "2026-10-15T00:00:00+00:00"
+    }
+  ],
+  "verdict": "pass_with_gaps"
+}

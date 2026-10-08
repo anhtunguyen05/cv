@@ -9,6 +9,9 @@ use App\Application\Cv\CanonicalJson;
 use App\Application\Cv\CvIdempotency;
 use App\Application\Cv\ProfileDocument;
 use App\Application\Cv\ProfileDocumentValidator;
+use App\Application\OperationalSafety\OperationalAuditEventStore;
+use App\Application\OperationalSafety\ProviderFailureClassifier;
+use App\Application\OperationalSafety\ProviderRetryPolicy;
 use App\Models\CvVersion;
 use App\Models\EvidenceAnswer;
 use App\Models\EvidenceInterview;
@@ -35,9 +38,12 @@ final class PatchService
 
     private const GENERATION_DEADLINE_SECONDS = 15.0;
 
-    private const MAX_ATTEMPTS_PER_MINUTE = 5;
-
-    public function __construct(private readonly PatchProposalProvider $provider) {}
+    public function __construct(
+        private readonly PatchProposalProvider $provider,
+        private readonly ProviderFailureClassifier $failureClassifier,
+        private readonly ProviderRetryPolicy $retryPolicy,
+        private readonly OperationalAuditEventStore $auditEventStore,
+    ) {}
 
     /** @return array{body:array<string,mixed>,status:int,replayed:bool} */
     public function generate(User $user, string $interviewId, array $payload, string $idempotencyKey, string $route, ?string $predecessorId = null, string $operation = 'generate-patch', ?int $predecessorRevision = null): array
@@ -73,13 +79,18 @@ final class PatchService
                 if ($active->created_at?->greaterThan(Carbon::now()->subSeconds(self::GENERATION_DEADLINE_SECONDS))) {
                     throw new ApiProblem('PATCH_STATE_CONFLICT', 'A Patch generation attempt is already active for this Interview.', 409);
                 }
-                $active->forceFill(['status' => 'retryable_failure', 'outcome_code' => 'PATCH_PROVIDER_UNAVAILABLE', 'completed_at' => Carbon::now()])->save();
+                $active->forceFill(['status' => 'retryable_failure', 'outcome_code' => 'PATCH_PROVIDER_TIMEOUT', 'completed_at' => Carbon::now()])->save();
             }
-            $attempts = PatchProviderAttempt::query()
+            $attemptQuery = PatchProviderAttempt::query()
                 ->where('user_id', $user->getKey())
-                ->where('created_at', '>=', Carbon::now()->subMinute())
-                ->count();
-            if ($attempts >= self::MAX_ATTEMPTS_PER_MINUTE) {
+                ->where('created_at', '>=', Carbon::now()->subSeconds(ProviderRetryPolicy::WINDOW_SECONDS));
+            $attempts = $attemptQuery->count();
+            $oldestAttempt = (clone $attemptQuery)->orderBy('created_at')->first();
+            if (! $this->retryPolicy->allows(
+                $attempts,
+                $oldestAttempt?->created_at?->toDateTimeImmutable(),
+                Carbon::now()->toDateTimeImmutable(),
+            )) {
                 throw new ApiProblem('PATCH_RATE_LIMITED', 'Patch generation is temporarily rate limited. Please retry later.', 429);
             }
             $predecessor = null;
@@ -119,6 +130,7 @@ final class PatchService
             return [
                 'replayed' => false,
                 'attempt_id' => (string) $attempt->getKey(),
+                'correlation_id' => (string) $attempt->correlation_id,
                 'context' => $context,
                 'predecessor' => $predecessor,
                 'positive' => $positive->all(),
@@ -151,15 +163,27 @@ final class PatchService
                 'tool_schema_version' => self::TOOL_SCHEMA_VERSION,
             ]);
             if ((hrtime(true) - $startedAt) / 1_000_000_000 > self::GENERATION_DEADLINE_SECONDS) {
-                throw new ApiProblem('PATCH_PROVIDER_UNAVAILABLE', 'The Patch provider exceeded the synchronous deadline. Please retry.', 503);
+                throw new ApiProblem('PATCH_PROVIDER_TIMEOUT', 'The Patch provider exceeded the synchronous deadline. Please retry.', 503);
             }
             $proposal = $this->validateProposal($proposal, $context['version']->snapshot, $state['positive']);
         } catch (ApiProblem $problem) {
-            $attemptStatus = $problem->errorCode === 'PATCH_PROVIDER_UNAVAILABLE' ? 'retryable_failure' : 'terminal_failure';
-            $this->finishAttempt((string) $state['attempt_id'], $attemptStatus, $problem->errorCode);
+            if (in_array($problem->errorCode, [
+                'PATCH_PROVIDER_TIMEOUT',
+                'PATCH_PROVIDER_UNAVAILABLE',
+                'PATCH_RATE_LIMITED',
+                'PATCH_PROPOSAL_INVALID',
+                'PATCH_VALIDATION_FAILED',
+                'PATCH_CANCELLED',
+            ], true)) {
+                $this->finishClassifiedAttempt((string) $state['attempt_id'], $problem->errorCode);
+            } else {
+                $this->finishAttempt((string) $state['attempt_id'], 'terminal_failure', $problem->errorCode);
+            }
+            $this->appendAuditEvent($state, $problem->errorCode, $startedAt);
             throw $problem;
         } catch (Throwable) {
-            $this->finishAttempt((string) $state['attempt_id'], 'retryable_failure', 'PATCH_PROVIDER_UNAVAILABLE');
+            $this->finishClassifiedAttempt((string) $state['attempt_id'], 'PATCH_PROVIDER_UNAVAILABLE');
+            $this->appendAuditEvent($state, 'PATCH_PROVIDER_UNAVAILABLE', $startedAt);
             throw new ApiProblem('PATCH_PROVIDER_UNAVAILABLE', 'The Patch provider is unavailable. Please retry.', 503);
         }
 
@@ -198,14 +222,17 @@ final class PatchService
                 ]);
                 $body = ['data' => PatchPresenter::data($patch->fresh(['sourceVersion', 'interview.answers']))];
                 CvIdempotency::record($user, $state['operation'], $state['idempotency_key'], $state['hash'], $body, 201);
-                $this->finishAttempt((string) $state['attempt_id'], 'succeeded', null, (string) $patch->getKey());
+                $this->finishClassifiedAttempt((string) $state['attempt_id'], 'PATCH_SUCCEEDED', true, (string) $patch->getKey());
 
                 return ['body' => $body, 'status' => 201, 'replayed' => false];
             });
         } catch (Throwable $exception) {
             $this->finishAttempt((string) $state['attempt_id'], 'retryable_failure', 'PATCH_PERSISTENCE_FAILED');
+            $this->appendAuditEvent($state, 'PATCH_PERSISTENCE_FAILED', $startedAt);
             throw $exception;
         }
+
+        $this->appendAuditEvent($state, 'PATCH_SUCCEEDED', $startedAt);
 
         return $result;
     }
@@ -686,6 +713,72 @@ final class PatchService
             $updates['patch_id'] = $patchId;
         }
         PatchProviderAttempt::query()->whereKey($id)->update($updates);
+    }
+
+    private function finishClassifiedAttempt(string $id, string $outcomeCode, bool $validated = false, ?string $patchId = null): void
+    {
+        $result = $this->failureClassifier->classify($outcomeCode, $validated);
+        if (($result['accepted'] ?? false) !== true) {
+            $this->finishAttempt($id, 'terminal_failure', 'PATCH_UNKNOWN_OUTCOME', $patchId);
+
+            return;
+        }
+
+        $status = match ($result['decision']['status']) {
+            ProviderFailureClassifier::STATUS_SUCCEEDED => 'succeeded',
+            ProviderFailureClassifier::STATUS_RETRYABLE_FAILED => 'retryable_failure',
+            ProviderFailureClassifier::STATUS_TERMINAL_FAILED,
+            ProviderFailureClassifier::STATUS_CANCELLED => 'terminal_failure',
+            default => 'terminal_failure',
+        };
+        $this->finishAttempt($id, $status, $result['decision']['outcome_code'], $patchId);
+    }
+
+    /** @param array<string,mixed> $state */
+    private function appendAuditEvent(array $state, string $outcomeCode, int $startedAt): void
+    {
+        $failureCategory = match ($outcomeCode) {
+            'PATCH_SUCCEEDED' => 'none',
+            'PATCH_PROVIDER_TIMEOUT' => 'timeout',
+            'PATCH_RATE_LIMITED' => 'rate_limited',
+            'PATCH_PROVIDER_UNAVAILABLE' => 'transport',
+            'PATCH_PROPOSAL_INVALID' => 'malformed',
+            'PATCH_VALIDATION_FAILED' => 'validation',
+            'PATCH_CANCELLED' => 'cancelled',
+            default => 'unknown',
+        };
+        $status = $outcomeCode === 'PATCH_SUCCEEDED'
+            ? 'succeeded'
+            : ($outcomeCode === 'PATCH_PROVIDER_TIMEOUT' ? 'timed_out' : 'failed');
+        $latencyClass = $status === 'succeeded' ? 'fast' : ($status === 'timed_out' ? 'timeout' : 'bounded_failure');
+        $durationMs = min(60_000, max(0, (int) round((hrtime(true) - $startedAt) / 1_000_000)));
+
+        try {
+            $this->auditEventStore->append([
+                'event_id' => ProfileDocument::id(),
+                'occurred_at' => Carbon::now()->toIso8601String(),
+                'actor_type' => 'system',
+                'operation' => 'generate-patch',
+                'tool' => 'patch-proposal',
+                'provider' => 'deterministic-fake',
+                'model' => self::PROVIDER_MODEL_VERSION,
+                'contract_version' => 'patch-1.0',
+                'prompt_version' => self::PROMPT_VERSION,
+                'tool_schema_version' => self::TOOL_SCHEMA_VERSION,
+                'resource_type' => 'patch',
+                'correlation_id' => (string) ($state['correlation_id'] ?? ''),
+                'attempt_id' => (string) ($state['attempt_id'] ?? ''),
+                'environment' => 'local-ci-disposable',
+            ], [
+                'status' => $status,
+                'failure_category' => $failureCategory,
+                'duration_ms' => $durationMs,
+                'retry_count' => 0,
+                'latency_class' => $latencyClass,
+            ]);
+        } catch (Throwable) {
+            // Audit failure never falls back to unsafe output or changes product truth.
+        }
     }
 
     private function notFound(): ApiProblem

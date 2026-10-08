@@ -4,10 +4,18 @@ on:
   push:
     paths:
       - 'apps/api/**'
+      - 'docs/contracts/jd/**'
+      - 'docs/contracts/operational-safety/**'
+      - '_bmad-output/implementation-artifacts/spec-5-*.md'
+      - '_bmad-output/planning-artifacts/epics/epic-5-operational-safety/**'
       - '.github/workflows/**'
   pull_request:
     paths:
       - 'apps/api/**'
+      - 'docs/contracts/jd/**'
+      - 'docs/contracts/operational-safety/**'
+      - '_bmad-output/implementation-artifacts/spec-5-*.md'
+      - '_bmad-output/planning-artifacts/epics/epic-5-operational-safety/**'
       - '.github/workflows/**'
 
 permissions:
@@ -83,6 +91,50 @@ jobs:
         run: |
           cp .env.example .env
           php artisan migrate --force --no-interaction
+
+      - name: Verify PostgreSQL refresh-safe migrations
+        run: php artisan migrate:fresh --force --no-interaction
+
+      - name: Run deterministic matching quality gate
+        id: match-quality
+        run: |
+          mkdir -p storage/framework/testing
+          set +e
+          php artisan match:quality --json > storage/framework/testing/match-quality-result.json
+          status=$?
+          set -e
+          test -s storage/framework/testing/match-quality-result.json
+          exit "$status"
+
+      - name: Upload deterministic matching quality artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: match-quality-${{ github.sha }}
+          path: apps/api/storage/framework/testing/match-quality-result.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Run operational safety baseline gate
+        run: |
+          set +e
+          php artisan safety:baseline > storage/framework/testing/safety-baseline-result.json
+          status=$?
+          set -e
+          test "$status" -eq 20
+          test -s storage/framework/testing/safety-baseline-result.json
+
+      - name: Run orchestration plan gate
+        run: php artisan safety:orchestration-plan
+
+      - name: Upload operational safety baseline artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: operational-safety-${{ github.sha }}
+          path: apps/api/storage/framework/testing/safety-baseline-result.json
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Check PHP formatting
         run: vendor/bin/pint --test
