@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Evidence;
 
+use App\Application\Cv\CanonicalJson;
 use App\Application\Cv\ProfileDocument;
 use App\Models\CvProfile;
 use App\Models\CvVersion;
@@ -49,7 +50,7 @@ final class StartEvidenceInterviewTest extends TestCase
             array_column($response->json('data.areas'), 'signal_id'),
             array_column($response->json('data.questions'), 'area_signal_id'),
         );
-        self::assertSame($snapshotBefore, $context['version']->fresh()->snapshot);
+        self::assertSame(CanonicalJson::encode($snapshotBefore), CanonicalJson::encode($context['version']->fresh()->snapshot));
         self::assertDatabaseCount('evidence_interviews', 1);
     }
 
@@ -167,6 +168,7 @@ final class StartEvidenceInterviewTest extends TestCase
             'Idempotency-Key' => '66666666-6666-4666-8666-666666666666',
         ])->assertCreated()->json('data');
 
+        $this->app['auth']->forgetGuards();
         $this->actingAs($other, 'web')->withSession(['_token' => 'csrf-token']);
         $this->getJson('/api/v1/evidence-interviews/'.$interview['id'])
             ->assertNotFound()

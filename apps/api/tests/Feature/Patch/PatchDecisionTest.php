@@ -50,6 +50,7 @@ final class PatchDecisionTest extends TestCase
         $context = $this->startCompleteEpic4Interview($owner);
         $patch = $this->generatePatch($context['interview']->getKey());
 
+        $this->app['auth']->forgetGuards();
         $this->actingAs($other, 'web')->withSession(['_token' => 'csrf-token']);
         $this->getJson('/api/v1/patches/'.$patch['id'])
             ->assertNotFound()

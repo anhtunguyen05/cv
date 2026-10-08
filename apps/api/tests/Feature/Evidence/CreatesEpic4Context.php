@@ -33,6 +33,7 @@ trait CreatesEpic4Context
             'schema_version' => '1.0',
             'document' => $document,
         ]);
+        $snapshot = ['title' => $profileTitle, ...$document];
         $version = CvVersion::create([
             'id' => ProfileDocument::id(),
             'user_id' => $user->getKey(),
@@ -40,8 +41,8 @@ trait CreatesEpic4Context
             'source_profile_revision' => 1,
             'name' => 'Baseline',
             'snapshot_schema_version' => '1.0',
-            'snapshot' => $document,
-            'snapshot_hash' => hash('sha256', CanonicalJson::encode($document)),
+            'snapshot' => $snapshot,
+            'snapshot_hash' => hash('sha256', CanonicalJson::encode($snapshot)),
             'created_at' => now(),
         ]);
         $job = JobDescription::create([
