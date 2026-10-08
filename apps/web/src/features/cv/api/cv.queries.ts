@@ -66,8 +66,7 @@ export function useCvPreviewQuery(
     queryKey: computed(() =>
       cvQueryKeys.preview(toValue(versionId), toValue(templateId), toValue(templateVersion)),
     ),
-    queryFn: () =>
-      getCvPreview(toValue(versionId), toValue(templateId), toValue(templateVersion)),
+    queryFn: () => getCvPreview(toValue(versionId), toValue(templateId), toValue(templateVersion)),
     enabled: computed(
       () => Boolean(toValue(versionId)) && Boolean(toValue(templateId) && toValue(templateVersion)),
     ),

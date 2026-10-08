@@ -14,7 +14,9 @@ const controller = useDashboardController()
 
 <template>
   <div class="space-y-6">
-    <div class="flex flex-col gap-4 border-b border-border/80 pb-4 md:flex-row md:items-center md:justify-between">
+    <div
+      class="flex flex-col gap-4 border-b border-border/80 pb-4 md:flex-row md:items-center md:justify-between"
+    >
       <div>
         <div class="mb-1 flex items-center gap-2">
           <span class="text-xs font-bold uppercase tracking-wider text-primary">Overview</span>
@@ -54,25 +56,34 @@ const controller = useDashboardController()
             :to="ROUTES.JD_NEW"
             class="group block rounded-xl border border-border bg-white p-3.5 transition-all hover:border-primary/40 hover:bg-surface"
           >
-            <p class="flex items-center justify-between text-sm font-semibold text-text group-hover:text-primary-dark">
+            <p
+              class="flex items-center justify-between text-sm font-semibold text-text group-hover:text-primary-dark"
+            >
               Evaluate a Job Description <ArrowRight :size="13" />
             </p>
-            <p class="mt-0.5 text-xs leading-relaxed text-text-muted">Audit required keywords against your CV.</p>
+            <p class="mt-0.5 text-xs leading-relaxed text-text-muted">
+              Audit required keywords against your CV.
+            </p>
           </RouterLink>
           <RouterLink
             :to="ROUTES.TEMPLATES"
             class="group block rounded-xl border border-border bg-white p-3.5 transition-all hover:border-primary/40 hover:bg-surface"
           >
-            <p class="flex items-center justify-between text-sm font-semibold text-text group-hover:text-primary-dark">
+            <p
+              class="flex items-center justify-between text-sm font-semibold text-text group-hover:text-primary-dark"
+            >
               Change CV Template <ArrowRight :size="13" />
             </p>
-            <p class="mt-0.5 text-xs leading-relaxed text-text-muted">Preview a saved immutable Version.</p>
+            <p class="mt-0.5 text-xs leading-relaxed text-text-muted">
+              Preview a saved immutable Version.
+            </p>
           </RouterLink>
         </Card>
         <Card class="space-y-3">
           <h2 class="text-sm font-bold text-text">Workspace guidance</h2>
           <p class="text-xs leading-relaxed text-text-muted">
-            Keep the master Profile factual, then use evidence-backed Match Reports to decide which changes to make.
+            Keep the master Profile factual, then use evidence-backed Match Reports to decide which
+            changes to make.
           </p>
         </Card>
       </aside>

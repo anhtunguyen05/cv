@@ -93,7 +93,13 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
         <span v-if="retryMessage" class="block mt-1">{{ retryMessage }}</span>
       </div>
 
-      <FormField v-slot="{ controlProps }" label="Full Name" :error="errors.name" html-for="name" required>
+      <FormField
+        v-slot="{ controlProps }"
+        label="Full Name"
+        :error="errors.name"
+        html-for="name"
+        required
+      >
         <div class="relative flex items-center">
           <User :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input
@@ -112,7 +118,13 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
         </div>
       </FormField>
 
-      <FormField v-slot="{ controlProps }" label="Email Address" :error="errors.email" html-for="reg-email" required>
+      <FormField
+        v-slot="{ controlProps }"
+        label="Email Address"
+        :error="errors.email"
+        html-for="reg-email"
+        required
+      >
         <div class="relative flex items-center">
           <Mail :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input
@@ -131,7 +143,13 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
         </div>
       </FormField>
 
-      <FormField v-slot="{ controlProps }" label="Password" :error="errors.password" html-for="reg-password" required>
+      <FormField
+        v-slot="{ controlProps }"
+        label="Password"
+        :error="errors.password"
+        html-for="reg-password"
+        required
+      >
         <div class="relative flex items-center">
           <Lock :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input

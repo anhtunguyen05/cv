@@ -40,11 +40,7 @@ const controlProps = computed(() => ({
 
     <slot :control-props="controlProps" />
 
-    <p
-      v-if="hint && !error"
-      :id="hintId"
-      class="text-xs text-text-muted"
-    >
+    <p v-if="hint && !error" :id="hintId" class="text-xs text-text-muted">
       {{ hint }}
     </p>
     <p v-if="error" :id="errorId" class="text-xs text-danger" role="alert" aria-live="polite">

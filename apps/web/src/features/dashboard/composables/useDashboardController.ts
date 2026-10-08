@@ -8,7 +8,9 @@ export function useDashboardController() {
   const jobDescriptionPage = ref(1)
   const jobDescriptionsQuery = useJobDescriptionsQuery(jobDescriptionPage)
   const matchReportsQuery = useMatchReportsQuery()
-  const previousJdPage = () => { if (jobDescriptionPage.value > 1) jobDescriptionPage.value -= 1 }
+  const previousJdPage = () => {
+    if (jobDescriptionPage.value > 1) jobDescriptionPage.value -= 1
+  }
   const nextJdPage = () => {
     const lastPage = jobDescriptionsQuery.data.value?.lastPage ?? 1
     if (jobDescriptionPage.value < lastPage) jobDescriptionPage.value += 1
@@ -25,9 +27,7 @@ export function useDashboardController() {
     nextJdPage,
     jobDescriptions: computed(() => jobDescriptionsQuery.data.value?.items ?? []),
     jobDescriptionTotal: computed(() => jobDescriptionsQuery.data.value?.total ?? 0),
-    jobDescriptionTotalPages: computed(
-      () => jobDescriptionsQuery.data.value?.lastPage ?? 1,
-    ),
+    jobDescriptionTotalPages: computed(() => jobDescriptionsQuery.data.value?.lastPage ?? 1),
     isJdLoading: jobDescriptionsQuery.isLoading,
     isJdError: jobDescriptionsQuery.isError,
     refetchJds: jobDescriptionsQuery.refetch,

@@ -139,7 +139,12 @@ const {
     <div v-if="!isNew && currentProfile" class="rounded-xl border border-border bg-white p-5">
       <h2 class="font-bold text-text">Create immutable Version</h2>
       <div class="mt-3 flex flex-col gap-2 sm:flex-row">
-        <FormField v-slot="{ controlProps }" label="Version name" html-for="version-name" class="flex-1">
+        <FormField
+          v-slot="{ controlProps }"
+          label="Version name"
+          html-for="version-name"
+          class="flex-1"
+        >
           <input
             v-bind="controlProps"
             v-model="versionName"

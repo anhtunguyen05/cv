@@ -15,7 +15,9 @@ async function parseAuthResponse(request: Promise<unknown>): Promise<AuthRespons
 export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
   await bootstrapCsrf()
   try {
-    return await parseAuthResponse(api<unknown>('/auth/login', { method: 'POST', body: credentials }))
+    return await parseAuthResponse(
+      api<unknown>('/auth/login', { method: 'POST', body: credentials }),
+    )
   } catch (error) {
     if (error instanceof ApiRequestError && error.status === 419) {
       await bootstrapCsrf()
@@ -38,7 +40,9 @@ async function registerWithCsrfRecovery(credentials: RegisterCredentials): Promi
   } catch (error) {
     if (error instanceof ApiRequestError && error.status === 419) {
       await bootstrapCsrf()
-      return parseAuthResponse(api<unknown>('/auth/register', { method: 'POST', body: credentials }))
+      return parseAuthResponse(
+        api<unknown>('/auth/register', { method: 'POST', body: credentials }),
+      )
     }
     throw error
   }

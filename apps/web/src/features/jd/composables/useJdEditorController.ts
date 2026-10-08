@@ -48,7 +48,8 @@ export function useJdEditorController() {
           request.revisionId !== result.job_description_revision_id ||
           request.jobDescriptionId !== jobDescriptionId.value ||
           current.value?.current_revision?.id !== result.job_description_revision_id
-        ) return
+        )
+          return
         storedAnalysisId.value = result.id
         if (typeof window !== 'undefined') {
           window.localStorage.setItem(
@@ -64,7 +65,8 @@ export function useJdEditorController() {
           request.generation !== routeGeneration.value ||
           request.jobDescriptionId !== jobDescriptionId.value ||
           (request.jobDescriptionId && jd.id !== request.jobDescriptionId)
-        ) return
+        )
+          return
         const previousRevisionId = request.revisionId
         analysisMutation.reset()
         storedAnalysisId.value = ''
@@ -72,8 +74,10 @@ export function useJdEditorController() {
           queryClient.removeQueries({ queryKey: jdQueryKeys.analysisRoot(jobDescriptionId.value) })
         }
         if (typeof window !== 'undefined') {
-          if (previousRevisionId) window.localStorage.removeItem(analysisStorageKey(previousRevisionId))
-          if (jd.current_revision) window.localStorage.removeItem(analysisStorageKey(jd.current_revision.id))
+          if (previousRevisionId)
+            window.localStorage.removeItem(analysisStorageKey(previousRevisionId))
+          if (jd.current_revision)
+            window.localStorage.removeItem(analysisStorageKey(jd.current_revision.id))
         }
         await queryClient.invalidateQueries({ queryKey: jdQueryKeys.all })
         if (request.generation !== routeGeneration.value) return
@@ -91,12 +95,14 @@ export function useJdEditorController() {
           request.generation !== routeGeneration.value ||
           request.jobDescriptionId !== jobDescriptionId.value ||
           report.job_description_id !== request.jobDescriptionId
-        ) return
+        )
+          return
         await queryClient.invalidateQueries({ queryKey: matchQueryKeys.all })
         if (
           request.generation !== routeGeneration.value ||
           request.jobDescriptionId !== jobDescriptionId.value
-        ) return
+        )
+          return
         await router.push(ROUTES.MATCH_REPORT(report.id))
         if (pendingMatchKey === request.idempotencyKey) pendingMatchKey = null
       },
@@ -107,11 +113,13 @@ export function useJdEditorController() {
           !deletedId ||
           deletedId !== jobDescriptionId.value ||
           current.value?.id !== deletedId
-        ) return
+        )
+          return
         if (pendingDeleteKey === request.idempotencyKey) pendingDeleteKey = null
         queryClient.removeQueries({ queryKey: jdQueryKeys.detail(deletedId) })
         await queryClient.invalidateQueries({ queryKey: jdQueryKeys.all })
-        if (request.generation !== routeGeneration.value || deletedId !== jobDescriptionId.value) return
+        if (request.generation !== routeGeneration.value || deletedId !== jobDescriptionId.value)
+          return
         jdDraft.reset()
         await router.push(ROUTES.DASHBOARD)
       },
@@ -145,7 +153,10 @@ export function useJdEditorController() {
     const first = value[0]
     return typeof first === 'string'
       ? first
-      : typeof first === 'object' && first !== null && 'message' in first && typeof first.message === 'string'
+      : typeof first === 'object' &&
+          first !== null &&
+          'message' in first &&
+          typeof first.message === 'string'
         ? first.message
         : ''
   }
@@ -158,32 +169,54 @@ export function useJdEditorController() {
   }
 
   const errorMessage = computed(() => {
-    const error = saveMutation.error.value ?? analysisMutation.error.value ?? analysisQuery.error.value ??
-      matchMutation.error.value ?? deleteMutation.error.value ?? jdQuery.error.value
+    const error =
+      saveMutation.error.value ??
+      analysisMutation.error.value ??
+      analysisQuery.error.value ??
+      matchMutation.error.value ??
+      deleteMutation.error.value ??
+      jdQuery.error.value
     return error instanceof Error ? error.message : ''
   })
   const retryable = computed(() => {
-    const error = jdQuery.error.value ?? saveMutation.error.value ?? analysisMutation.error.value ??
-      analysisQuery.error.value ?? matchMutation.error.value ?? deleteMutation.error.value
+    const error =
+      jdQuery.error.value ??
+      saveMutation.error.value ??
+      analysisMutation.error.value ??
+      analysisQuery.error.value ??
+      matchMutation.error.value ??
+      deleteMutation.error.value
     return error instanceof ApiRequestError && [429, 503].includes(error.status)
   })
   const saveRetryable = computed(
-    () => saveMutation.error.value instanceof ApiRequestError && [429, 503].includes(saveMutation.error.value.status),
+    () =>
+      saveMutation.error.value instanceof ApiRequestError &&
+      [429, 503].includes(saveMutation.error.value.status),
   )
   const deleteRetryable = computed(
-    () => deleteMutation.error.value instanceof ApiRequestError && [429, 503].includes(deleteMutation.error.value.status),
+    () =>
+      deleteMutation.error.value instanceof ApiRequestError &&
+      [429, 503].includes(deleteMutation.error.value.status),
   )
   const saveConflict = computed(
-    () => saveMutation.error.value instanceof ApiRequestError && saveMutation.error.value.status === 409,
+    () =>
+      saveMutation.error.value instanceof ApiRequestError &&
+      saveMutation.error.value.status === 409,
   )
   const deleteConflict = computed(
-    () => deleteMutation.error.value instanceof ApiRequestError && deleteMutation.error.value.status === 409,
+    () =>
+      deleteMutation.error.value instanceof ApiRequestError &&
+      deleteMutation.error.value.status === 409,
   )
   const analysisConflict = computed(
-    () => analysisMutation.error.value instanceof ApiRequestError && analysisMutation.error.value.status === 409,
+    () =>
+      analysisMutation.error.value instanceof ApiRequestError &&
+      analysisMutation.error.value.status === 409,
   )
   const matchRetryable = computed(
-    () => matchMutation.error.value instanceof ApiRequestError && [409, 429, 503].includes(matchMutation.error.value.status),
+    () =>
+      matchMutation.error.value instanceof ApiRequestError &&
+      [409, 429, 503].includes(matchMutation.error.value.status),
   )
 
   function submit(): void {
@@ -193,7 +226,8 @@ export function useJdEditorController() {
       return
     }
     if (overLimit.value) {
-      localError.value = 'The Job Description must be at most 50,000 Unicode code points and 200 KiB.'
+      localError.value =
+        'The Job Description must be at most 50,000 Unicode code points and 200 KiB.'
       return
     }
     const submitted = jdDraft.values()
@@ -201,19 +235,35 @@ export function useJdEditorController() {
       generation: routeGeneration.value,
       jobDescriptionId: jobDescriptionId.value,
       revisionId: current.value?.current_revision?.id ?? '',
-      data: { raw_text: submitted.rawText, company: submitted.company || null, role: submitted.role || null },
+      data: {
+        raw_text: submitted.rawText,
+        company: submitted.company || null,
+        role: submitted.role || null,
+      },
       submitted,
       idempotencyKey: (pendingSaveKey ??= crypto.randomUUID()),
     })
   }
 
   const limitCodePoints = (value: string, limit: number) => [...value].slice(0, limit).join('')
-  const setCompany = (value: string) => { company.value = limitCodePoints(value, 160) }
-  const setRole = (value: string) => { role.value = limitCodePoints(value, 160) }
-  const setRawText = (value: string) => { rawText.value = limitCodePoints(value, 50000) }
-  const setSelectedCvVersionId = (value: string) => { selectedCvVersionId.value = value }
-  const setErrorSummary = (element: HTMLElement | null) => { errorSummary.value = element }
-  const previousCvVersionPage = () => { if (cvVersionPage.value > 1) cvVersionPage.value -= 1 }
+  const setCompany = (value: string) => {
+    company.value = limitCodePoints(value, 160)
+  }
+  const setRole = (value: string) => {
+    role.value = limitCodePoints(value, 160)
+  }
+  const setRawText = (value: string) => {
+    rawText.value = limitCodePoints(value, 50000)
+  }
+  const setSelectedCvVersionId = (value: string) => {
+    selectedCvVersionId.value = value
+  }
+  const setErrorSummary = (element: HTMLElement | null) => {
+    errorSummary.value = element
+  }
+  const previousCvVersionPage = () => {
+    if (cvVersionPage.value > 1) cvVersionPage.value -= 1
+  }
   const nextCvVersionPage = () => {
     const lastPage = versionsQuery.data.value?.lastPage ?? 1
     if (cvVersionPage.value < lastPage) cvVersionPage.value += 1
@@ -231,7 +281,8 @@ export function useJdEditorController() {
   }
 
   function createReport(): void {
-    if (!current.value || hasUnsavedChanges.value || !analysis.value || !selectedCvVersionId.value) return
+    if (!current.value || hasUnsavedChanges.value || !analysis.value || !selectedCvVersionId.value)
+      return
     matchMutation.mutate({
       generation: routeGeneration.value,
       cvVersionId: selectedCvVersionId.value,
@@ -262,7 +313,12 @@ export function useJdEditorController() {
   }
 
   function confirmDelete(): void {
-    if (typeof window === 'undefined' || window.confirm('Delete this saved Job Description? Existing historical reports remain readable.')) {
+    if (
+      typeof window === 'undefined' ||
+      window.confirm(
+        'Delete this saved Job Description? Existing historical reports remain readable.',
+      )
+    ) {
       runDelete()
     }
   }
@@ -278,43 +334,55 @@ export function useJdEditorController() {
     })
   }
 
-  watch(jdQuery.data, (jd) => {
-    if (!jd?.current_revision || jd.id !== jobDescriptionId.value) return
-    if (saved.value?.id === jd.id && hasUnsavedChanges.value) return
-    jdDraft.load(jd)
-  }, { immediate: true })
-  watch(current, (jd) => {
-    const revisionId = jd?.current_revision?.id
-    if (!revisionId || typeof window === 'undefined') {
-      storedAnalysisId.value = ''
-      return
-    }
-    storedAnalysisId.value = window.localStorage.getItem(analysisStorageKey(revisionId)) ?? ''
-  }, { immediate: true })
+  watch(
+    jdQuery.data,
+    (jd) => {
+      if (!jd?.current_revision || jd.id !== jobDescriptionId.value) return
+      if (saved.value?.id === jd.id && hasUnsavedChanges.value) return
+      jdDraft.load(jd)
+    },
+    { immediate: true },
+  )
+  watch(
+    current,
+    (jd) => {
+      const revisionId = jd?.current_revision?.id
+      if (!revisionId || typeof window === 'undefined') {
+        storedAnalysisId.value = ''
+        return
+      }
+      storedAnalysisId.value = window.localStorage.getItem(analysisStorageKey(revisionId)) ?? ''
+    },
+    { immediate: true },
+  )
   watch([rawText, company, role], () => {
     if (!saveMutation.isPending.value) pendingSaveKey = null
   })
-  watch(jobDescriptionId, (id) => {
-    routeGeneration.value += 1
-    if (id && createdRouteId.value === id) {
-      createdRouteId.value = ''
-      return
-    }
-    jdDraft.reset()
-    localError.value = ''
-    storedAnalysisId.value = ''
-    selectedCvVersionId.value = ''
-    cvVersionPage.value = 1
-    pendingSaveKey = null
-    pendingAnalysisKey = null
-    pendingMatchKey = null
-    pendingDeleteKey = null
-    analysisMutation.reset()
-    saveMutation.reset()
-    matchMutation.reset()
-    deleteMutation.reset()
-    if (!id) void queryClient.removeQueries({ queryKey: jdQueryKeys.detail(id) })
-  }, { immediate: true })
+  watch(
+    jobDescriptionId,
+    (id) => {
+      routeGeneration.value += 1
+      if (id && createdRouteId.value === id) {
+        createdRouteId.value = ''
+        return
+      }
+      jdDraft.reset()
+      localError.value = ''
+      storedAnalysisId.value = ''
+      selectedCvVersionId.value = ''
+      cvVersionPage.value = 1
+      pendingSaveKey = null
+      pendingAnalysisKey = null
+      pendingMatchKey = null
+      pendingDeleteKey = null
+      analysisMutation.reset()
+      saveMutation.reset()
+      matchMutation.reset()
+      deleteMutation.reset()
+      if (!id) void queryClient.removeQueries({ queryKey: jdQueryKeys.detail(id) })
+    },
+    { immediate: true },
+  )
   watch(selectedCvVersionId, () => {
     if (!matchMutation.isPending.value) pendingMatchKey = null
   })
@@ -331,15 +399,50 @@ export function useJdEditorController() {
   })
 
   return {
-    jobDescriptionId, rawText, company, role, hasUnsavedChanges, localError, errorSummary,
-    selectedCvVersionId, cvVersionPage, jdQuery, current, analysisQuery, analysis, versionsQuery,
-    analysisMutation, saveMutation, matchMutation, deleteMutation, charCount, errorMessage,
-    retryable, saveRetryable, deleteRetryable, saveConflict, deleteConflict, analysisConflict,
-    matchRetryable, submit, limitCodePoints, setCompany, setRole, setRawText, setSelectedCvVersionId,
+    jobDescriptionId,
+    rawText,
+    company,
+    role,
+    hasUnsavedChanges,
+    localError,
+    errorSummary,
+    selectedCvVersionId,
+    cvVersionPage,
+    jdQuery,
+    current,
+    analysisQuery,
+    analysis,
+    versionsQuery,
+    analysisMutation,
+    saveMutation,
+    matchMutation,
+    deleteMutation,
+    charCount,
+    errorMessage,
+    retryable,
+    saveRetryable,
+    deleteRetryable,
+    saveConflict,
+    deleteConflict,
+    analysisConflict,
+    matchRetryable,
+    submit,
+    limitCodePoints,
+    setCompany,
+    setRole,
+    setRawText,
+    setSelectedCvVersionId,
     setErrorSummary,
-    previousCvVersionPage, nextCvVersionPage,
-    analyze, createReport, reloadCurrentRevision,
-    confirmDelete, retryMatch, retrySave: submit, retryDelete: runDelete, fieldError,
+    previousCvVersionPage,
+    nextCvVersionPage,
+    analyze,
+    createReport,
+    reloadCurrentRevision,
+    confirmDelete,
+    retryMatch,
+    retrySave: submit,
+    retryDelete: runDelete,
+    fieldError,
   }
 }
 

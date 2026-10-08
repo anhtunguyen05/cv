@@ -161,7 +161,9 @@ const {
 
             <div v-if="unresolvedAreaCount > 0 && !interviewNotNeeded" class="space-y-3">
               <p class="text-sm text-text-secondary">
-                {{ unresolvedAreaCount }} unresolved area{{ unresolvedAreaCount === 1 ? '' : 's' }}
+                {{ unresolvedAreaCount }} unresolved area{{
+                  unresolvedAreaCount === 1 ? '' : 's'
+                }}
                 found; the first {{ interviewAreaCount }} will be included, with one question per
                 area.
               </p>

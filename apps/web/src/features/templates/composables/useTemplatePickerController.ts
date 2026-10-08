@@ -35,7 +35,9 @@ export function useTemplatePickerController() {
       selected.value = current
         ? (available.find(
             (template) => template.id === current.id && template.version === current.version,
-          ) ?? available[0] ?? null)
+          ) ??
+          available[0] ??
+          null)
         : (available[0] ?? null)
     },
     { immediate: true },

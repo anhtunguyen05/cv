@@ -29,8 +29,7 @@ export function usePatchReviewController() {
   const routeGeneration = ref(0)
   const initializedDraftPatchId = ref('')
   const query = usePatchQuery(patchId)
-  const mutationKey = (action: string) =>
-    (idempotencyKeys.value[action] ??= crypto.randomUUID())
+  const mutationKey = (action: string) => (idempotencyKeys.value[action] ??= crypto.randomUUID())
   const clearMutationKey = (action: string, request: PatchMutationRequest) => {
     if (idempotencyKeys.value[action] === request.idempotencyKey) {
       delete idempotencyKeys.value[action]
@@ -45,7 +44,11 @@ export function usePatchReviewController() {
     )
       void query.refetch()
   }
-  const cacheOrigin = (action: PatchAction, patch: Patch, request: PatchMutationRequest): string => {
+  const cacheOrigin = (
+    action: PatchAction,
+    patch: Patch,
+    request: PatchMutationRequest,
+  ): string => {
     clearMutationKey(action, request)
     queryClient.setQueryData(evidenceQueryKeys.patch(request.patchId), patch)
     return request.patchId
@@ -60,7 +63,8 @@ export function usePatchReviewController() {
         originId === patchId.value &&
         patch.id === originId &&
         draft.value === request.draft
-      ) draft.value = patch.new_value
+      )
+        draft.value = patch.new_value
     },
     onError: (error, request) => refreshConflict(request, error),
   })
@@ -120,7 +124,9 @@ export function usePatchReviewController() {
   }
   function sourceValue(value: Patch['old_value']): string {
     if (typeof value === 'string') return value
-    return value === null ? 'No existing value' : 'Existing highlight collection (hash precondition)'
+    return value === null
+      ? 'No existing value'
+      : 'Existing highlight collection (hash precondition)'
   }
 
   watch(patchId, () => {

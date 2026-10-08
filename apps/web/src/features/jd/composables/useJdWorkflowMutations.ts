@@ -1,5 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { analyzeJobDescription, createJobDescription, deleteJobDescription, updateJobDescription } from '../api/jd.api'
+import {
+  analyzeJobDescription,
+  createJobDescription,
+  deleteJobDescription,
+  updateJobDescription,
+} from '../api/jd.api'
 import { createMatchReport } from '@/features/match/api/match.api'
 import type { JobDescription, JdAnalysis } from '../types/jd.types'
 import type { MatchReport } from '@/features/match/types/match.types'
@@ -73,11 +78,7 @@ export function useJdWorkflowMutations(options: WorkflowOptions) {
   })
   const deleteMutation = useMutation({
     mutationFn: (request: JdDeleteRequest) =>
-      deleteJobDescription(
-        request.jobDescriptionId,
-        request.revisionId,
-        request.idempotencyKey,
-      ),
+      deleteJobDescription(request.jobDescriptionId, request.revisionId, request.idempotencyKey),
     onSuccess: options.onDeleteSuccess,
   })
 

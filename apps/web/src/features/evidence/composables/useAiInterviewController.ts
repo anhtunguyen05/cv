@@ -96,7 +96,7 @@ export function useAiInterviewController() {
       answerKeys.value[questionId] = crypto.randomUUID()
       answerPayloads.value[questionId] = signature
     }
-    const idempotencyKey = answerKeys.value[questionId] ??= crypto.randomUUID()
+    const idempotencyKey = (answerKeys.value[questionId] ??= crypto.randomUUID())
     answerMutation.mutate({
       interviewId: interviewId.value,
       questionId,

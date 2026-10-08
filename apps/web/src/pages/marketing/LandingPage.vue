@@ -2,13 +2,7 @@
 import { RouterLink } from 'vue-router'
 import { ROUTES } from '@/shared/constants/routes'
 import Button from '@/shared/components/ui/button/Button.vue'
-import {
-  ArrowRight,
-  CheckCircle2,
-  Sparkles,
-  ShieldCheck,
-  Zap,
-} from 'lucide-vue-next'
+import { ArrowRight, CheckCircle2, Sparkles, ShieldCheck, Zap } from 'lucide-vue-next'
 import LandingWorkflowSection from '@/features/marketing/components/LandingWorkflowSection.vue'
 import LandingFeaturesSection from '@/features/marketing/components/LandingFeaturesSection.vue'
 </script>

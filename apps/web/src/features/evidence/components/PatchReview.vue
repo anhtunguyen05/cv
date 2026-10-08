@@ -59,7 +59,11 @@ const {
     <Card v-else-if="query.isError.value" class="space-y-3" role="alert">
       <h2 class="text-lg font-bold text-text">Unable to load this proposal</h2>
       <p class="text-sm text-text-muted">
-        {{ query.error.value instanceof Error ? query.error.value.message : 'The proposal could not be loaded.' }}
+        {{
+          query.error.value instanceof Error
+            ? query.error.value.message
+            : 'The proposal could not be loaded.'
+        }}
       </p>
       <Button
         v-if="isRetryable(query.error.value)"
@@ -208,7 +212,12 @@ const {
           This proposal is still being validated. Refresh shortly for the next server-owned action.
         </p>
         <p
-          v-if="edit.isError.value || reject.isError.value || approve.isError.value || regenerate.isError.value"
+          v-if="
+            edit.isError.value ||
+            reject.isError.value ||
+            approve.isError.value ||
+            regenerate.isError.value
+          "
           class="text-sm text-danger-text"
           role="alert"
         >

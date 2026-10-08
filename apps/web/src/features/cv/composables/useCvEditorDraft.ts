@@ -38,11 +38,19 @@ function documentFromProfile(profile: CvProfile): CvDocument {
 }
 
 const sectionKeys: CvSectionKey[] = [
-  'personal_information', 'summary', 'skills', 'education', 'experience',
-  'projects', 'certificates', 'languages', 'activities',
+  'personal_information',
+  'summary',
+  'skills',
+  'education',
+  'experience',
+  'projects',
+  'certificates',
+  'languages',
+  'activities',
 ]
 
-const equal = (left: unknown, right: unknown): boolean => JSON.stringify(left) === JSON.stringify(right)
+const equal = (left: unknown, right: unknown): boolean =>
+  JSON.stringify(left) === JSON.stringify(right)
 
 export function useCvEditorDraft() {
   const activeSection = ref<CvSectionKey>('personal_information')
@@ -148,7 +156,8 @@ export function useCvEditorDraft() {
       }
     }
     loadSectionText()
-    if (activeWasDirty && activeSection.value === localActiveSection) sectionText.value = localSectionText
+    if (activeWasDirty && activeSection.value === localActiveSection)
+      sectionText.value = localSectionText
   }
 
   function applySavedTitle(profile: CvProfile): void {

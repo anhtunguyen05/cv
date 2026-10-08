@@ -1,11 +1,6 @@
 import { useQueryClient } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
-import {
-  createCvProfile,
-  createCvVersion,
-  updateCvSection,
-  updateCvTitle,
-} from '../api/cv.api'
+import { createCvProfile, createCvVersion, updateCvSection, updateCvTitle } from '../api/cv.api'
 import { cvQueryKeys } from '../api/cv.keys'
 import { useCvProfileQuery, useCvVersionsQuery } from '../api/cv.queries'
 import type { CvDocument, CvProfile, CvSectionKey, PersonalInformation } from '../types/cv.types'
