@@ -1,70 +1,26 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { useQuery } from '@tanstack/vue-query'
+import { RouterLink } from 'vue-router'
 import TemplateCard from '@/features/templates/components/TemplateCard.vue'
-import type { CvTemplate } from '@/features/templates/types/template.types'
 import SearchInput from '@/shared/components/molecules/SearchInput.vue'
 import EmptyState from '@/shared/components/molecules/EmptyState.vue'
-import AppButton from '@/shared/components/atoms/AppButton.vue'
-import { getTemplates } from '@/features/templates/api/templates.api'
-import { getCvVersions } from '@/features/cv/api/cv.api'
+import Button from '@/shared/components/ui/button/Button.vue'
+import { useTemplatePickerController } from '@/features/templates/composables/useTemplatePickerController'
 import { LayoutTemplate, ArrowRight, ShieldCheck } from 'lucide-vue-next'
+import { ROUTES } from '@/shared/constants/routes'
 
-const router = useRouter()
-const route = useRoute()
-const search = ref('')
-const selected = ref<CvTemplate | null>(null)
-const versionId = computed(() => {
-  const value = route.params.versionId
-  return typeof value === 'string' ? value : ''
-})
-
-const templatesQuery = useQuery({
-  queryKey: ['templates'],
-  queryFn: getTemplates,
-})
-const versionsQuery = useQuery({
-  queryKey: ['cv-versions', 'template-entry'],
-  queryFn: () => getCvVersions(),
-  enabled: () => !versionId.value,
-})
-
-const templates = computed(() => templatesQuery.data.value ?? [])
-const savedVersions = computed(() => versionsQuery.data.value ?? [])
-const filtered = computed(() => {
-  const query = search.value.toLowerCase().trim()
-  if (!query) return templates.value
-  return templates.value.filter((template) => {
-    return `${template.name} ${template.description ?? ''} ${template.version}`
-      .toLowerCase()
-      .includes(query)
-  })
-})
-
-watch(
-  templates,
-  (available) => {
-    if (!selected.value && available[0]) selected.value = available[0]
-  },
-  { immediate: true },
-)
-
-function onSelect(template: CvTemplate) {
-  selected.value =
-    selected.value?.id === template.id && selected.value.version === template.version
-      ? null
-      : template
-}
-
-function applyTemplate() {
-  if (!selected.value || !versionId.value) return
-  const query = new URLSearchParams({
-    template_id: selected.value.id,
-    template_version: selected.value.version,
-  })
-  void router.push(`/cv-versions/${versionId.value}/preview?${query.toString()}`)
-}
+const {
+  search,
+  selected,
+  versionId,
+  templatesQuery,
+  versionsQuery,
+  savedVersions,
+  filtered,
+  onSelect,
+  applyTemplate,
+  openDashboard,
+  resetSearchOrOpenDashboard,
+} = useTemplatePickerController()
 </script>
 
 <template>
@@ -74,7 +30,7 @@ function applyTemplate() {
     >
       <div>
         <div class="mb-1 flex items-center gap-2">
-          <RouterLink to="/dashboard" class="text-xs text-text-muted hover:text-text"
+          <RouterLink :to="ROUTES.DASHBOARD" class="text-xs text-text-muted hover:text-text"
             >Dashboard</RouterLink
           >
           <span class="text-xs text-border-hover">/</span>
@@ -86,10 +42,10 @@ function applyTemplate() {
         </p>
       </div>
 
-      <AppButton v-if="selected && versionId" size="md" @click="applyTemplate">
+      <Button v-if="selected && versionId" size="md" @click="applyTemplate">
         <span>Preview “{{ selected.name }}”</span>
         <ArrowRight :size="15" />
-      </AppButton>
+      </Button>
     </div>
 
     <p
@@ -101,7 +57,7 @@ function applyTemplate() {
     </p>
     <div v-else-if="!versionId && versionsQuery.isError.value" role="alert" class="space-y-3">
       <p class="text-sm text-danger-text">Unable to load saved CV Versions.</p>
-      <AppButton size="sm" variant="outline" @click="versionsQuery.refetch()">Retry</AppButton>
+      <Button size="sm" variant="outline" @click="versionsQuery.refetch()">Retry</Button>
     </div>
     <div v-else-if="!versionId && savedVersions.length" class="space-y-3">
       <h2 class="text-sm font-semibold text-text">Choose a saved Version</h2>
@@ -109,7 +65,7 @@ function applyTemplate() {
         <RouterLink
           v-for="version in savedVersions"
           :key="version.id"
-          :to="`/cv-versions/${version.id}/templates`"
+          :to="ROUTES.CV_VERSION_TEMPLATES(version.id)"
           class="rounded-lg border border-border bg-white p-4 transition hover:border-primary-border hover:shadow-sm"
         >
           <span class="font-semibold text-text">{{ version.name }}</span>
@@ -123,7 +79,7 @@ function applyTemplate() {
       title="Save a CV Version first"
       description="Templates can only be applied to an immutable saved Version."
       action-label="Open dashboard"
-      @action="router.push('/dashboard')"
+      @action="openDashboard"
     />
     <template v-else>
       <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -147,9 +103,9 @@ function applyTemplate() {
         class="rounded-lg border border-danger-border bg-danger-muted p-4 text-sm text-danger-text"
       >
         <p>Unable to load templates. Refresh and try again.</p>
-        <AppButton size="sm" variant="outline" class="mt-3" @click="templatesQuery.refetch()">
+        <Button size="sm" variant="outline" class="mt-3" @click="templatesQuery.refetch()">
           Retry
-        </AppButton>
+        </Button>
       </div>
       <div
         v-else-if="filtered.length"
@@ -173,7 +129,7 @@ function applyTemplate() {
             : 'There are no active templates available for this Version.'
         "
         :action-label="search ? 'Reset search' : 'Return to dashboard'"
-        @action="search ? (search = '') : router.push('/dashboard')"
+        @action="resetSearchOrOpenDashboard"
       />
     </template>
   </div>

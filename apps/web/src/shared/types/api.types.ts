@@ -9,12 +9,24 @@ export interface ApiError {
   status?: number
 }
 
+export interface PaginationMeta {
+  page?: number
+  current_page?: number
+  per_page: number
+  total: number
+  last_page?: number
+}
+
 export interface PaginatedResponse<T> {
   data: T[]
-  meta: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
+  meta: PaginationMeta
+  links?: Record<string, string | null>
+}
+
+export interface PageResult<T> {
+  items: T[]
+  page: number
+  perPage: number
+  lastPage: number
+  total: number
 }

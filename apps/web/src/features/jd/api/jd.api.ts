@@ -1,81 +1,36 @@
 import { api } from '@/shared/api/client'
+import { paginatedResponseSchema } from '@/shared/schemas/pagination.schemas'
+import { jdAnalysisSchema, jobDescriptionSchema } from '../schemas/jd.schemas'
 import type { JdAnalysis, JobDescription } from '../types/jd.types'
-import { z } from 'zod'
-
-interface Collection<T> {
-  data: T[]
-  meta: { page: number; per_page: number; total: number }
-  links: Record<string, string | null>
-}
-
-export interface PageResult<T> {
-  items: T[]
-  total: number
-}
+import type { PageResult } from '@/shared/types/api.types'
 
 const uuid = (): string => crypto.randomUUID()
-const ulid = z.string().regex(/^[0-9A-HJKMNP-TV-Z]{26}$/)
-const signalState = z.enum(['detected', 'absent', 'unknown'])
-const signalList = z.object({
-  state: signalState,
-  items: z.array(z.union([z.string(), z.object({ signal_id: z.string(), label: z.string() })])),
-})
-const signalValue = z.object({ state: signalState, value: z.string().nullable() })
-const revisionSchema = z.object({
-  id: ulid,
-  job_description_id: ulid,
-  revision_number: z.number().int().positive(),
-  raw_text: z.string(),
-  company: z.string().nullable(),
-  role: z.string().nullable(),
-  created_at: z.string().min(1),
-})
-const jobDescriptionSchema = z.object({
-  id: ulid,
-  company: z.string().nullable(),
-  role: z.string().nullable(),
-  current_revision: revisionSchema.nullable(),
-  deleted_at: z.string().nullable(),
-  created_at: z.string().min(1),
-  updated_at: z.string().min(1),
-})
-const analysisSchema = z.object({
-  id: ulid,
-  job_description_revision_id: ulid,
-  analysis_schema_version: z.literal('1.0.0'),
-  analysis_rule_version: z.literal('1.0.0'),
-  status: z.enum(['succeeded', 'failed', 'pending', 'running']),
-  created_at: z.string().nullable(),
-  signals: z.object({
-    role: signalValue,
-    required_skills: signalList,
-    nice_to_have_skills: signalList,
-    responsibilities: signalList,
-    keywords: signalList,
-    seniority: signalValue,
-    soft_skills: signalList,
-    domain_context: signalList,
-  }),
-})
 
 export async function getJobDescriptions(
   page = 1,
   perPage = 20,
 ): Promise<PageResult<JobDescription>> {
-  const response = await api<Collection<JobDescription>>('/job-descriptions', {
-    query: { page, per_page: perPage },
-  })
+  const response = paginatedResponseSchema.parse(
+    await api<unknown>('/job-descriptions', {
+      query: { page, per_page: perPage },
+    }),
+  )
+  const responsePage = response.meta.page ?? response.meta.current_page ?? page
+
   return {
-    items: response.data.map((item) => jobDescriptionSchema.parse(item) as JobDescription),
+    items: response.data.map((item) => jobDescriptionSchema.parse(item)),
+    page: responsePage,
+    perPage: response.meta.per_page,
+    lastPage:
+      response.meta.last_page ??
+      Math.max(1, Math.ceil(response.meta.total / response.meta.per_page)),
     total: response.meta.total,
   }
 }
 
 export async function getJobDescription(id: string): Promise<JobDescription> {
-  const response = await api<{ data: JobDescription }>(
-    `/job-descriptions/${encodeURIComponent(id)}`,
-  )
-  return jobDescriptionSchema.parse(response.data) as JobDescription
+  const response = await api<{ data: unknown }>(`/job-descriptions/${encodeURIComponent(id)}`)
+  return jobDescriptionSchema.parse(response.data)
 }
 
 export async function createJobDescription(
@@ -86,12 +41,12 @@ export async function createJobDescription(
   },
   idempotencyKey = uuid(),
 ): Promise<JobDescription> {
-  const response = await api<{ data: JobDescription }>('/job-descriptions', {
+  const response = await api<{ data: unknown }>('/job-descriptions', {
     method: 'POST',
     body: data,
     headers: { 'Idempotency-Key': idempotencyKey },
   })
-  return jobDescriptionSchema.parse(response.data) as JobDescription
+  return jobDescriptionSchema.parse(response.data)
 }
 
 export async function updateJobDescription(
@@ -104,15 +59,12 @@ export async function updateJobDescription(
   },
   idempotencyKey = uuid(),
 ): Promise<JobDescription> {
-  const response = await api<{ data: JobDescription }>(
-    `/job-descriptions/${encodeURIComponent(id)}`,
-    {
-      method: 'PATCH',
-      body: data,
-      headers: { 'If-Match': `"${revisionId}"`, 'Idempotency-Key': idempotencyKey },
-    },
-  )
-  return jobDescriptionSchema.parse(response.data) as JobDescription
+  const response = await api<{ data: unknown }>(`/job-descriptions/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    body: data,
+    headers: { 'If-Match': `"${revisionId}"`, 'Idempotency-Key': idempotencyKey },
+  })
+  return jobDescriptionSchema.parse(response.data)
 }
 
 export async function deleteJobDescription(
@@ -130,23 +82,23 @@ export async function analyzeJobDescription(
   id: string,
   idempotencyKey = uuid(),
 ): Promise<JdAnalysis> {
-  const response = await api<{ data: JdAnalysis }>(
+  const response = await api<{ data: unknown }>(
     `/job-descriptions/${encodeURIComponent(id)}/analyses`,
     {
       method: 'POST',
       headers: { 'Idempotency-Key': idempotencyKey },
     },
   )
-  return analysisSchema.parse(response.data) as JdAnalysis
+  return jdAnalysisSchema.parse(response.data)
 }
 
 export async function getJobDescriptionAnalysis(
   id: string,
   analysisId: string,
 ): Promise<JdAnalysis> {
-  const response = await api<{ data: JdAnalysis }>(
+  const response = await api<{ data: unknown }>(
     `/job-descriptions/${encodeURIComponent(id)}/analyses/${encodeURIComponent(analysisId)}`,
   )
 
-  return analysisSchema.parse(response.data) as JdAnalysis
+  return jdAnalysisSchema.parse(response.data)
 }

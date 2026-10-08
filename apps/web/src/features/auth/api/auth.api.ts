@@ -6,15 +6,20 @@ import type {
   RegisterCredentials,
   AuthUser,
 } from '../types/auth.types'
+import { authResponseSchema } from '../schemas/auth.schema'
+
+async function parseAuthResponse(request: Promise<unknown>): Promise<AuthResponse> {
+  return authResponseSchema.parse(await request)
+}
 
 export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
   await bootstrapCsrf()
   try {
-    return await api<AuthResponse>('/auth/login', { method: 'POST', body: credentials })
+    return await parseAuthResponse(api<unknown>('/auth/login', { method: 'POST', body: credentials }))
   } catch (error) {
     if (error instanceof ApiRequestError && error.status === 419) {
       await bootstrapCsrf()
-      return api<AuthResponse>('/auth/login', { method: 'POST', body: credentials })
+      return parseAuthResponse(api<unknown>('/auth/login', { method: 'POST', body: credentials }))
     }
     throw error
   }
@@ -27,11 +32,13 @@ export function register(credentials: RegisterCredentials): Promise<AuthResponse
 async function registerWithCsrfRecovery(credentials: RegisterCredentials): Promise<AuthResponse> {
   await bootstrapCsrf()
   try {
-    return await api<AuthResponse>('/auth/register', { method: 'POST', body: credentials })
+    return await parseAuthResponse(
+      api<unknown>('/auth/register', { method: 'POST', body: credentials }),
+    )
   } catch (error) {
     if (error instanceof ApiRequestError && error.status === 419) {
       await bootstrapCsrf()
-      return api<AuthResponse>('/auth/register', { method: 'POST', body: credentials })
+      return parseAuthResponse(api<unknown>('/auth/register', { method: 'POST', body: credentials }))
     }
     throw error
   }
@@ -42,6 +49,6 @@ export function logout(): Promise<void> {
 }
 
 export async function getMe(): Promise<AuthUser> {
-  const response = await api<AuthResponse>('/auth/me')
+  const response = authResponseSchema.parse(await api<unknown>('/auth/me'))
   return response.data.user
 }

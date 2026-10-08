@@ -1,6 +1,6 @@
 import { ofetch } from 'ofetch'
 
-import { env } from '@/app/config/env'
+import { env } from '@/shared/config/env'
 
 export interface ApiErrorPayload {
   code?: string

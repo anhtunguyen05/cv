@@ -26,6 +26,51 @@ export default defineConfigWithVueTs(
     },
   },
 
+  {
+    name: 'shared/dependency-boundary',
+    files: ['src/shared/**/*.{vue,ts,mts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['@/app/**'], message: 'shared must not depend on app.' },
+            { group: ['@/pages/**'], message: 'shared must not depend on pages.' },
+            { group: ['@/features/**'], message: 'shared must not depend on features.' },
+          ],
+        },
+      ],
+    },
+  },
+
+  {
+    name: 'pages/controller-boundary',
+    files: ['src/pages/**/*.{vue,ts,mts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@tanstack/vue-query',
+              message: 'Route pages must use feature controllers or feature query hooks.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['@/features/*/api/*.api'],
+              message: 'Route pages must not call feature transport modules directly.',
+            },
+            {
+              group: ['@/features/*/api/*.queries'],
+              message: 'Route pages must render feature components instead of owning query orchestration.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
 
   skipFormatting,

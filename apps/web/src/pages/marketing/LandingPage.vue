@@ -1,72 +1,16 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import { ROUTES } from '@/shared/constants/routes'
-import AppButton from '@/shared/components/atoms/AppButton.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
 import {
   ArrowRight,
-  Upload,
-  Search,
-  BarChart2,
-  FileDown,
   CheckCircle2,
   Sparkles,
   ShieldCheck,
   Zap,
 } from 'lucide-vue-next'
-
-const steps = [
-  {
-    num: '01',
-    icon: Upload,
-    title: 'Create or Import CV',
-    desc: 'Structured entry for your technical stack, projects, education, and achievements once.',
-  },
-  {
-    num: '02',
-    icon: Search,
-    title: 'Ingest Job Posting',
-    desc: 'Paste any job description. Our parser extracts core requirements and secondary preferences.',
-  },
-  {
-    num: '03',
-    icon: BarChart2,
-    title: 'Analyze Evidence Gaps',
-    desc: 'Receive deterministic match scores, verified keyword citations, and targeted suggestions.',
-  },
-  {
-    num: '04',
-    icon: FileDown,
-    title: 'Export Tailored PDF',
-    desc: 'Select an ATS-optimized template and export a print-ready, high-converting CV.',
-  },
-]
-
-const features = [
-  {
-    badge: 'Evidence-Based',
-    stat: '72%',
-    statLabel: 'average match score lift',
-    title: 'Deterministic Skill Cross-Referencing',
-    desc: 'Unlike generic AI writers that hallucinate fake experience, CareerFitCV extracts actual project evidence from your background and maps it directly to recruiter expectations.',
-    highlights: ['Zero fake claims', 'Exact keyword alignment', 'Project-level citations'],
-  },
-  {
-    badge: 'ATS Defense',
-    stat: '98%',
-    statLabel: 'parser compatibility rate',
-    title: 'Engineered for Real Applicant Tracking Systems',
-    desc: 'Standard single-column layouts, clean ASCII typography hierarchy, and semantic headings ensure Workday, Greenhouse, and Lever read your resume without distortion.',
-    highlights: ['Single-column clean flow', 'No parsing dead-zones', 'Standard section tags'],
-  },
-  {
-    badge: 'Velocity',
-    stat: '< 4 min',
-    statLabel: 'from JD to polished submission',
-    title: 'Fast, Reversible Version Management',
-    desc: 'Never overwrite your master profile. Keep individual tailored snapshots for each company application with full version rollback.',
-    highlights: ['Immutable version snapshots', 'Side-by-side diffs', 'Target company tagging'],
-  },
-]
+import LandingWorkflowSection from '@/features/marketing/components/LandingWorkflowSection.vue'
+import LandingFeaturesSection from '@/features/marketing/components/LandingFeaturesSection.vue'
 </script>
 
 <template>
@@ -108,14 +52,14 @@ const features = [
           <!-- CTAs -->
           <div class="mt-8 flex flex-wrap items-center gap-4">
             <RouterLink :to="ROUTES.REGISTER">
-              <AppButton size="lg" class="shadow-brand-action">
+              <Button size="lg" class="shadow-brand-action">
                 Build your CV free
                 <ArrowRight :size="16" :stroke-width="2" />
-              </AppButton>
+              </Button>
             </RouterLink>
 
             <RouterLink :to="ROUTES.LOGIN">
-              <AppButton size="lg" variant="glass"> Sign in to workspace </AppButton>
+              <Button size="lg" variant="glass"> Sign in to workspace </Button>
             </RouterLink>
           </div>
 
@@ -241,110 +185,8 @@ const features = [
       </div>
     </section>
 
-    <!-- ── How it works (Bento Flow) ──────────────────────────── -->
-    <section
-      id="how-it-works"
-      class="bg-dark-raised px-6 lg:px-16 py-20 lg:py-24 border-t border-white/5"
-    >
-      <div class="max-w-[1440px] mx-auto">
-        <div class="max-w-xl mb-12 sm:mb-16">
-          <p class="text-xs font-bold text-primary-light uppercase tracking-widest mb-2">
-            Workflow
-          </p>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Four steps from job posting to interview-ready CV.
-          </h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-          <div
-            v-for="step in steps"
-            :key="step.num"
-            class="glass-panel-dark rounded-xl p-6 sm:p-7 border border-white/5 relative group hover:border-primary/40 transition-all duration-300"
-          >
-            <!-- Step Number Pill -->
-            <div class="flex items-center justify-between mb-5">
-              <div
-                class="w-11 h-11 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center group-hover:scale-105 transition-transform"
-              >
-                <component :is="step.icon" :size="20" class="text-primary-light" />
-              </div>
-              <span
-                class="font-mono font-bold text-2xl text-white/25 group-hover:text-primary-light/50 transition-colors"
-              >
-                {{ step.num }}
-              </span>
-            </div>
-
-            <h3 class="text-base sm:text-lg font-bold text-white mb-2">{{ step.title }}</h3>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">{{ step.desc }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── Asymmetric Feature Deep Dive ──────────────────────── -->
-    <section id="features" class="bg-dark-bg px-6 lg:px-16 py-20 lg:py-24 border-t border-white/5">
-      <div class="max-w-[1440px] mx-auto space-y-20 lg:space-y-24">
-        <div
-          v-for="(feat, i) in features"
-          :key="feat.title"
-          :class="[
-            'grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center',
-            i % 2 !== 0 ? 'lg:grid-flow-dense' : '',
-          ]"
-        >
-          <!-- Stat Panel -->
-          <div :class="[i % 2 !== 0 ? 'lg:col-start-2' : '']">
-            <div class="glass-panel-dark p-6 sm:p-8 rounded-xl border border-white/10 max-w-md">
-              <span
-                class="text-xs font-semibold uppercase tracking-wider text-primary-light bg-primary/15 px-2.5 py-1 rounded-full"
-              >
-                {{ feat.badge }}
-              </span>
-              <div
-                class="mt-5 text-5xl sm:text-6xl font-extrabold text-white tracking-tight font-mono"
-              >
-                {{ feat.stat }}
-              </div>
-              <p class="text-slate-300 text-xs sm:text-sm font-medium mt-1">{{ feat.statLabel }}</p>
-
-              <div class="mt-5 pt-5 border-t border-white/10 space-y-2">
-                <div
-                  v-for="item in feat.highlights"
-                  :key="item"
-                  class="flex items-center gap-2 text-xs text-slate-300"
-                >
-                  <CheckCircle2 :size="13" class="text-success" />
-                  <span>{{ item }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Description Panel -->
-          <div>
-            <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
-              {{ feat.title }}
-            </h3>
-            <p class="mt-4 text-slate-300 text-sm sm:text-base leading-relaxed">
-              {{ feat.desc }}
-            </p>
-
-            <div class="mt-6">
-              <RouterLink :to="ROUTES.REGISTER">
-                <span
-                  class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-light hover:text-primary-lighter transition-colors"
-                >
-                  Explore how it works
-                  <ArrowRight :size="13" />
-                </span>
-              </RouterLink>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <LandingWorkflowSection />
+    <LandingFeaturesSection />
 
     <!-- ── Final High-Impact CTA ──────────────────────────────── -->
     <section class="bg-dark-raised px-6 py-24 border-t border-white/10 relative">
@@ -368,13 +210,13 @@ const features = [
 
         <div class="pt-4 flex flex-wrap justify-center gap-4">
           <RouterLink :to="ROUTES.REGISTER">
-            <AppButton size="lg" class="shadow-brand-hero">
+            <Button size="lg" class="shadow-brand-hero">
               Create your free account
               <ArrowRight :size="16" :stroke-width="2" />
-            </AppButton>
+            </Button>
           </RouterLink>
           <RouterLink :to="ROUTES.LOGIN">
-            <AppButton size="lg" variant="glass"> Sign in to existing account </AppButton>
+            <Button size="lg" variant="glass"> Sign in to existing account </Button>
           </RouterLink>
         </div>
       </div>

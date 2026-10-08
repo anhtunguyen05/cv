@@ -4,7 +4,8 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { loginSchema } from '../schemas/auth.schema'
 import { useLoginMutation } from '../api/auth.mutations'
 import FormField from '@/shared/components/molecules/FormField.vue'
-import AppButton from '@/shared/components/atoms/AppButton.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
+import { ROUTES } from '@/shared/constants/routes'
 import { Sparkles, ArrowRight, Lock, Mail } from 'lucide-vue-next'
 
 const { handleSubmit, defineField, errors, setValues } = useForm({
@@ -65,13 +66,18 @@ function fillDemo() {
         {{ (mutationError as Error).message || 'Sign in failed. Please check your credentials.' }}
       </div>
 
-      <FormField label="Email address" :error="errors.email" html-for="email" required>
+      <FormField
+        v-slot="{ controlProps }"
+        label="Email address"
+        :error="errors.email"
+        html-for="email"
+        required
+      >
         <div class="relative flex items-center">
           <Mail :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input
-            id="email"
             v-model="email"
-            v-bind="emailAttrs"
+            v-bind="{ ...emailAttrs, ...controlProps }"
             type="email"
             autocomplete="email"
             placeholder="you@example.com"
@@ -86,13 +92,18 @@ function fillDemo() {
         </div>
       </FormField>
 
-      <FormField label="Password" :error="errors.password" html-for="password" required>
+      <FormField
+        v-slot="{ controlProps }"
+        label="Password"
+        :error="errors.password"
+        html-for="password"
+        required
+      >
         <div class="relative flex items-center">
           <Lock :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input
-            id="password"
             v-model="password"
-            v-bind="passwordAttrs"
+            v-bind="{ ...passwordAttrs, ...controlProps }"
             type="password"
             autocomplete="current-password"
             placeholder="••••••••"
@@ -108,17 +119,17 @@ function fillDemo() {
       </FormField>
 
       <div class="pt-2">
-        <AppButton size="lg" type="submit" class="w-full shadow-xs" :loading="isPending">
+        <Button size="lg" type="submit" class="w-full shadow-xs" :loading="isPending">
           <span>Sign in</span>
           <ArrowRight :size="16" />
-        </AppButton>
+        </Button>
       </div>
     </form>
 
     <p class="text-center text-sm text-text-muted">
       Don't have an account yet?
       <RouterLink
-        to="/register"
+        :to="ROUTES.REGISTER"
         class="text-primary hover:text-primary-hover font-semibold ml-1 transition-colors"
       >
         Create one free

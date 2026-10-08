@@ -1,4 +1,7 @@
 export * from './types/match.types'
 export * from './api/match.api'
+export * from './api/match.queries'
 export { default as MatchScoreRing } from './components/MatchScoreRing.vue'
 export { default as SkillGapList } from './components/SkillGapList.vue'
+export { default as MatchReportList } from './components/MatchReportList.vue'
+export { default as MatchReportDetail } from './components/MatchReportDetail.vue'
