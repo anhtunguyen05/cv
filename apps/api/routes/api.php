@@ -8,10 +8,12 @@ use App\Presentation\Http\Controllers\Cv\PreviewController;
 use App\Presentation\Http\Controllers\Cv\ProfileController;
 use App\Presentation\Http\Controllers\Cv\TemplateController;
 use App\Presentation\Http\Controllers\Cv\VersionController;
+use App\Presentation\Http\Controllers\Evidence\EvidenceInterviewController;
 use App\Presentation\Http\Controllers\HealthController;
 use App\Presentation\Http\Controllers\JobFit\AnalysisController;
 use App\Presentation\Http\Controllers\JobFit\JobDescriptionController;
 use App\Presentation\Http\Controllers\JobFit\MatchReportController;
+use App\Presentation\Http\Controllers\Patch\PatchController;
 use App\Presentation\Http\Middleware\RejectBearerToken;
 use App\Presentation\Http\Middleware\RejectMalformedJson;
 use App\Presentation\Http\Middleware\RequireCsrfToken;
@@ -108,6 +110,43 @@ Route::middleware([
     Route::get('/match-reports', [MatchReportController::class, 'index']);
     Route::get('/match-reports/{matchReport}', [MatchReportController::class, 'show']);
     Route::post('/match-reports', [MatchReportController::class, 'store'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-analysis',
+    ]);
+    Route::post('/match-reports/{matchReport}/evidence-interviews', [EvidenceInterviewController::class, 'store'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-analysis',
+    ]);
+    Route::get('/evidence-interviews/{interview}', [EvidenceInterviewController::class, 'show']);
+    Route::post('/evidence-interviews/{interview}/answers', [EvidenceInterviewController::class, 'answer'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-mutations',
+    ]);
+    Route::post('/evidence-interviews/{interview}/patches', [PatchController::class, 'generate'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-analysis',
+    ]);
+    Route::get('/patches/{patch}', [PatchController::class, 'show']);
+    Route::patch('/patches/{patch}', [PatchController::class, 'edit'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-mutations',
+    ]);
+    Route::post('/patches/{patch}/reject', [PatchController::class, 'reject'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-mutations',
+    ]);
+    Route::post('/patches/{patch}/approve', [PatchController::class, 'approve'])->middleware([
+        RejectMalformedJson::class,
+        RequireCsrfToken::class,
+        'throttle:job-fit-mutations',
+    ]);
+    Route::post('/patches/{patch}/regenerate', [PatchController::class, 'regenerate'])->middleware([
         RejectMalformedJson::class,
         RequireCsrfToken::class,
         'throttle:job-fit-analysis',

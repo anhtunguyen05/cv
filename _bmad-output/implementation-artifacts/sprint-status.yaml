@@ -4,7 +4,7 @@
 # Story packages remain nested under their owning Epic; lifecycle lives here.
 
 generated: 09-01-2026 03:30
-last_updated: 10-07-2026 16:40
+last_updated: 10-08-2026 00:52
 project: CareerFitCV
 project_key: CAREERFITCV
 tracking_system: file-system
@@ -36,13 +36,13 @@ development_status:
   3-3-export-a-reviewed-cv: backlog
   epic-3-retrospective: optional
 
-  epic-4: backlog
-  4-1-start-an-evidence-interview: backlog
-  4-2-answer-evidence-questions: backlog
-  4-3-generate-a-patch-proposal: backlog
-  4-4-review-edit-or-reject-a-patch: backlog
-  4-5-approve-a-patch-into-a-new-cv-version: backlog
-  4-6-regenerate-a-rejected-or-invalid-patch: backlog
+  epic-4: in-progress
+  4-1-start-an-evidence-interview: review
+  4-2-answer-evidence-questions: review
+  4-3-generate-a-patch-proposal: review
+  4-4-review-edit-or-reject-a-patch: review
+  4-5-approve-a-patch-into-a-new-cv-version: review
+  4-6-regenerate-a-rejected-or-invalid-patch: review
   epic-4-retrospective: optional
 
   epic-5: backlog

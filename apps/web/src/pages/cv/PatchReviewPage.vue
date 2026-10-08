@@ -1,159 +1,319 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { GitCompare, ArrowLeft, Check, X, Sparkles, ArrowRight } from 'lucide-vue-next'
-import { RouterLink, useRoute } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useMutation, useQuery } from '@tanstack/vue-query'
+import { ArrowLeft, Check, RefreshCw, X } from 'lucide-vue-next'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import {
+  approvePatch,
+  editPatch,
+  getPatch,
+  regeneratePatch,
+  rejectPatch,
+} from '@/features/evidence/api/evidence.api'
+import type { Patch } from '@/features/evidence/types/evidence.types'
+import { ApiRequestError } from '@/shared/api/client'
 import { ROUTES } from '@/shared/constants/routes'
 import AppButton from '@/shared/components/atoms/AppButton.vue'
-import Card from '@/shared/components/ui/card/Card.vue'
 import AppBadge from '@/shared/components/atoms/AppBadge.vue'
+import Card from '@/shared/components/ui/card/Card.vue'
 
 const route = useRoute()
-const cvId = (route.params.id as string) ?? '1'
-
-const patches = ref([
-  {
-    id: 1,
-    section: 'Key Projects · CareerFitCV',
-    reason: 'JD explicitly demands "Pinia state management" keyword in production features.',
-    scoreImpact: '+6 pts',
-    original: 'Engineered responsive single-page application with caching and client stores.',
-    proposed:
-      'Engineered responsive single-page application with TanStack Vue Query caching and Pinia client state management.',
-    status: 'pending' as 'pending' | 'accepted' | 'rejected',
+const router = useRouter()
+const patchId = computed(() => String(route.params.patchId || ''))
+const legacyCvId = computed(() => String(route.params.id || ''))
+const draft = ref('')
+const idempotencyKeys = ref<Record<string, string>>({})
+function mutationKey(action: string): string {
+  return (idempotencyKeys.value[action] ??= crypto.randomUUID())
+}
+function clearMutationKey(action: string): void {
+  delete idempotencyKeys.value[action]
+}
+const query = useQuery({
+  queryKey: computed(() => ['patches', patchId.value]),
+  queryFn: () => getPatch(patchId.value),
+  enabled: computed(() => patchId.value.length > 0),
+  retry: (count, error) => isRetryable(error) && count < 2,
+})
+const edit = useMutation({
+  mutationFn: () =>
+    editPatch(patchId.value, query.data.value?.revision ?? 0, draft.value, mutationKey('edit')),
+  onSuccess: (patch) => {
+    clearMutationKey('edit')
+    query.data.value = patch
+    draft.value = patch.new_value
   },
-  {
-    id: 2,
-    section: 'Technical Skills · Tools',
-    reason: 'Adds missing Vitest keyword grounded in repository testing evidence.',
-    scoreImpact: '+5 pts',
-    original: 'Git, Docker, Postman, Figma',
-    proposed: 'Git, Docker, Vitest (Unit Testing), Postman, Figma',
-    status: 'pending' as 'pending' | 'accepted' | 'rejected',
+  onError: (error) => {
+    if (error instanceof ApiRequestError && error.status === 409) void query.refetch()
   },
-])
+})
+const reject = useMutation({
+  mutationFn: () =>
+    rejectPatch(patchId.value, query.data.value?.revision ?? 0, mutationKey('reject')),
+  onSuccess: (patch) => {
+    clearMutationKey('reject')
+    query.data.value = patch
+  },
+  onError: (error) => {
+    if (error instanceof ApiRequestError && error.status === 409) void query.refetch()
+  },
+})
+const approve = useMutation({
+  mutationFn: () =>
+    approvePatch(patchId.value, query.data.value?.revision ?? 0, mutationKey('approve')),
+  onSuccess: (patch) => {
+    clearMutationKey('approve')
+    query.data.value = patch
+  },
+  onError: (error) => {
+    if (error instanceof ApiRequestError && error.status === 409) void query.refetch()
+  },
+})
+const regenerate = useMutation({
+  mutationFn: () =>
+    regeneratePatch(patchId.value, query.data.value?.revision ?? 0, mutationKey('regenerate')),
+  onSuccess: (patch) => {
+    clearMutationKey('regenerate')
+    void router.push(ROUTES.PATCH_REVIEW(patch.id))
+  },
+  onError: (error) => {
+    if (error instanceof ApiRequestError && error.status === 409) void query.refetch()
+  },
+})
 
-function acceptPatch(id: number) {
-  const p = patches.value.find((x) => x.id === id)
-  if (p) p.status = 'accepted'
+function confirmDecision(message: string, action: () => void): void {
+  if (typeof window !== 'undefined' && !window.confirm(message)) return
+  action()
 }
 
-function rejectPatch(id: number) {
-  const p = patches.value.find((x) => x.id === id)
-  if (p) p.status = 'rejected'
+function isRetryable(error: unknown): boolean {
+  return error instanceof ApiRequestError ? error.status === 429 || error.status >= 500 : true
+}
+
+function startEdit(): void {
+  draft.value = typeof query.data.value?.new_value === 'string' ? query.data.value.new_value : ''
+}
+
+function sourceValue(value: Patch['old_value']): string {
+  if (typeof value === 'string') return value
+  if (value === null) return 'No existing value'
+  return 'Existing highlight collection (hash precondition)'
 }
 </script>
 
 <template>
-  <div class="space-y-8 max-w-4xl">
-    <!-- Header -->
+  <div class="space-y-6 max-w-4xl mx-auto" aria-live="polite">
     <div class="space-y-3 pb-4 border-b border-border/80">
       <RouterLink
-        :to="ROUTES.CV_EDIT(cvId)"
-        class="inline-flex items-center gap-2 text-sm font-medium text-text-muted hover:text-text transition-colors"
+        :to="
+          query.data.value
+            ? ROUTES.AI_INTERVIEW(query.data.value.interview_id)
+            : legacyCvId
+              ? ROUTES.CV_EDIT(legacyCvId)
+              : ROUTES.MATCH_REPORTS
+        "
+        class="inline-flex items-center gap-2 text-sm font-medium text-text-muted hover:text-text"
       >
-        <ArrowLeft :size="16" />
-        <span>Return to CV Editor</span>
+        <ArrowLeft :size="16" aria-hidden="true" />
+        <span>Return to source</span>
       </RouterLink>
+      <p class="text-xs font-bold uppercase tracking-wider text-primary">
+        Evidence-based AI revision
+      </p>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text">
+        Review proposed improvement
+      </h1>
+      <p class="text-sm text-text-muted">
+        The current CV source, User Evidence, and provider proposal remain separate. Nothing is
+        applied until you explicitly approve it.
+      </p>
+    </div>
 
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-        <div>
-          <div class="flex items-center gap-2.5 mb-1.5">
-            <span class="text-xs font-bold text-primary uppercase tracking-wider"
-              >Selective AI Patches</span
-            >
-            <span class="text-xs text-border-hover">•</span>
-            <span class="text-xs font-semibold text-text-muted">Human in the Loop</span>
+    <Card v-if="query.isLoading.value" class="space-y-3" aria-label="Loading Patch proposal">
+      <div class="h-6 w-48 animate-pulse rounded bg-surface-muted" />
+      <div class="h-28 animate-pulse rounded bg-surface-muted" />
+    </Card>
+    <Card v-else-if="query.isError.value" class="space-y-3" role="alert">
+      <h2 class="text-lg font-bold text-text">Unable to load this proposal</h2>
+      <p class="text-sm text-text-muted">
+        {{
+          query.error.value instanceof Error
+            ? query.error.value.message
+            : 'The proposal could not be loaded.'
+        }}
+      </p>
+      <AppButton
+        v-if="isRetryable(query.error.value)"
+        type="button"
+        variant="outline"
+        @click="query.refetch()"
+        ><RefreshCw :size="15" aria-hidden="true" /> Retry</AppButton
+      >
+      <RouterLink
+        v-else
+        :to="ROUTES.MATCH_REPORTS"
+        class="text-sm font-semibold text-primary hover:underline"
+        >Return to Match Reports</RouterLink
+      >
+    </Card>
+    <Card v-else-if="!patchId" class="space-y-3" role="status">
+      <h2 class="text-lg font-bold text-text">Choose a Patch proposal</h2>
+      <p class="text-sm text-text-muted">
+        Open a server-created proposal from an Evidence interview to review it here.
+      </p>
+      <RouterLink
+        :to="ROUTES.MATCH_REPORTS"
+        class="text-sm font-semibold text-primary hover:underline"
+        >Return to Match Reports</RouterLink
+      >
+    </Card>
+    <template v-else-if="query.data.value">
+      <Card class="space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="text-xs text-text-muted">Patch revision {{ query.data.value.revision }}</p>
+            <h2 class="text-lg font-bold text-text">
+              {{ query.data.value.target.section }} · {{ query.data.value.target.field }}
+            </h2>
           </div>
-          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-text">
-            Review Proposed Improvements
-          </h1>
-          <p class="text-sm sm:text-base text-text-muted mt-1.5 leading-relaxed">
-            Review and selectively accept verified diffs without overwriting your master profile.
+          <AppBadge
+            :label="query.data.value.status"
+            :variant="query.data.value.status === 'pending' ? 'warning' : 'muted'"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="rounded-xl border border-danger-border bg-danger-muted/60 p-4 space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-danger-text">
+              Current CV source
+            </h3>
+            <p class="whitespace-pre-wrap text-danger-strong">
+              {{ sourceValue(query.data.value.old_value) }}
+            </p>
+          </div>
+          <div class="rounded-xl border border-success-border bg-success-muted/60 p-4 space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-success-text">
+              Provider proposal
+            </h3>
+            <p class="whitespace-pre-wrap text-success-strong">{{ query.data.value.new_value }}</p>
+          </div>
+        </div>
+        <p class="text-sm text-text-muted">Reason: {{ query.data.value.reason }}</p>
+
+        <div
+          v-if="query.data.value.evidence?.length"
+          class="rounded-xl border border-border bg-surface-muted/40 p-4 space-y-2"
+        >
+          <h3 class="text-xs font-bold uppercase tracking-wider text-text-muted">User Evidence</h3>
+          <p
+            v-for="evidence in query.data.value.evidence"
+            :key="evidence.id"
+            class="text-sm text-text"
+          >
+            {{ evidence.outcome === 'answer' ? evidence.answer : 'Cannot provide evidence' }}
           </p>
         </div>
 
-        <RouterLink :to="`/cv/${cvId}/preview`">
-          <AppButton size="md">
-            <span>Preview Document</span>
-            <ArrowRight :size="15" />
-          </AppButton>
-        </RouterLink>
-      </div>
-    </div>
-
-    <!-- Patches List -->
-    <div class="space-y-6">
-      <Card v-for="patch in patches" :key="patch.id" class="space-y-5 border border-border">
-        <!-- Patch meta header -->
         <div
-          class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-surface-muted"
+          v-if="query.data.value.allowed_actions.includes('edit')"
+          class="border-t border-border pt-4 space-y-3"
         >
-          <div class="flex items-center gap-3">
-            <GitCompare :size="18" class="text-primary" />
-            <span class="text-base font-bold text-text">{{ patch.section }}</span>
-            <AppBadge variant="primary" :label="patch.scoreImpact" />
-          </div>
-
-          <div class="flex items-center gap-2.5">
-            <span
-              v-if="patch.status === 'accepted'"
-              class="text-xs font-bold text-success-text bg-success-muted border border-success-border px-3 py-1 rounded-full flex items-center gap-1.5"
-            >
-              <Check :size="14" />
-              Accepted
-            </span>
-            <span
-              v-else-if="patch.status === 'rejected'"
-              class="text-xs font-bold text-danger-text bg-danger-muted border border-danger-border px-3 py-1 rounded-full flex items-center gap-1.5"
-            >
-              <X :size="14" />
-              Declined
-            </span>
-            <template v-else>
-              <button
-                type="button"
-                class="px-3.5 py-2 rounded-xl text-sm font-medium text-text-quiet hover:bg-surface-muted hover:text-text transition-colors cursor-pointer"
-                @click="rejectPatch(patch.id)"
-              >
-                Decline
-              </button>
-              <AppButton size="sm" @click="acceptPatch(patch.id)">
-                <Check :size="14" />
-                <span>Accept Patch</span>
-              </AppButton>
-            </template>
-          </div>
-        </div>
-
-        <!-- Diff view -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm font-mono">
-          <!-- Current content -->
-          <div
-            class="p-4 sm:p-5 rounded-2xl bg-danger-muted/70 border border-danger-border space-y-1.5"
+          <label for="patch-edit" class="text-sm font-semibold text-text"
+            >Edit the proposed value (optional)</label
           >
-            <div class="text-xs font-bold text-danger-text uppercase tracking-wider">
-              Original Text
-            </div>
-            <p class="text-danger-strong leading-relaxed">{{ patch.original }}</p>
+          <textarea
+            id="patch-edit"
+            v-model="draft"
+            rows="4"
+            class="w-full rounded-xl border border-border p-3 text-sm"
+            @focus="startEdit"
+          />
+          <div class="flex flex-wrap gap-2">
+            <AppButton
+              type="button"
+              variant="outline"
+              :disabled="edit.isPending.value"
+              @click="edit.mutate()"
+              >Save edit</AppButton
+            >
+            <AppButton
+              type="button"
+              variant="outline"
+              :disabled="reject.isPending.value"
+              @click="
+                confirmDecision(
+                  'Reject this Patch proposal? It will remain available for lineage-linked regeneration.',
+                  () => reject.mutate(),
+                )
+              "
+              ><X :size="15" aria-hidden="true" /> Reject</AppButton
+            >
+            <AppButton
+              type="button"
+              :loading="approve.isPending.value"
+              :disabled="approve.isPending.value"
+              @click="
+                confirmDecision('Approve this Patch into one new immutable CV Version?', () =>
+                  approve.mutate(),
+                )
+              "
+              ><Check :size="15" aria-hidden="true" /> Approve into new CV Version</AppButton
+            >
           </div>
-
-          <!-- Proposed content -->
-          <div
-            class="p-4 sm:p-5 rounded-2xl bg-success-muted/80 border border-success-border space-y-1.5"
+          <p class="text-xs text-text-muted">
+            Approval is an explicit action and creates one immutable CV Version.
+          </p>
+        </div>
+        <div
+          v-else-if="query.data.value.allowed_actions.includes('regenerate')"
+          class="border-t border-border pt-4 space-y-3"
+        >
+          <p class="text-sm text-text-muted">
+            This Patch is {{ query.data.value.status }}. You can request a predecessor-linked
+            regeneration.
+          </p>
+          <AppButton
+            type="button"
+            :loading="regenerate.isPending.value"
+            :disabled="regenerate.isPending.value"
+            @click="regenerate.mutate()"
+            >Regenerate proposal</AppButton
           >
-            <div class="text-xs font-bold text-success-text uppercase tracking-wider">
-              Proposed ATS Replacement
-            </div>
-            <p class="text-success-strong leading-relaxed">{{ patch.proposed }}</p>
-          </div>
         </div>
-
-        <!-- Rationale -->
-        <div class="flex items-center gap-2.5 text-sm text-text-muted pt-1">
-          <Sparkles :size="16" class="text-primary flex-shrink-0" />
-          <span>Rationale: {{ patch.reason }}</span>
-        </div>
+        <p
+          v-else-if="query.data.value.status === 'pending_validation'"
+          class="border-t border-border pt-4 text-sm text-text-muted"
+          role="status"
+        >
+          This proposal is still being validated. Refresh shortly for the next server-owned action.
+        </p>
+        <p
+          v-if="
+            edit.isError.value ||
+            reject.isError.value ||
+            approve.isError.value ||
+            regenerate.isError.value
+          "
+          class="text-sm text-danger-text"
+          role="alert"
+        >
+          This action could not be committed. Refresh the proposal and retry if it is still
+          available.
+        </p>
+        <p
+          v-if="query.data.value.status === 'applied'"
+          class="text-sm text-success-text"
+          role="status"
+        >
+          Applied to immutable CV Version
+          <RouterLink
+            v-if="query.data.value.applied_version_id"
+            :to="ROUTES.CV_VERSION_PREVIEW(query.data.value.applied_version_id)"
+            class="font-semibold underline"
+            >{{ query.data.value.applied_version_id }}</RouterLink
+          >.
+        </p>
       </Card>
-    </div>
+    </template>
   </div>
 </template>

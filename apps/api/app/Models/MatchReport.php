@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class MatchReport extends Model
 {
@@ -54,5 +55,10 @@ final class MatchReport extends Model
     public function analysis(): BelongsTo
     {
         return $this->belongsTo(JobDescriptionAnalysis::class, 'analysis_id');
+    }
+
+    public function evidenceInterviews(): HasMany
+    {
+        return $this->hasMany(EvidenceInterview::class);
     }
 }

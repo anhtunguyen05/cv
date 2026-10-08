@@ -144,6 +144,13 @@ const router = createRouter({
       beforeEnter: requireAuth,
     },
     {
+      path: '/patches/:patchId',
+      name: 'patch-review-server',
+      component: () => import('@/pages/cv/PatchReviewPage.vue'),
+      meta: { layout: 'AppLayout' },
+      beforeEnter: requireAuth,
+    },
+    {
       path: '/cv/:id/patches',
       name: 'cv-patches',
       component: () => import('@/pages/cv/PatchReviewPage.vue'),

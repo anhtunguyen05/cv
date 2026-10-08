@@ -50,3 +50,12 @@ contracts for patch review and application; Sprint 15 consumes those accepted
 contracts when refining audit, provider-failure, and orchestration controls.
 
 All membership is recorded in this charter frontmatter. No Story lifecycle or task lifecycle is copied here. An external issue tracker may mirror permanent task keys under the mapping and verification rules in this directory README.
+
+## Approved planning baseline (2026-10-07)
+
+`E4-DEC-001` through `E4-DEC-009` are resolved for the deterministic
+fake-provider implementation path. The remaining implementation dependency is
+acceptance of Epic 2's Match Report checkpoint, followed by assigning an
+integration owner before a task becomes `doing`. Production provider selection,
+retention, legal approval, live evaluation thresholds, and Epic 5 controls are
+explicitly excluded from this charter and remain release gates.

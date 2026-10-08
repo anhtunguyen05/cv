@@ -93,5 +93,41 @@ and new Version IDs and unchanged source identity.
 | Old value/source mismatch | `409 PATCH_SOURCE_STALE` | No Version and no applied status |
 | Apply transaction failure | stable retryable server error | Roll back Version/Patch/provenance together |
 
-Exact operation topology and matrices remain open under `E4-DEC-001`,
-`E4-DEC-004`, `E4-DEC-006`, and `E4-DEC-007`.
+Production-provider topology and release matrices remain open under Epic 5;
+the deterministic fake-provider topology is fixed below.
+
+## Approved implementation bindings (2026-10-07)
+
+The decisions register now freezes the following implementation subset; it
+supersedes the preceding wording that described these particular choices as
+open. Production-provider, data-retention, legal, and release controls remain
+outside this scope.
+
+- `POST /api/v1/match-reports/{matchReport}/evidence-interviews` starts or
+  reconciles an active session. `GET /api/v1/evidence-interviews/{interview}`
+  reads it, and `POST /api/v1/evidence-interviews/{interview}/answers` accepts
+  exactly one `answer` or `cannot_provide` outcome.
+- Areas are stored `missing_skills`/`weak_evidence` signals, in Match Report
+  order, with one deterministic template question per area and the first five
+  eligible areas only. `question_set_version=1.0`, expiry is seven days, and a
+  submitted Evidence answer is immutable; correction starts a new Interview.
+- An answer is transport-decoded original text of 1–4,000 Unicode graphemes and
+  at most 16 KiB UTF-8 after JSON decoding, or the mutually exclusive
+  `cannot_provide` outcome. The server retains original text, derives NFC/LF
+  normalized validation/search text, and never logs either form.
+- `POST /api/v1/evidence-interviews/{interview}/patches` is synchronous with a
+  15-second deadline. It uses a deterministic `PatchProposalProvider` fake;
+  there is no queue, automatic retry, production provider, or raw prompt/output
+  persistence.
+- A Patch is one bounded operation only: replace `summary`, replace one existing
+  Experience/Project highlight, or append one highlight to an existing
+  Experience/Project item. Replacements include exact old value; append uses a
+  canonical hash of the existing highlight collection as its old-value
+  precondition; item targets include their ULID; all Patches cite positive
+  supporting Evidence IDs.
+- `PATCH /api/v1/patches/{patch}` is an in-target edit. `reject`, `approve`, and
+  `regenerate` are `POST /api/v1/patches/{patch}/reject`, `/approve`, and
+  `/regenerate`. Generation is limited to five attempts per User per minute and
+  one active attempt per Interview. Patch mutations require `If-Match` Patch
+  revision and `Idempotency-Key`; the first committed terminal action wins and
+  subsequent competitors receive `409 PATCH_STATE_CONFLICT`.

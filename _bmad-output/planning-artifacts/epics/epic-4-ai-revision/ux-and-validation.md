@@ -50,3 +50,11 @@
   and announced without color alone.
 - Long/Unicode content, empty Evidence, screen-reader reading order, focus after
   transition, and reduced-motion/loading behavior are included in fixtures.
+
+## Existing placeholder replacement
+
+`/ai/interview/:id` and `/cv/:id/patches` are demonstrative placeholder pages,
+not Epic 4 behavior. The implementation journey begins from an eligible Match
+Report and must replace their hard-coded questions, Patch rows, score-impact,
+and ATS claims with server-validated Interview/Patch data. A proposal must be
+labelled as advisory and never imply that approval improves a score.

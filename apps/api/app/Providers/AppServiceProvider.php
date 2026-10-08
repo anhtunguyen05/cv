@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Application\Patch\DeterministicFakePatchProposalProvider;
+use App\Application\Patch\PatchProposalProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -14,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(PatchProposalProvider::class, DeterministicFakePatchProposalProvider::class);
     }
 
     /**

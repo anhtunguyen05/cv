@@ -50,3 +50,12 @@
 
 
 Keep provider and Patch shared files under their single coordination owners; preserve the approved upstream eligibility and source-context gates.
+
+## Approved baseline override
+
+The historical decision/discovery entries in the task metadata are resolved for
+fake-provider implementation by the Epic 4 approved baseline. Task 4.6 work is
+blocked only by the accepted Match Report, Interview/Evidence, fake-provider,
+and Patch-review checkpoints, plus assigning its integration owner before
+`doing`. `E4-PREREQ-OPS-001`, provider selection, and production quality gates
+remain blockers for live-provider activation only.

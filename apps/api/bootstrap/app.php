@@ -24,6 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // API mutators apply the explicit RequireCsrfToken contract below;
         // exclude the same routes from Laravel's duplicate web/stateful check.
         $middleware->preventRequestForgery(except: ['api/v1/*']);
+        $middleware->trimStrings(except: [
+            static fn (Request $request): bool => $request->is('api/v1/evidence-interviews/*/answers'),
+        ]);
         $middleware->trustProxies(at: env('TRUSTED_PROXIES'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
