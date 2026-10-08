@@ -92,6 +92,9 @@ jobs:
           cp .env.example .env
           php artisan migrate --force --no-interaction
 
+      - name: Verify PostgreSQL refresh-safe migrations
+        run: php artisan migrate:fresh --force --no-interaction
+
       - name: Run deterministic matching quality gate
         id: match-quality
         run: |

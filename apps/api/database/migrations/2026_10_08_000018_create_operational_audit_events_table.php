@@ -45,7 +45,7 @@ return new class extends Migration
         $driver = DB::connection()->getDriverName();
         if ($driver === 'pgsql') {
             DB::unprepared(<<<'SQL'
-                CREATE FUNCTION operational_audit_events_append_only_guard()
+                CREATE OR REPLACE FUNCTION operational_audit_events_append_only_guard()
                 RETURNS trigger
                 LANGUAGE plpgsql
                 AS $$
