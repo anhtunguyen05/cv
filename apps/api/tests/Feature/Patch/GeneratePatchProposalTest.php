@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Patch;
 
+use App\Models\OperationalAuditEvent;
 use App\Models\Patch;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -33,6 +34,8 @@ final class GeneratePatchProposalTest extends TestCase
             ->assertJsonPath('data.provenance.provider.kind', 'deterministic_fake');
         self::assertSame(1, Patch::query()->count());
         self::assertSame(1, Patch::query()->where('interview_id', $context['interview']->getKey())->count());
+        self::assertSame(1, OperationalAuditEvent::query()->count());
+        self::assertSame('succeeded', OperationalAuditEvent::query()->firstOrFail()->status);
     }
 
     public function test_generation_requires_completed_interview_and_does_not_create_patch(): void

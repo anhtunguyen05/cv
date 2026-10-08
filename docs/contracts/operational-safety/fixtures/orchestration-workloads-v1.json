@@ -1,0 +1,23 @@
+{
+  "workload_version": "1.0.0",
+  "workloads": [
+    {
+      "id": "synthetic-match-quality-001",
+      "scenario": "deterministic_match_quality",
+      "input_class": "synthetic_fixture",
+      "expected_contract": "classification_and_score_are_reproducible"
+    },
+    {
+      "id": "synthetic-patch-boundary-001",
+      "scenario": "proposal_validation_boundary",
+      "input_class": "synthetic_fixture",
+      "expected_contract": "unvalidated_output_never_becomes_trusted_state"
+    },
+    {
+      "id": "synthetic-failure-recovery-001",
+      "scenario": "bounded_failure_recovery",
+      "input_class": "synthetic_fixture",
+      "expected_contract": "failure_is_actionable_and_not_false_success"
+    }
+  ]
+}

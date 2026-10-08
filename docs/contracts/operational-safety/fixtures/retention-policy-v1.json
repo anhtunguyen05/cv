@@ -1,0 +1,44 @@
+{
+  "policy_version": "1.0.0",
+  "plan_version": "1.0.0",
+  "environment": "local-ci-disposable",
+  "execution": "disposable_no_mutation",
+  "subject_scope": "authenticated_subject",
+  "dry_run_required": true,
+  "approval": {
+    "required": true,
+    "algorithm": "sha256-canonical-json",
+    "content_free": true
+  },
+  "holds": [
+    "legal_hold",
+    "required_trusted_history",
+    "pending_external_expiry"
+  ],
+  "data_classes": [
+    {"name": "trusted_product_records", "retention_action": "retain", "deletion_action": "delete", "dependency_order": 10},
+    {"name": "derived_trusted_records", "retention_action": "retain", "deletion_action": "delete", "dependency_order": 20},
+    {"name": "provider_job_attempts", "retention_action": "delete", "deletion_action": "delete", "dependency_order": 30},
+    {"name": "audit_events", "retention_action": "delete", "deletion_action": "delete", "dependency_order": 40},
+    {"name": "metrics_traces_logs", "retention_action": "aggregate", "deletion_action": "aggregate", "dependency_order": 50},
+    {"name": "evaluation_artifacts", "retention_action": "retain", "deletion_action": "retain", "dependency_order": 60},
+    {"name": "backups", "retention_action": "retain_until_expiry", "deletion_action": "retain_until_expiry", "dependency_order": 70},
+    {"name": "external_processors", "retention_action": "retain_pending", "deletion_action": "retain_pending", "dependency_order": 80}
+  ],
+  "forbidden_scope_fields": [
+    "id",
+    "ids",
+    "record_id",
+    "record_ids",
+    "table",
+    "tables",
+    "user_id",
+    "user_ids"
+  ],
+  "completion": {
+    "production_mutation": false,
+    "partial_status": "partial_retryable",
+    "terminal_status": "completed_disposable",
+    "completion_claimable": false
+  }
+}

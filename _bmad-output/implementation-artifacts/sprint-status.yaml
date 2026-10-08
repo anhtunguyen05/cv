@@ -4,7 +4,7 @@
 # Story packages remain nested under their owning Epic; lifecycle lives here.
 
 generated: 09-01-2026 03:30
-last_updated: 10-08-2026 00:52
+last_updated: 10-08-2026 12:48
 project: CareerFitCV
 project_key: CAREERFITCV
 tracking_system: file-system
@@ -45,13 +45,13 @@ development_status:
   4-6-regenerate-a-rejected-or-invalid-patch: review
   epic-4-retrospective: optional
 
-  epic-5: backlog
-  5-1-audit-ai-tool-calls-safely: backlog
-  5-2-handle-provider-and-background-failures: backlog
-  5-3-retain-and-delete-user-data-safely: backlog
-  5-4-monitor-operational-health: backlog
-  5-5-validate-deterministic-matching-quality: backlog
-  5-6-decide-whether-multi-agent-orchestration-is-justified: backlog
-  5-7-verify-the-operational-safety-baseline: backlog
+  epic-5: review
+  5-1-audit-ai-tool-calls-safely: review
+  5-2-handle-provider-and-background-failures: review
+  5-3-retain-and-delete-user-data-safely: review
+  5-4-monitor-operational-health: review
+  5-5-validate-deterministic-matching-quality: review
+  5-6-decide-whether-multi-agent-orchestration-is-justified: review
+  5-7-verify-the-operational-safety-baseline: review
   epic-5-retrospective: optional
 action_items: []
