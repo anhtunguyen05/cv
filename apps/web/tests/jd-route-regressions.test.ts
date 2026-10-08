@@ -1,6 +1,8 @@
 import { reactive, ref } from 'vue'
 import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { dashboardQueryKeys } from '@/features/dashboard/api/dashboard.keys'
+import { jdQueryKeys } from '@/features/jd/api/jd.keys'
 
 const routeParams = reactive({ id: 'JD-A' })
 const replace = vi.fn()
@@ -14,6 +16,11 @@ const mutationStates: Array<{
   mutate: ReturnType<typeof vi.fn>
   reset: ReturnType<typeof vi.fn>
 }> = []
+const queryClient = {
+  setQueryData: vi.fn(),
+  removeQueries: vi.fn(),
+  invalidateQueries: vi.fn(() => Promise.resolve()),
+}
 
 const jobDescription = {
   id: 'JD-A',
@@ -40,11 +47,7 @@ vi.mock('vue-router', () => ({
 }))
 
 vi.mock('@tanstack/vue-query', () => ({
-  useQueryClient: () => ({
-    setQueryData: vi.fn(),
-    removeQueries: vi.fn(),
-    invalidateQueries: vi.fn(),
-  }),
+  useQueryClient: () => queryClient,
   useMutation: (options: Record<string, (...args: never[]) => unknown>) => {
     mutationOptions.push(options)
     const state = {
@@ -101,6 +104,10 @@ describe('JD route regressions', () => {
     routeParams.id = 'JD-A'
     mutationOptions.length = 0
     mutationStates.length = 0
+    queryClient.setQueryData.mockReset()
+    queryClient.removeQueries.mockReset()
+    queryClient.invalidateQueries.mockReset()
+    queryClient.invalidateQueries.mockImplementation(() => Promise.resolve())
     replace.mockReset()
     push.mockReset()
   })
@@ -134,6 +141,51 @@ describe('JD route regressions', () => {
     expect(wrapper.get('#company').element.value).toBe('')
     expect(replace).not.toHaveBeenCalled()
     expect(push).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('limits mounted Unicode input by code point without splitting emoji', async () => {
+    const wrapper = mount(JdInputPage, {
+      global: {
+        stubs: {
+          Card: { template: '<section><slot /></section>' },
+          Button: { template: '<button><slot /></button>' },
+        },
+      },
+    })
+    await flushPromises()
+
+    const value = '😀'.repeat(50001)
+    await wrapper.get('#jd-text').setValue(value)
+
+    expect(Array.from((wrapper.get('#jd-text').element as HTMLTextAreaElement).value)).toHaveLength(
+      50000,
+    )
+    expect(wrapper.text()).toContain('50000 / 50,000 Unicode code points')
+    wrapper.unmount()
+  })
+
+  it('invalidates JD list pages without broad-refetching unrelated detail queries', async () => {
+    const wrapper = mount(JdInputPage)
+    await flushPromises()
+    await wrapper.get('#jd-text').setValue('Source A')
+    await wrapper.get('form').trigger('submit')
+    const request = mutationStates[1]?.mutate.mock.calls[0]?.[0]
+
+    await mutationOptions[1]?.onSuccess?.(
+      jobDescription as never,
+      request,
+    )
+
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: jdQueryKeys.listRoot(),
+    })
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: dashboardQueryKeys.summary(),
+    })
+    expect(queryClient.invalidateQueries).not.toHaveBeenCalledWith({
+      queryKey: jdQueryKeys.all,
+    })
     wrapper.unmount()
   })
 })

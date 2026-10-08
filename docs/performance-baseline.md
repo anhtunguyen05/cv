@@ -1,6 +1,6 @@
 # CareerFitCV performance baseline (report-only)
 
-Date: 2026-10-08  
+Date: 2026-10-08
 Baseline commit: `96a02306cf0d28b970d51bcf0bf16f9e4107a2dd`
 
 This document is the repeatable fixture/scenario definition for the performance

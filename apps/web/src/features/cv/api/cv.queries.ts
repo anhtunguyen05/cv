@@ -59,6 +59,8 @@ export function useCvVersionsPageQuery(
     ),
     queryFn: () => getCvVersionsPage(toValue(page), 20, profileId ? toValue(profileId) : undefined),
     enabled: () => toValue(enabled),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   })
 }
 

@@ -83,7 +83,7 @@ export function useJdEditorController() {
             window.localStorage.removeItem(analysisStorageKey(jd.current_revision.id))
         }
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: jdQueryKeys.all }),
+          queryClient.invalidateQueries({ queryKey: jdQueryKeys.listRoot() }),
           queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.summary() }),
         ])
         if (request.generation !== routeGeneration.value) return
@@ -127,7 +127,7 @@ export function useJdEditorController() {
         if (pendingDeleteKey === request.idempotencyKey) pendingDeleteKey = null
         queryClient.removeQueries({ queryKey: jdQueryKeys.detail(deletedId) })
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: jdQueryKeys.all }),
+          queryClient.invalidateQueries({ queryKey: jdQueryKeys.listRoot() }),
           queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.summary() }),
         ])
         if (request.generation !== routeGeneration.value || deletedId !== jobDescriptionId.value)

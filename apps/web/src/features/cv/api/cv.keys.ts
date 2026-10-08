@@ -1,6 +1,7 @@
 export const cvQueryKeys = {
   all: ['cv'] as const,
   profiles: () => [...cvQueryKeys.all, 'profiles'] as const,
+  profilesList: () => [...cvQueryKeys.profiles(), 'page'] as const,
   profilesPage: (page: number, perPage = 20) =>
     [...cvQueryKeys.profiles(), 'page', page, perPage] as const,
   profile: (id: string) => [...cvQueryKeys.profiles(), id] as const,

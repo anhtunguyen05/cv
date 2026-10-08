@@ -42,6 +42,11 @@ final class ProfileVersionTest extends TestCase
             ->assertJsonPath('meta.per_page', 1)
             ->assertJsonPath('meta.total', 1)
             ->assertJsonPath('data.0.id', $profile['id'])
+            ->assertJsonPath('data.0.title', 'Backend CV')
+            ->assertJsonPath('data.0.revision', 1)
+            ->assertJsonStructure([
+                'data' => [['id', 'title', 'revision', 'created_at', 'updated_at']],
+            ])
             ->assertJsonMissingPath('data.0.personal_information');
 
         $this->postJson('/api/v1/cv-profiles/'.$profile['id'].'/versions', ['name' => 'Baseline'], [
@@ -56,6 +61,9 @@ final class ProfileVersionTest extends TestCase
             ->assertJsonPath('meta.per_page', 1)
             ->assertJsonPath('meta.total', 2)
             ->assertJsonCount(1, 'data')
+            ->assertJsonStructure([
+                'data' => [['id', 'name', 'source_profile_id', 'source_profile_revision', 'created_at']],
+            ])
             ->assertJsonMissingPath('data.0.snapshot');
     }
 

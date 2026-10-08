@@ -33,7 +33,7 @@ export function useCvEditorOperations(profileId: MaybeRef<string>, versionPage: 
     cacheProfile,
     invalidateProfiles: () =>
       Promise.all([
-        queryClient.invalidateQueries({ queryKey: cvQueryKeys.profiles() }),
+        queryClient.invalidateQueries({ queryKey: cvQueryKeys.profilesList() }),
         queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.summary() }),
       ]),
     invalidateVersions: () =>

@@ -1,0 +1,1353 @@
+I. Executive Summary
+Sau khi đối chiếu source code đã refactor, mình đánh giá rằng hướng tối ưu quan trọng nhất của dự án hiện tại là Data Fetching, Client-side Processing và Cache Management, chứ không còn là việc chia nhỏ page/component.
+Những thay đổi trước đó đã cải thiện đáng kể tổ chức code. Các page lớn như CV Editor và JD Editor đã chuyển phần lớn logic vào feature controllers, composables và API modules.
+Tuy nhiên, source code vẫn tồn tại những trường hợp:
+- Tải toàn bộ dữ liệu trong khi màn hình chỉ cần một vài trường.
+- Gửi request trước khi dữ liệu thực sự cần được hiển thị.
+- Thực hiện serialization và validation trên một document lớn chỉ để tính toán trạng thái giao diện.
+- Duyệt và sao chép chuỗi dài trong quá trình nhập liệu.
+- Sử dụng một cache policy chung cho các resource có đặc điểm khác nhau.
+- Kích hoạt Vue reactive updates cho hiệu ứng chuột có tần suất cao.
+- Import đồng bộ các layout dù đã triển khai lazy loading cho page.
+1. Các finding chính
+ID	Finding	Loại optimization	Ưu tiên
+PERF-01	CV Profile list trả về full document	Network, Memory, JSON Parsing	P1
+PERF-02	CV Versions list chứa full snapshot	Network, Memory, Pagination	P1
+PERF-03	Dashboard tải Match Reports chỉ để lấy tổng số	Network, API Efficiency	P1
+PERF-04	CV Editor clone/parse toàn bộ document để tính completion	CPU, Reactivity	P1
+PERF-05	JD Editor duyệt chuỗi lớn trong quá trình nhập	CPU, Input Responsiveness	P1
+PERF-06	Template Picker fetch templates trước khi cần	Network, Query Execution	P2
+PERF-07	TanStack Query dùng chung staleTime 30 giây	Cache, Network	P2
+PERF-08	CV Save workflow có những invalidation dư thừa	Network, Cache Consistency	P2
+PERF-09	TemplateCard reactive update theo mousemove	Rendering, CPU	P2
+PERF-10	Layout components được import đồng bộ	Bundle Size, Initial Loading	P2
+PERF-11	Danh sách CV chưa phân trang đầy đủ trên Dashboard	Scalability, DOM Rendering	P2
+PERF-12	Chưa có performance budget và hệ thống đo tự động	Performance Governance	P2
+
+
+Ý nghĩa mức ưu tiên: P1 là vấn đề có khả năng ảnh hưởng lớn đến hiệu năng hoặc khả năng mở rộng, nên đo và xử lý trước. P2 là cải thiện tiếp theo sau khi có baseline. Các mức này không khẳng định hiện đã xảy ra tình trạng chậm nghiêm trọng trong production.
+2. Đánh giá theo các nhóm tài nguyên
+Nhóm	Hiện trạng	Nhận định
+Network requests	Có query caching, nhưng còn request chưa cần thiết	Có dư địa tối ưu
+API payload	Một số list endpoint sử dụng full domain model	Ưu tiên cao
+CPU processing	Có clone, serialize, parse và duyệt chuỗi lớn	Ưu tiên cao
+Vue reactivity	Phần lớn hợp lý, còn một số hot path	Tối ưu có chọn lọc
+Client memory	Có khả năng giữ các CV document và snapshot lớn trong cache	Cần kiểm tra
+Bundle loading	Route-level lazy loading đã có	Tương đối tốt
+Query caching	Có cơ chế cache, chưa phân biệt đặc điểm resource	Cần chuẩn hóa
+Rendering	Chưa thấy bằng chứng cần virtualization toàn diện	Cần profiling
+Architecture	Đã tách controller và UI khá rõ	Nên giữ kiến trúc hiện tại
+
+
+3. Mục tiêu optimization
+Không nên đặt mục tiêu đơn thuần là giảm số dòng code hoặc số lượng component.
+Các chỉ số cần cải thiện là:
+Initial Load: Giảm JavaScript không cần thiết, payload và thời gian hiển thị nội dung quan trọng.
+Interaction Responsiveness: Giảm công việc đồng bộ trên main thread khi người dùng nhập CV hoặc Job Description.
+Network Efficiency: Không tải dữ liệu chưa cần dùng; giảm kích thước response và tránh request trùng.
+Memory Efficiency: Hạn chế giữ các document lớn, snapshot và object trung gian không cần thiết.
+Scalability: Hiệu năng không suy giảm quá nhanh khi người dùng có hàng trăm CV Versions, Job Descriptions hoặc Match Reports.
+Correctness: Mọi tối ưu phải giữ nguyên validation, revision handling, dirty checking, optimistic concurrency và tính đúng đắn của cache.
+Phương pháp xác minh: Các finding dưới đây dựa trên source công khai vừa truy xuất lại từ GitHub. Chưa có production bundle report, Chrome Performance trace hoặc dữ liệu Web Vitals, vì vậy những mức cải thiện về thời gian, CPU, memory chỉ được xác định bằng benchmark sau khi triển khai.
+II. Phân tích chi tiết từng finding
+PERF-01 — CV Profile List đang tải nhiều dữ liệu hơn cần thiết
+Ưu tiên: P1
+Nhóm: Network Optimization, API Contract, Memory
+Phạm vi: Frontend + Backend
+1. Hiện trạng
+File: features/cv/api/cv.api.ts
+export async function getCvProfiles(): Promise<PageResult<CvProfile>> {
+  const response = paginatedResponseSchema.parse(
+    await api<unknown>('/cv-profiles'),
+  )
+
+  return {
+    items: response.data.map((item) =>
+      cvProfileSchema.parse(item)
+    ),
+    // pagination metadata
+  }
+}
+
+Trong khi đó, CvProfile kế thừa toàn bộ CvDocument, bao gồm:
+interface CvDocument {
+  personal_information: PersonalInformation
+  summary: string | null
+  skills: SkillCategory[]
+  education: EducationItem[]
+  experience: ExperienceItem[]
+  projects: ProjectItem[]
+  certificates: CertificateItem[]
+  languages: LanguageItem[]
+  activities: ActivityItem[]
+}
+
+Nhưng trên Dashboard, danh sách CV Profiles chủ yếu sử dụng:
+id
+title
+revision
+updated_at
+
+Dữ liệu chi tiết của projects, experience hay education không cần thiết để render danh sách này. GitHub
+2. Vấn đề performance
+Giả sử một CV Profile có dung lượng JSON là 30 KB và một trang chứa 20 profiles.
+Payload dữ liệu của danh sách có thể lên đến khoảng 600 KB trước compression, trong khi các trường cần render có thể chỉ chiếm một phần nhỏ.
+Đây là ví dụ tính toán, không phải dung lượng thực tế đã đo trên repository.
+Chi phí phát sinh gồm:
+Backend
+  │
+  ├── Serialize full CV documents
+  │
+  ▼
+HTTP Response
+  │
+  ├── Transfer payload
+  │
+  ▼
+Browser
+  │
+  ├── JSON parsing
+  ├── Zod validation
+  ├── Object allocation
+  ├── TanStack Query cache
+  │
+  ▼
+Dashboard
+  │
+  └── Chỉ render title, revision, updated_at
+
+Vấn đề không nằm ở Vue rendering mà ở việc đưa dữ liệu không cần thiết qua nhiều bước xử lý.
+3. Cách sửa
+Tách Summary DTO và Detail DTO.
+export interface CvProfileSummary {
+  id: string
+  title: string
+  revision: number
+  updated_at: string
+}
+
+Đề xuất API:
+GET /cv-profiles?page=1&per_page=20
+
+Trả về:
+{
+  "data": [
+    {
+      "id": "cv-123",
+      "title": "Frontend Developer CV",
+      "revision": 4,
+      "updated_at": "2026-10-08T08:00:00Z"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "per_page": 20,
+    "total": 85,
+    "last_page": 5
+  }
+}
+
+Khi mở CV Editor:
+GET /cv-profiles/cv-123
+
+Endpoint detail mới trả về toàn bộ CV.
+Frontend cần tạo schema riêng cho list response, thay vì parse item bằng cvProfileSchema.
+4. Lợi ích và trade-off
+Lợi ích:
+- Giảm response payload.
+- Giảm thời gian parse và validate dữ liệu.
+- Giảm memory sử dụng bởi Query Cache.
+- Dashboard hoạt động ổn định hơn khi số lượng CV tăng.
+Trade-off: Cần sửa contract backend và những consumer đang kỳ vọng list response chứa full document. Query detail phải được tải khi màn hình thực sự cần dữ liệu.
+5. Cách đo
+So sánh trước/sau bằng Network tab:
+Metric	Trước	Sau
+Response transferred size	Đo baseline	Đo lại
+Response uncompressed size	Đo baseline	Đo lại
+Request duration	Đo baseline	Đo lại
+JSON parsing/validation time	Đo baseline	Đo lại
+JS heap sau khi mở Dashboard	Đo baseline	Đo lại
+
+
+Acceptance criteria: Dashboard chỉ cần Summary DTO để render danh sách; CV Editor vẫn nhận đầy đủ document; pagination và invalidation không bị ảnh hưởng.
+PERF-02 — CV Version List truyền toàn bộ immutable snapshot
+Ưu tiên: P1
+Nhóm: Network, Memory, Scalability
+Phạm vi: Frontend + Backend
+1. Hiện trạng
+Trong cv.api.ts:
+export async function getCvVersions(
+  profileId?: string
+): Promise<CvVersion[]> {
+  const query = profileId
+    ? `?profile_id=${encodeURIComponent(profileId)}`
+    : ''
+
+  const response = paginatedResponseSchema.parse(
+    await api<unknown>(`/cv-versions${query}`)
+  )
+
+  return response.data.map((item) =>
+    cvVersionSchema.parse(item)
+  )
+}
+
+CvVersion có trường:
+snapshot: CvDocument & { title: string }
+
+Nghĩa là mỗi CV Version có thể chứa toàn bộ nội dung CV tại một thời điểm.
+Tuy nhiên, danh sách lựa chọn version chỉ cần metadata như ID, name, source profile và created date.
+Ngoài ra, getCvVersions() nhận một response có pagination nhưng trả về mỗi data, bỏ metadata. useAllCvVersionsQuery() lại sử dụng hàm này. GitHub
+2. Vấn đề
+Có hai vấn đề độc lập:
+Over-fetching: Tải snapshot trong khi chỉ cần metadata.
+Incomplete pagination: Một query được đặt tên là lấy tất cả CV Versions nhưng thực tế có thể chỉ nhận được một trang dữ liệu.
+Khi số version tăng, vấn đề thứ hai còn ảnh hưởng đến tính đầy đủ của chức năng, không chỉ performance.
+3. Cách sửa
+Tách contract:
+interface CvVersionSummary {
+  id: string
+  name: string
+  source_profile_id: string
+  source_profile_revision: number
+  created_at: string
+}
+
+API:
+GET /cv-versions?page=1&per_page=20
+GET /cv-versions/:id
+
+Chỉ request detail mới cần snapshot.
+Trong frontend:
+export function useCvVersionSummariesQuery(
+  page: MaybeRef<number>,
+) {
+  return useQuery({
+    queryKey: computed(() =>
+      cvQueryKeys.versionSummaries(toValue(page))
+    ),
+    queryFn: () =>
+      getCvVersionSummaries(toValue(page), 20),
+  })
+}
+
+Đồng thời loại bỏ cách đặt tên gây hiểu nhầm như useAllCvVersionsQuery() nếu query không thực sự lấy tất cả các trang.
+4. Tối ưu bổ sung: Không tải toàn bộ version list
+Đối với Template Picker, lựa chọn phù hợp là server-side pagination hoặc tìm kiếm theo tên.
+Không nên tải tất cả versions rồi filter ở client nếu backend có thể có hàng trăm hoặc hàng nghìn records.
+5. Kết quả mong muốn
+- CV Version List sử dụng lightweight DTO.
+- Snapshot chỉ tải khi cần preview hoặc xử lý nghiệp vụ.
+- Pagination thực sự hỗ trợ nhiều trang.
+- Query Cache không lưu hàng loạt snapshot chỉ vì người dùng mở trang chọn version.
+PERF-03 — Dashboard tải Match Report details chỉ để hiển thị tổng số
+Ưu tiên: P1
+Nhóm: Network Optimization, Backend Efficiency
+1. Hiện trạng
+Trong useDashboardController.ts:
+const profilesQuery = useCvProfilesQuery()
+
+const jobDescriptionsQuery =
+  useJobDescriptionsQuery(jobDescriptionPage)
+
+const matchReportsQuery = useMatchReportsQuery()
+
+Trong khi useMatchReportsQuery() mặc định:
+export function useMatchReportsQuery(
+  page: MaybeRef<number> = 1,
+  perPage = 20,
+) {
+  return useQuery({
+    queryKey: computed(() =>
+      matchQueryKeys.list(toValue(page), perPage)
+    ),
+    queryFn: () =>
+      getMatchReports(toValue(page), perPage),
+  })
+}
+
+Dashboard sử dụng matchReportsQuery.data.value?.total để hiển thị số lượng reports. Danh sách 20 reports không được render trong các Dashboard components đã kiểm tra. GitHub
+2. Vấn đề
+Đây là trường hợp fetching detailed data for aggregate information.
+Màn hình cần:
+{
+  "total_match_reports": 42
+}
+
+Nhưng client lại gọi list endpoint để nhận nhiều MatchReport objects.
+Vấn đề sẽ rõ hơn nếu MatchReport chứa scores, findings, explanations hoặc evidence lớn.
+3. Hướng sửa ngắn hạn
+Có thể giảm số item xuống một:
+const matchReportsQuery = useMatchReportsQuery(1, 1)
+
+Dashboard tiếp tục lấy:
+matchReportsQuery.data.value?.total
+
+Điều này vẫn giữ nguyên API contract.
+Tuy nhiên, mỗi request vẫn phải nhận và validate một report không cần thiết.
+4. Hướng sửa dài hạn
+Tạo endpoint:
+GET /dashboard/summary
+
+Response:
+{
+  "cv_profiles": 12,
+  "job_descriptions": 28,
+  "match_reports": 42
+}
+
+Ưu tiên backend trả số liệu tổng hợp bằng những truy vấn hiệu quả, thay vì xây dựng toàn bộ list response rồi đếm ở application layer.
+Đặc biệt cần bảo đảm số liệu được tính theo quyền truy cập và user scope hiện tại.
+5. Trade-off
+Một endpoint dashboard tổng hợp có thể tăng coupling giữa Dashboard và các module backend.
+Vì vậy:
+- Nếu Dashboard chỉ hiển thị ba con số, endpoint summary rất hợp lý.
+- Nếu backend chưa muốn bổ sung endpoint, dùng perPage=1 là tối ưu nhanh.
+- Không nhất thiết gộp tất cả API của Dashboard thành một endpoint lớn.
+Acceptance criteria: Dashboard không tải nhiều report objects chỉ để lấy total.
+PERF-04 — CV Editor clone và parse document trong reactive computation
+Ưu tiên: P1
+Nhóm: CPU Optimization, Vue Reactivity, Memory Allocation
+File: useCvEditorDraft.ts
+1. Hiện trạng
+function cloneDocument(document: CvDocument): CvDocument {
+  return JSON.parse(JSON.stringify(document)) as CvDocument
+}
+
+function captureDocument(): CvDocument {
+  const document = cloneDocument(editableDocument.value)
+
+  try {
+    document[activeSection.value] =
+      sectionValue() as never
+  } catch {
+    // Keep the last valid structured value
+  }
+
+  return document
+}
+
+Sau đó:
+const completedSections = computed<CvSectionKey[]>(() => {
+  const document = captureDocument()
+
+  // Tính completion
+})
+
+sectionValue() còn thực hiện JSON parsing và Zod validation đối với nhiều section. GitHub
+2. Nguyên nhân gây chi phí
+Có ba nhóm công việc:
+Full-document cloning
+JSON.stringify(document)
+        ↓
+JSON.parse(serialized)
+        ↓
+New object graph
+
+Section parsing
+sectionText
+      ↓
+JSON.parse
+      ↓
+Zod.parse
+
+Completion calculation
+Document
+     ↓
+Check 9 sections
+     ↓
+Completion array
+
+Ba bước đang được kết hợp, trong khi việc hiển thị bộ đếm completion không nhất thiết cần tạo một document clone hoàn chỉnh.
+Vue computed có caching, nên nó không chạy lại chỉ vì component render nếu dependencies không thay đổi. Tuy nhiên, khi completedSections đang được sử dụng và sectionText hoặc dữ liệu liên quan thay đổi, computed có thể phải thực hiện lại chuỗi xử lý trên.
+3. Hướng sửa đề xuất
+Tách phép tính completion khỏi full document cloning.
+Đầu tiên, tạo hàm kiểm tra completion cho từng section:
+function isSectionComplete(
+  key: CvSectionKey,
+  value: CvDocument[CvSectionKey],
+): boolean {
+  if (key === 'personal_information') {
+    return Boolean(
+      (value as PersonalInformation).full_name.trim()
+    )
+  }
+
+  if (key === 'summary') {
+    return Boolean((value as string | null)?.trim())
+  }
+
+  return Array.isArray(value) && value.length > 0
+}
+
+Sau đó phân biệt:
+Saved/Committed Sections
+          │
+          ▼
+Check completion trực tiếp
+
+Active Section Draft
+          │
+          ▼
+Parse active section khi cần
+          │
+          ▼
+Check completion
+
+Không cần clone toàn bộ document.
+Để giữ nguyên behavior hiện tại, nếu active section có JSON không hợp lệ thì completion có thể sử dụng last valid committed value, thay vì xóa trạng thái hoàn thành.
+4. Tối ưu thêm cho dirty checking
+Trong cùng composable:
+const equal = (left: unknown, right: unknown) =>
+  JSON.stringify(left) === JSON.stringify(right)
+
+Không cần thay ngay bằng thư viện deep equality khác, vì thư viện đó cũng phải duyệt cấu trúc dữ liệu.
+Tối ưu tốt hơn là giảm phạm vi so sánh.
+Ví dụ:
+- Title: so sánh string.
+- Summary: so sánh string.
+- Active section: so sánh draft với saved section.
+- Các section khác: chỉ so sánh khi cần merge/reconcile.
+Không nên deep compare toàn bộ CV sau mọi tương tác nhỏ.
+5. Cân nhắc về shallowRef
+Có thể sử dụng shallowRef cho immutable server snapshots nếu không cần deep reactivity.
+Nhưng editableDocument đang được cập nhật ở các thuộc tính lồng nhau. Thay trực tiếp sang shallowRef có thể làm hỏng tracking nếu không đồng thời chuyển sang immutable updates hoặc triggerRef().
+Vì vậy, không đề xuất chuyển toàn bộ CV state sang shallowRef ngay.
+6. Acceptance criteria
+- completedSections không clone toàn bộ CV.
+- Validation vẫn chính xác cho từng section.
+- Invalid JSON không làm mất nội dung người dùng đang nhập.
+- Dirty checking, save và conflict resolution giữ nguyên behavior.
+- CPU time và allocations giảm khi nhập vào CV lớn.
+PERF-05 — JD Editor có xử lý Unicode string chưa tối ưu
+Ưu tiên: P1
+Nhóm: Input Responsiveness, CPU, Garbage Collection
+File: useJdEditorController.ts
+1. Hiện trạng
+const charCount = computed(
+  () => [...rawText.value].length
+)
+
+const overLimit = computed(
+  () =>
+    charCount.value > 50000 ||
+    new TextEncoder().encode(rawText.value).length > 204800
+)
+
+const limitCodePoints = (
+  value: string,
+  limit: number,
+) => [...value].slice(0, limit).join('')
+
+const setRawText = (value: string) => {
+  rawText.value = limitCodePoints(value, 50000)
+}
+``` :chatgpt-content-reference{index="4"}
+
+
+### 2. Phân tích chi phí
+
+Toán tử spread:
+
+```ts
+[...value]
+
+phải duyệt chuỗi theo Unicode code points và tạo một mảng mới.
+Với chuỗi dài, chi phí bao gồm:
+- Duyệt toàn bộ chuỗi.
+- Tạo nhiều phần tử mảng.
+- Cắt mảng.
+- Ghép lại thành chuỗi.
+- Giải phóng object trung gian qua garbage collection.
+Trong khi đó, phần lớn thao tác nhập liệu thông thường chỉ thêm một vài ký tự vào cuối chuỗi.
+3. Hướng tối ưu thứ nhất: Fast path
+Nếu UTF-16 string length nhỏ hơn hoặc bằng giới hạn code points, chắc chắn số code points cũng không vượt giới hạn.
+Vì vậy:
+function limitCodePoints(
+  value: string,
+  limit: number,
+): string {
+  if (value.length <= limit) {
+    return value
+  }
+
+  let count = 0
+  let endIndex = 0
+
+  for (const codePoint of value) {
+    if (count >= limit) break
+
+    endIndex += codePoint.length
+    count++
+  }
+
+  return value.slice(0, endIndex)
+}
+
+Ưu điểm:
+- Với phần lớn input chưa đạt giới hạn, không cần tạo mảng.
+- Khi cần cắt chuỗi, vẫn đếm đúng Unicode code points.
+- Giảm allocations so với spread/slice/join.
+4. Hướng tối ưu thứ hai: Giảm số lần encoding
+Có một điểm đáng chú ý về hai giới hạn hiện tại.
+Một Unicode code point hợp lệ khi encode UTF-8 chiếm tối đa 4 byte.
+Với giới hạn 50.000 code points:
+50.000 × 4 byte = 200.000 byte
+
+Trong khi giới hạn thứ hai là:
+200 KiB = 204.800 byte
+
+Do đó, nếu chuỗi đã được giới hạn ở tối đa 50.000 Unicode code points, kích thước UTF-8 của chính chuỗi đó không thể vượt 204.800 byte.
+Tức là trong cấu hình giới hạn hiện tại, phép kiểm tra 200 KiB thực chất bị giới hạn 50.000 code points bao phủ.
+Đây là một cơ hội tối ưu rõ hơn việc đơn thuần debounce TextEncoder.
+Có thể bỏ kiểm tra byte khỏi hot path của UI sau khi xác nhận backend cũng đang áp dụng đúng cách đếm và không có phép biến đổi dữ liệu làm tăng kích thước trước khi validate.
+Vẫn có thể giữ server-side byte validation như cơ chế phòng vệ, đặc biệt nếu giới hạn thay đổi trong tương lai.
+5. Hướng tối ưu thứ ba: Không debounce toàn bộ form state
+Không nên debounce rawText vì:
+- Người dùng cần thấy dữ liệu vừa nhập ngay lập tức.
+- Dirty checking cần phản hồi chính xác.
+- Save không được lấy giá trị cũ do debounce chưa hoàn tất.
+Nếu sau tối ưu vẫn có validation phức tạp, hãy debounce validation computation, không phải source-of-truth của input.
+6. Acceptance criteria
+- Nhập JD dài không tạo mảng Unicode code points ở mọi lần cập nhật.
+- Không cắt sai emoji hoặc surrogate pairs.
+- Không làm thay đổi giới hạn 50.000 code points.
+- Save luôn lấy nội dung mới nhất.
+- Không có input lag đáng kể ở dữ liệu gần giới hạn.
+PERF-06 — Template Picker thực hiện query chưa cần thiết
+Ưu tiên: P2
+Nhóm: Conditional Query, Network Optimization
+File: useTemplatePickerController.ts
+Hiện trạng
+const templatesQuery = useTemplatesQuery()
+
+const versionsQuery = useAllCvVersionsQuery(
+  computed(() => !versionId.value),
+)
+
+Có hai trường hợp:
+Route	Dữ liệu cần thiết
+/templates	Danh sách CV Versions để chọn
+/cv-versions/:versionId/templates	Danh sách Templates để áp dụng
+
+
+versionsQuery đã có điều kiện enabled. Nhưng templatesQuery chưa có.
+Do đó, khi mở /templates, query templates vẫn được khởi tạo và có thể thực hiện request ngay cả khi người dùng chưa chọn version.
+Hướng sửa
+Sửa useTemplatesQuery để hỗ trợ enabled:
+import {
+  computed,
+  toValue,
+  type MaybeRefOrGetter,
+} from 'vue'
+
+export function useTemplatesQuery(
+  enabled: MaybeRefOrGetter<boolean> = true,
+) {
+  return useQuery({
+    queryKey: templateQueryKeys.list(),
+    queryFn: getTemplates,
+    enabled: computed(() => toValue(enabled)),
+  })
+}
+
+Trong controller:
+const templatesQuery = useTemplatesQuery(
+  computed(() => Boolean(versionId.value)),
+)
+
+Khi nào không nên sửa theo cách này?
+Nếu dự án chủ động muốn prefetch templates để bước tiếp theo mở nhanh hơn, việc gọi trước có thể hợp lý.
+Tuy nhiên, khi đó nên phân biệt:
+- Required fetch: Dữ liệu cần để render màn hình hiện tại.
+- Prefetch: Dữ liệu dự kiến cần ở bước tiếp theo.
+Prefetch có thể được thực hiện khi người dùng chọn version hoặc chuẩn bị chuyển route.
+Không nên để request tự chạy chỉ vì component có khai báo query.
+Acceptance criteria: Query templates không tự fetch trên màn hình chỉ chọn version, trừ khi chiến lược prefetch được chủ động bật.
+PERF-07 — TanStack Query cần Cache Policy theo từng resource
+Ưu tiên: P2
+Nhóm: API Caching, Network Efficiency
+File: app/providers/vue-query.ts
+1. Hiện trạng
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+    },
+  },
+})
+
+Hiện tại, phần lớn query kế thừa staleTime 30 giây.
+Điều này hợp lý với dữ liệu thường xuyên thay đổi. Nhưng không phải resource nào cũng có cùng đặc điểm.
+Ví dụ:
+- CV Profile có thể được sửa liên tục.
+- Job Description có thể được cập nhật revision.
+- CV Version là immutable snapshot.
+- CV Templates có thể thay đổi rất ít.
+- AI Interview có trạng thái đang diễn ra.
+- Patch Review có state transition.
+2. Vấn đề
+TanStack Query có thể refetch stale queries khi component được mount, khi cửa sổ được focus lại hoặc khi kết nối mạng trở lại. Hành vi cụ thể còn phụ thuộc option của query.
+Do đó, một immutable resource sử dụng stale time ngắn có thể tạo request không cần thiết. TanStack
+3. Đề xuất Cache Policy
+Bảng dưới đây là giá trị khởi điểm để thử nghiệm, không phải kết quả benchmark.
+Resource	staleTime tham khảo	Ghi chú
+CV Profile Detail	15–30 giây	Cần phát hiện dữ liệu bị chỉnh sửa nơi khác
+CV Profile List	30–60 giây	Invalidate khi create/update
+JD List	30–60 giây	Invalidate sau create/update/delete
+JD Detail	15–30 giây	Phụ thuộc revision
+CV Version Detail	10–30 phút	Có thể lâu hơn nếu thật sự immutable
+CV Templates	10–30 phút	Cần invalidate nếu quản trị viên cập nhật
+Match Report Detail	5–15 phút	Chỉ áp dụng nếu report không thay đổi nội dung
+Active Interview	0–15 giây	Cập nhật theo mutation và trạng thái
+Patch Review	15–30 giây	Có state transition
+
+
+Đối với CV Version Detail:
+export function useCvVersionQuery(
+  versionId: MaybeRef<string>,
+) {
+  return useQuery({
+    queryKey: computed(() =>
+      cvQueryKeys.version(toValue(versionId))
+    ),
+
+    queryFn: () => getCvVersion(toValue(versionId)),
+
+    enabled: computed(() =>
+      Boolean(toValue(versionId))
+    ),
+
+    staleTime: 10 * 60 * 1000,
+  })
+}
+
+4. Phân biệt staleTime và gcTime
+Hai khái niệm dễ bị nhầm:
+staleTime: Khoảng thời gian dữ liệu được xem là fresh.
+gcTime: Thời gian cache không còn được sử dụng được giữ lại trước khi garbage collection.
+Ví dụ, tăng staleTime không đồng nghĩa dữ liệu sẽ tồn tại vĩnh viễn trong memory.
+Đối với những CV Version snapshots lớn, tăng staleTime nhưng giữ nhiều snapshot trong cache cũng có thể làm tăng memory footprint.
+Vì vậy, cache policy phải cân bằng giữa:
+Network requests
+       ↕
+Data freshness
+       ↕
+Memory consumption
+
+5. Không nên vô hiệu hóa refetch toàn cục
+Ví dụ:
+refetchOnWindowFocus: false
+
+Có thể làm giảm request, nhưng cũng có thể khiến người dùng không thấy những thay đổi từ tab khác.
+Mình đề xuất chỉ thay đổi với những resource có tính chất rõ ràng.
+Acceptance criteria: Giảm repeated GET requests trong các luồng điều hướng phổ biến nhưng vẫn đồng bộ dữ liệu đúng sau mutation và khi server state thay đổi.
+PERF-08 — CV Save Workflow có thể tạo cache invalidation không cần thiết
+Ưu tiên: P2
+Nhóm: Request Deduplication, Cache Invalidation
+File: useCvEditorController.ts
+1. Hiện trạng
+Trong save():
+if (titleDirty) {
+  profile = await operations.updateTitle(/* ... */)
+
+  operations.cacheProfile(profile)
+  void operations.invalidateProfiles()
+}
+
+if (sectionDirty) {
+  profile = await operations.updateSection(/* ... */)
+
+  operations.cacheProfile(profile)
+}
+
+void operations.invalidateProfiles()
+
+Khi title và section cùng dirty, code có thể gọi invalidation hai lần trong cùng một workflow.
+Ngoài ra, khi tạo CV Version:
+await operations.createVersion(/* ... */)
+
+await versionsQuery.refetch()
+
+void operations.invalidateVersions()
+
+refetch() và invalidateVersions() có phạm vi cập nhật chồng lấn.
+Đây không phải bằng chứng rằng chắc chắn có hai HTTP requests trong mọi trường hợp, vì TanStack Query có cơ chế quản lý và phối hợp fetching. Tuy nhiên, đây là các thao tác đáng rà soát để tránh refetch/cancellation không cần thiết. TanStack
+2. Hướng sửa
+Tập trung invalidation tại thời điểm kết thúc workflow thành công, thay vì invalidate mỗi khi một bước hoàn tất.
+Ví dụ:
+let profileWasUpdated = false
+
+try {
+  if (titleDirty) {
+    profile = await operations.updateTitle(/* ... */)
+    operations.cacheProfile(profile)
+    profileWasUpdated = true
+  }
+
+  if (sectionDirty) {
+    profile = await operations.updateSection(/* ... */)
+    operations.cacheProfile(profile)
+    profileWasUpdated = true
+  }
+} finally {
+  if (profileWasUpdated) {
+    await operations.invalidateProfiles()
+  }
+}
+
+Đây là hướng tổ chức, không nên thay nguyên đoạn code hiện tại một cách cơ học.
+Vì workflow đang có revision, 409 Conflict, partial success và route-generation guards, logic thực tế phải bảo toàn các trường hợp:
+- Title lưu thành công, section thất bại.
+- User chuyển route khi request chưa hoàn thành.
+- Server trả revision mới.
+- Người dùng tiếp tục chỉnh sửa trong lúc save.
+- Query refetch trả dữ liệu mới hơn local snapshot.
+3. Với Create Version
+Có thể chọn một trong hai chiến lược:
+Chiến lược A: Invalidate query và để TanStack Query refetch dữ liệu liên quan.
+Chiến lược B: Cập nhật cache bằng response của createVersion(), sau đó invalidate những query tổng hợp cần đồng bộ.
+Không cần đồng thời gọi explicit refetch và broad invalidation nếu không có lý do rõ ràng.
+Acceptance criteria: Một lần Save không kích hoạt những request trùng không cần thiết; các danh sách và detail vẫn hiển thị revision mới chính xác.
+PERF-09 — TemplateCard sử dụng Vue reactivity cho mousemove animation
+Ưu tiên: P2
+Nhóm: Rendering Optimization
+File: TemplateCard.vue
+1. Hiện trạng
+const spotlight = ref({
+  x: 0,
+  y: 0,
+  opacity: 0,
+})
+
+function onMouseMove(e: MouseEvent) {
+  const rect = cardRef.value?.getBoundingClientRect()
+
+  if (!rect) return
+
+  spotlight.value = {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top,
+    opacity: 1,
+  }
+}
+
+Template bind tọa độ này vào radial gradient.
+2. Vấn đề
+mousemove có thể được phát với tần suất cao.
+Mỗi event có thể dẫn đến:
+mousemove
+    ↓
+Update reactive state
+    ↓
+Invalidate render dependency
+    ↓
+Vue patch style
+    ↓
+Browser paint
+
+Không phải mọi event đều dẫn đến một lần DOM patch độc lập vì Vue có batching. Dù vậy, đưa vị trí chuột vào component reactivity vẫn tạo công việc không cần thiết cho một hiệu ứng trang trí.
+3. Hướng sửa
+Dùng CSS variables kết hợp requestAnimationFrame.
+let frame = 0
+let x = 0
+let y = 0
+
+function onMouseMove(event: MouseEvent) {
+  x = event.clientX
+  y = event.clientY
+
+  if (frame) return
+
+  frame = requestAnimationFrame(() => {
+    frame = 0
+
+    const element = cardRef.value
+    if (!element) return
+
+    const rect = element.getBoundingClientRect()
+
+    element.style.setProperty(
+      '--spotlight-x',
+      `${x - rect.left}px`,
+    )
+
+    element.style.setProperty(
+      '--spotlight-y',
+      `${y - rect.top}px`,
+    )
+  })
+}
+
+CSS:
+.template-spotlight {
+  background: radial-gradient(
+    250px circle at
+      var(--spotlight-x, 50%)
+      var(--spotlight-y, 50%),
+    color-mix(
+      in srgb,
+      var(--color-primary) 9%,
+      transparent
+    ),
+    transparent 70%
+  );
+}
+
+Dùng CSS hover hoặc class để điều khiển opacity.
+Cần bổ sung cleanup của animation frame khi unmount và hỗ trợ prefers-reduced-motion nếu animation gây khó chịu.
+4. Trade-off
+Cập nhật CSS variables vẫn có thể gây style recalculation/paint. Không nên kỳ vọng chi phí rendering bằng không.
+Với số lượng template ít, đây là micro-optimization. Chỉ nên ưu tiên sớm nếu Chrome Performance cho thấy hiệu ứng gây dropped frames hoặc main-thread work đáng kể.
+PERF-10 — Layout chưa được code-split
+Ưu tiên: P2
+Nhóm: Bundle Optimization, Initial Loading
+Files: App.vue, router/index.ts
+1. Hiện trạng
+Router đã sử dụng:
+component: () =>
+  import('@/pages/dashboard/DashboardPage.vue')
+
+Đây là một điểm tốt.
+Nhưng App.vue import đồng bộ:
+import MarketingLayout from
+  '@/app/layouts/MarketingLayout.vue'
+
+import AuthLayout from
+  '@/app/layouts/AuthLayout.vue'
+
+import AppLayout from
+  '@/app/layouts/AppLayout.vue'
+
+import PreviewLayout from
+  '@/app/layouts/PreviewLayout.vue'
+
+Những layout này có thể xuất hiện trong dependency graph tải ban đầu, dù chỉ một layout được render tại một thời điểm.
+2. Hướng tối ưu
+Nếu bundle analyzer cho thấy layout và những dependency của chúng đóng góp đáng kể vào entry bundle, có thể lazy-load theo layout.
+Ví dụ:
+import { defineAsyncComponent } from 'vue'
+
+const layoutComponents = {
+  MarketingLayout: defineAsyncComponent(
+    () => import('@/app/layouts/MarketingLayout.vue')
+  ),
+
+  AuthLayout: defineAsyncComponent(
+    () => import('@/app/layouts/AuthLayout.vue')
+  ),
+
+  AppLayout: defineAsyncComponent(
+    () => import('@/app/layouts/AppLayout.vue')
+  ),
+
+  PreviewLayout: defineAsyncComponent(
+    () => import('@/app/layouts/PreviewLayout.vue')
+  ),
+}
+
+3. Rủi ro
+Lazy-loading layout có thể tạo waterfall:
+Load app entry
+      ↓
+Load layout chunk
+      ↓
+Load page chunk
+      ↓
+Render
+
+Tùy cách tổ chức route, bundler và preload, các chunk có thể tải song song hoặc nối tiếp.
+Do đó, không thể kết luận lazy layout chắc chắn nhanh hơn static layout.
+Cần đo:
+- Entry JS size.
+- Total transferred JS.
+- Chunk dependency graph.
+- Number of requests trên critical path.
+- Time to first meaningful screen.
+- Route navigation latency.
+Nếu AppLayout nhỏ và không kéo theo thư viện lớn, giữ static import có thể tốt hơn.
+4. Landing Page và SEO
+Landing Page hiện là một Vue SPA page.
+Nếu sau này đặt mục tiêu SEO mạnh, có thể cân nhắc prerender hoặc SSG riêng cho các marketing routes.
+Đây không phải optimization bắt buộc cho toàn bộ ứng dụng và không nên chuyển sang Nuxt/SSR chỉ để giải quyết một số vấn đề bundle nhỏ.
+Vue khuyến nghị code splitting có chọn lọc và đo kích thước dependency thực tế thay vì chỉ đánh giá theo tên thư viện. Vue.js
+PERF-11 — Dashboard CV Profiles chưa có pagination hoàn chỉnh
+Ưu tiên: P2
+Nhóm: Data Scalability, Rendering
+Trong useDashboardController.ts, JD đã có:
+const jobDescriptionPage = ref(1)
+
+const jobDescriptionsQuery =
+  useJobDescriptionsQuery(jobDescriptionPage)
+
+Nhưng CV sử dụng:
+const profilesQuery = useCvProfilesQuery()
+
+Trong CvProfileList.vue, các CV được render bằng v-for, chưa có pagination tương ứng.
+Hướng sửa
+Tạo query nhận page:
+export function useCvProfilesQuery(
+  page: MaybeRef<number>,
+) {
+  return useQuery({
+    queryKey: computed(() =>
+      cvQueryKeys.profilesPage(toValue(page))
+    ),
+
+    queryFn: () =>
+      getCvProfiles(toValue(page), 20),
+  })
+}
+
+Sau đó controller quản lý cvProfilePage.
+Khi chuyển trang, có thể dùng placeholderData để giữ danh sách trang trước trong lúc tải, nhưng cần phân biệt rõ trạng thái loading để không khiến người dùng nhầm dữ liệu của trang cũ với trang mới.
+Virtualization có cần không?
+Chưa cần nếu danh sách chỉ hiển thị 20–30 item mỗi trang.
+Virtualization phù hợp hơn khi:
+- Render hàng trăm hoặc hàng nghìn row.
+- Có DOM lớn.
+- Component item phức tạp.
+- Pagination không phù hợp UX.
+Với dashboard hiện tại, server-side pagination là lựa chọn đơn giản và có giá trị hơn.
+PERF-12 — Chưa có Performance Budget và cơ chế regression
+Ưu tiên: P2
+Nhóm: Performance Testing, CI/CD
+1. Vấn đề
+Nếu không có baseline, các thay đổi performance khó được đánh giá khách quan.
+Ví dụ, một PR có thể:
+- Giảm CPU time nhưng tăng bundle size.
+- Giảm request count nhưng tăng response payload.
+- Tăng cache hit rate nhưng khiến memory tăng đáng kể.
+- Giảm thời gian render nhưng làm data freshness kém đi.
+Vì vậy, không nên đánh giá optimization bằng một chỉ số duy nhất.
+2. Đề xuất Performance Budget
+Web Vitals
+Với Landing Page, sử dụng những ngưỡng tham chiếu phổ biến:
+Metric	Mục tiêu tham khảo
+Largest Contentful Paint — LCP	≤ 2,5 giây
+Interaction to Next Paint — INP	≤ 200 ms
+Cumulative Layout Shift — CLS	≤ 0,1
+
+
+Đây là các ngưỡng Core Web Vitals đánh giá tại phân vị thứ 75 của người dùng thực tế; không phải kết quả đo hiện tại của CareerFitCV. web.dev
+Performance Budget nội bộ
+Đối với ứng dụng này, nên bổ sung các mục tiêu về:
+Metric	Cách thiết lập
+Initial JS transfer size	Lấy baseline và đặt ngưỡng cảnh báo tăng
+Dashboard API transferred bytes	So sánh cùng một dataset
+Dashboard request count	Không phát sinh request không cần thiết
+CV Editor input latency	Đo với CV lớn
+JD Editor input latency	Đo với JD gần 50.000 code points
+JS heap usage	Đo sau các chu kỳ mở/đóng màn hình
+Route navigation duration	Đo cùng thiết bị và network conditions
+
+
+Không nên đặt ngưỡng byte hoặc millisecond tùy ý khi chưa có dữ liệu ban đầu.
+3. Tích hợp vào CI
+Đề xuất:
+Pull Request
+    │
+    ├── Type Check
+    ├── ESLint
+    ├── Unit Tests
+    ├── Integration Tests
+    ├── Production Build
+    ├── Bundle Size Comparison
+    └── Performance Smoke Tests
+              │
+              ▼
+       PR Quality Report
+
+Những performance tests có độ nhiễu cao nên chạy trong môi trường ổn định và dùng ngưỡng cảnh báo hợp lý.
+Không nên block PR vì chênh lệch Lighthouse nhỏ giữa hai lần đo đơn lẻ.
+III. Phân tích theo luồng sử dụng thực tế
+Tối ưu từng file riêng lẻ chưa đủ. Cần xem mỗi hành động của người dùng kích hoạt bao nhiêu công việc.
+1. Luồng mở Dashboard
+Hiện tại
+User mở Dashboard
+        │
+        ▼
+DashboardView
+        │
+        ▼
+useDashboardController()
+        │
+        ├── GET /cv-profiles
+        │       └── Full CV Profile objects
+        │
+        ├── GET /job-descriptions?page=1
+        │       └── JD records + pagination
+        │
+        └── GET /match-reports?page=1&per_page=20
+                └── Match Report objects + pagination
+        │
+        ▼
+Browser parse + Zod validate
+        │
+        ▼
+TanStack Query Cache
+        │
+        ▼
+Render Dashboard
+
+Ba query có thể chạy song song, đây là điểm tốt.
+Tuy nhiên, Dashboard tải nhiều object hơn nhu cầu hiển thị.
+Sau tối ưu
+User mở Dashboard
+        │
+        ▼
+DashboardView
+        │
+        ▼
+useDashboardController()
+        │
+        ├── GET /dashboard/summary
+        │       └── KPI totals
+        │
+        ├── GET /cv-profiles?page=1
+        │       └── CV Profile summaries
+        │
+        └── GET /job-descriptions?page=1
+                └── JD summaries
+        │
+        ▼
+Render Dashboard
+
+Lợi ích lớn nhất không nhất thiết là giảm số request, mà là giảm lượng dữ liệu được truyền và xử lý.
+Nếu chuyển sang một endpoint duy nhất nhưng response vẫn chứa toàn bộ CV, JD và Match Report, hiệu quả có thể không cải thiện.
+2. Luồng chỉnh sửa CV
+Hiện tại
+User nhập nội dung
+      │
+      ▼
+Update sectionText
+      │
+      ├── Dirty checking
+      │
+      └── Completed sections
+               │
+               ├── Clone CV document
+               ├── Parse active section
+               ├── Validate schema
+               └── Check completion
+      │
+      ▼
+Vue render updates
+
+Sau tối ưu
+User nhập nội dung
+      │
+      ▼
+Update sectionText
+      │
+      ├── Cheap dirty check
+      │
+      └── Active-section completion
+               │
+               └── Process active section only
+      │
+      ▼
+Vue render updates
+
+User Save
+      │
+      ▼
+Full section validation
+      │
+      ▼
+Mutation + revision handling
+      │
+      ▼
+Targeted cache update
+
+Điều quan trọng là giảm xử lý ở hot path, tức những đoạn code được chạy rất thường xuyên.
+Validation đầy đủ vẫn cần tồn tại, nhưng không phải phép validation nào cũng cần chạy trong mọi lần nhập liệu.
+3. Luồng chỉnh sửa Job Description
+Hiện tại
+User nhập JD
+      │
+      ▼
+Convert string → Array
+      │
+      ▼
+Slice by code points
+      │
+      ▼
+Join into string
+      │
+      ▼
+Update rawText
+      │
+      ▼
+Calculate character count
+      │
+      ▼
+Encode bytes if needed
+      │
+      ▼
+Update UI
+
+Sau tối ưu
+User nhập JD
+      │
+      ▼
+Check fast path
+      │
+      ├── Under limit → use original string
+      │
+      └── Exceeds threshold
+              └── Single-pass code-point truncation
+      │
+      ▼
+Update rawText
+      │
+      ▼
+Calculate only necessary UI state
+      │
+      ▼
+Update UI
+
+Với những input đang ở xa giới hạn, phần lớn công việc không cần thực hiện.
+IV. Performance Measurement Plan
+Đây là phần mình đề xuất triển khai trước PR tối ưu đầu tiên để biết thay đổi có thực sự mang lại lợi ích không.
+1. Bộ dữ liệu benchmark
+Nên tạo dữ liệu kiểm thử có thể tái sử dụng.
+Dataset	Nội dung	Mục đích
+D1	5 CV Profiles, mỗi CV nhỏ	Baseline
+D2	100 CV Profiles, nhiều projects và experiences	Kiểm tra Dashboard scalability
+D3	100 CV Versions, mỗi version có snapshot dài	Kiểm tra pagination, payload và memory
+D4	100 Match Reports	Đo aggregate-query efficiency
+D5	JD khoảng 5.000 code points	Tình huống thường gặp
+D6	JD khoảng 49.000–50.000 code points	Stress test nhập liệu
+D7	CV có 9 section, mỗi section chứa nhiều dữ liệu	Đo completion và dirty checking
+
+
+Không nên thay đổi dataset giữa baseline và optimized build.
+2. Test trong Production Build
+Chạy từ thư mục apps/web:
+npm run type-check
+npm run lint:check
+npm run test:unit
+npm run build
+npm run preview
+
+Không nên lấy số liệu cuối cùng từ Vite development server, vì HMR, source maps và các công cụ development có thể làm sai lệch đánh giá.
+Đo Dashboard
+Trong Chrome DevTools:
+1. Mở Network.
+2. Bật Disable cache để đo cold load.
+3. Đăng nhập với dữ liệu benchmark.
+4. Mở Dashboard.
+5. Ghi lại request count, transferred bytes và timing.
+6. Lặp lại với cache được bật để đo warm navigation.
+Cần đo riêng cold load và warm load. Nếu chỉ đo một trong hai, dễ đánh giá sai lợi ích của query cache.
+Đo CV Editor
+Trong Performance panel:
+1. Mở CV lớn từ D7.
+2. Bắt đầu recording.
+3. Nhập hoặc paste nội dung theo kịch bản cố định.
+4. Đo scripting time, long tasks, component updates và allocations.
+5. Lặp lại sau refactor.
+Đo JD Editor
+Sử dụng JD gần giới hạn ký tự.
+Cần kiểm tra cả typing thông thường và paste một đoạn dài, vì hai thao tác tạo workload khác nhau.
+3. Các chỉ số nên đưa vào PR
+Metric	Baseline	Optimized	Đánh giá
+Dashboard transferred bytes	A	B	Giảm bao nhiêu phần trăm
+Dashboard request count	A	B	Request nào bị loại bỏ
+CV list parsing time	A	B	Giảm CPU work
+CV Editor scripting time	A	B	Cải thiện tương tác
+JD input processing time	A	B	Cải thiện hot path
+Initial JS bundle size	A	B	Có thay đổi đáng kể không
+Peak JS heap	A	B	Có tăng memory không
+Route navigation duration	A	B	Có xuất hiện waterfall không
+
+
+Các phép đo lặp lại nên sử dụng median, p95 hoặc phân phối nhiều lần chạy, không chỉ chọn kết quả tốt nhất.
+V. Implementation Roadmap
+Mình khuyến nghị chia tối ưu thành 5 PR, theo thứ tự phụ thuộc và giá trị mang lại.
+PR	Nội dung	Findings	Phụ thuộc
+OPT-01	Performance baseline & profiling	PERF-12	Frontend
+OPT-02	API payload và pagination	PERF-01, 02, 03, 11	Frontend + Backend
+OPT-03	Input & CPU optimization	PERF-04, 05	Frontend
+OPT-04	Query execution & caching	PERF-06, 07, 08	Frontend
+OPT-05	Rendering & bundle optimization	PERF-09, 10	Frontend
+
+
+OPT-01 — Thiết lập baseline
+Mục tiêu: Có số liệu để xác định bottleneck thực sự.
+Deliverables:
+- Performance test scenarios.
+- Dataset benchmark.
+- Network baseline.
+- CPU profile cho CV/JD Editor.
+- Bundle analysis report.
+- Bảng kết quả trước tối ưu.
+Acceptance: Có thể chạy lại các phép đo với cùng điều kiện và so sánh kết quả giữa hai commit.
+OPT-02 — Giảm API Payload
+Scope:
+features/cv/api/cv.api.ts
+features/cv/api/cv.queries.ts
+features/cv/api/cv.keys.ts
+features/cv/types/cv.types.ts
+features/cv/schemas/cv.schemas.ts
+
+features/dashboard/
+features/match/api/
+features/templates/
+
+Công việc:
+1. Tạo CV Profile Summary DTO.
+2. Tạo CV Version Summary DTO.
+3. Phân trang CV Profile List.
+4. Phân trang CV Version Picker.
+5. Giảm payload Match Report query trên Dashboard.
+6. Cân nhắc Dashboard Summary endpoint.
+7. Cập nhật các query consumers liên quan.
+Acceptance:
+- Không làm mất dữ liệu hoặc tính năng.
+- Không có full CV document trong list response nếu UI chỉ cần summary.
+- Không có full CV snapshot trong version list nếu UI chỉ cần metadata.
+- Dashboard KPI vẫn chính xác.
+- Pagination hoạt động khi số item vượt một trang.
+Đây là PR có khả năng mang lại lợi ích network và memory lớn nhất nếu dữ liệu thực tế có kích thước đáng kể.
+OPT-03 — Giảm CPU Work
+Scope:
+features/cv/composables/useCvEditorDraft.ts
+features/jd/composables/useJdEditorController.ts
+
+Công việc:
+1. Bỏ full-document cloning khỏi completion computation.
+2. Giảm deep comparison không cần thiết.
+3. Tối ưu Unicode string truncation.
+4. Loại bỏ byte encoding khỏi input hot path nếu contract cho phép.
+5. Kiểm tra memory allocations.
+6. Bổ sung performance và regression tests.
+Acceptance:
+- Completion state chính xác.
+- Draft và conflict handling không thay đổi.
+- Unicode không bị cắt sai.
+- Không có regression về validation.
+- Profile cho thấy giảm main-thread work ở kịch bản stress test.
+OPT-04 — Query & Cache Optimization
+Scope:
+app/providers/vue-query.ts
+
+features/cv/api/
+features/cv/composables/
+features/jd/api/
+features/match/api/
+features/templates/api/
+features/templates/composables/
+
+Công việc:
+1. Phân loại resource theo mutability.
+2. Cấu hình resource-specific staleTime.
+3. Kiểm tra gcTime với những snapshot lớn.
+4. Thêm conditional query cho Template Picker.
+5. Rà soát duplicate invalidations.
+6. Chuẩn hóa mutation cache updates.
+7. Kiểm tra refetch khi focus, remount và reconnect.
+Acceptance:
+- Giảm request không cần thiết.
+- Cache không bị stale ngoài chính sách cho phép.
+- Mutation cập nhật đúng các màn hình liên quan.
+- Không tăng memory không kiểm soát.
+OPT-05 — Rendering & Bundle Optimization
+Scope:
+App.vue
+app/router/
+app/layouts/
+features/templates/components/TemplateCard.vue
+vite.config.ts
+
+Công việc:
+1. Profile spotlight animation.
+2. Tối ưu mousemove nếu có bottleneck.
+3. Chạy bundle analyzer.
+4. Kiểm tra những dependency lớn trong initial chunk.
+5. Thử lazy-loading layout nếu hợp lý.
+6. Đo initial load và route navigation trước/sau.
+Acceptance:
+- Không xuất hiện chunk waterfall bất lợi.
+- Không tăng thời gian chuyển trang.
+- Không gây layout shift mới.
+- Animation giữ được trải nghiệm sử dụng.
+- Các thay đổi về bundle có số liệu chứng minh.
+VI. Ưu tiên theo giá trị và độ phức tạp
+Để lựa chọn công việc khi nguồn lực hạn chế, có thể phân loại như sau:
+Finding	Lợi ích tiềm năng	Độ phức tạp	Khuyến nghị
+PERF-01 — CV Summary DTO	Cao	Trung bình–Cao	Ưu tiên
+PERF-02 — CV Version Summary DTO	Cao	Trung bình–Cao	Ưu tiên
+PERF-03 — Match Report Count	Trung bình–Cao	Thấp nếu dùng perPage=1	Làm sớm
+PERF-04 — CV Completion	Trung bình–Cao	Trung bình	Làm sớm
+PERF-05 — JD String Processing	Trung bình	Thấp–Trung bình	Làm sớm
+PERF-06 — Conditional Templates Query	Thấp–Trung bình	Thấp	Quick win
+PERF-07 — Cache Policies	Trung bình	Trung bình	Sau khi đo
+PERF-08 — Duplicate Invalidation	Thấp–Trung bình	Trung bình	Kết hợp cache review
+PERF-09 — Mousemove	Thấp nếu ít cards	Thấp–Trung bình	Theo profiler
+PERF-10 — Lazy Layout	Chưa xác định	Trung bình	Theo bundle report
+PERF-11 — CV Pagination	Trung bình–Cao khi dữ liệu tăng	Trung bình	Làm cùng PERF-01
+PERF-12 — Performance Baseline	Giá trị dài hạn cao	Trung bình	Làm đầu tiên
+
+
+Nếu chỉ được chọn ba nhóm để tối ưu trước, mình sẽ chọn:
+1. API payload và pagination: PERF-01, PERF-02, PERF-03, PERF-11.
+2. Input responsiveness: PERF-04, PERF-05.
+3. Query execution và cache: PERF-06, PERF-07, PERF-08.
+Các optimization về animation và layout code splitting nên làm sau khi xác nhận chúng thực sự đóng góp đáng kể vào thời gian tải hoặc rendering.
+VII. Các nguyên tắc cần giữ trong quá trình tối ưu
+Có một số trường hợp optimization dễ gây regression hơn lợi ích nó mang lại.
+Không nên	Thay bằng
+Tăng staleTime toàn cục để giảm request	Phân loại theo resource
+Bỏ Zod validation chỉ để giảm CPU	Giảm payload và validate tại boundary
+Chuyển mọi ref thành shallowRef	Chỉ dùng với dữ liệu phù hợp
+Debounce toàn bộ form state	Debounce riêng expensive computations
+Tải tất cả records rồi filter ở client	Pagination/filtering ở server khi dữ liệu lớn
+Dùng virtualization cho mọi danh sách	Chỉ dùng nếu DOM thực sự lớn
+Lazy-load tất cả component	Phân tích dependency và critical path
+Chuyển dữ liệu API từ Query sang Pinia	Giữ rõ server state và client state
+Thêm Web Worker ngay khi thấy xử lý O(n)	Tối ưu thuật toán và giảm tần suất trước
+Bỏ cache invalidation để tiết kiệm request	Invalidate đúng thời điểm và đúng query key
+
+
+Đặc biệt, các workflow của CareerFitCV có revision, Idempotency-Key, immutable versions và conflict handling. Những cơ chế này liên quan trực tiếp đến tính đúng đắn của dữ liệu.
+Không nên hy sinh chúng chỉ để giảm một vài milliseconds hoặc một HTTP request.
+VIII. Đánh giá cuối cùng
+Sau đợt refactor vừa rồi, kiến trúc frontend của dự án đã tương đối rõ ràng:
+Application
+    │
+    ▼
+Page
+    │
+    ▼
+Feature Component
+    │
+    ▼
+Feature Controller / Composable
+    │
+    ▼
+Query / Mutation Layer
+    │
+    ▼
+API Client
+    │
+    ▼
+Backend
+
+Không có lý do rõ ràng để thay đổi toàn bộ structure hiện tại chỉ vì mục tiêu performance.
+Vấn đề nằm ở cách sử dụng tài nguyên trong luồng này.
+Tổng kết theo ba mức
+Cần ưu tiên tối ưu: Full CV/Profile payload, CV Version snapshots, Match Report aggregation, CV document cloning và JD string processing.
+Nên tối ưu tiếp theo: Query cache policies, conditional queries, invalidation, pagination và performance regression tests.
+Chỉ tối ưu khi profiler chứng minh cần thiết: TemplateCard animation, layout lazy loading, virtualization, memoization và Web Worker.
+Kết luận kỹ thuật
+Hướng đi tốt nhất cho CareerFitCV hiện tại là tối ưu theo nguyên tắc: Fetch less, compute less, render only what matters, and cache deliberately.
+Trong đó:
+- Fetch less: API chỉ trả dữ liệu cần thiết cho từng màn hình.
+- Compute less: Không clone hoặc validate toàn bộ document cho một thay đổi nhỏ.
+- Render only what matters: Chỉ tối ưu component updates sau khi xác định hot path.
+- Cache deliberately: Cache theo tính chất dữ liệu, không dùng một chính sách cho tất cả.
+Nếu triển khai đúng thứ tự, dự án có thể cải thiện cả network, CPU, memory và khả năng mở rộng mà không cần thêm framework hoặc thay đổi kiến trúc frontend nền tảng.
+Phạm vi kết luận: Các vấn đề và hướng sửa được xây dựng từ static source review của branch main vào ngày 08/10/2026. Những cải thiện về milliseconds, bundle size hoặc phần trăm hiệu năng chưa được đo và không nên được xem là kết quả thực tế trước khi chạy benchmark.
