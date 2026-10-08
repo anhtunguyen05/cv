@@ -3,7 +3,7 @@ import { onBeforeMount, onBeforeUnmount, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { Printer, ArrowLeft, Sparkles, Download } from 'lucide-vue-next'
 import { ROUTES } from '@/shared/constants/routes'
-import AppButton from '@/shared/components/atoms/AppButton.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
 
 const previewReady = ref(false)
 const printMessage = ref('')
@@ -90,7 +90,7 @@ onBeforeUnmount(() => window.removeEventListener('careerfitcv:preview-state', on
 
       <div class="flex items-center gap-3">
         <slot name="controls" />
-        <AppButton
+        <Button
           size="md"
           variant="outline"
           :disabled="!previewReady || printing"
@@ -99,8 +99,8 @@ onBeforeUnmount(() => window.removeEventListener('careerfitcv:preview-state', on
         >
           <Printer :size="15" :stroke-width="1.5" />
           <span class="hidden sm:inline">Print / PDF</span>
-        </AppButton>
-        <AppButton
+        </Button>
+        <Button
           size="md"
           :disabled="!previewReady || printing"
           :aria-disabled="!previewReady || printing"
@@ -108,7 +108,7 @@ onBeforeUnmount(() => window.removeEventListener('careerfitcv:preview-state', on
         >
           <Download :size="15" :stroke-width="2" />
           <span>Export</span>
-        </AppButton>
+        </Button>
       </div>
     </header>
 

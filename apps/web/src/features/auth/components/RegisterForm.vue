@@ -5,7 +5,8 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { registerSchema } from '../schemas/auth.schema'
 import { useRegisterMutation } from '../api/auth.mutations'
 import FormField from '@/shared/components/molecules/FormField.vue'
-import AppButton from '@/shared/components/atoms/AppButton.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
+import { ROUTES } from '@/shared/constants/routes'
 import { User, Mail, Lock, ArrowRight } from 'lucide-vue-next'
 import { ApiRequestError } from '@/shared/api/client'
 
@@ -92,15 +93,18 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
         <span v-if="retryMessage" class="block mt-1">{{ retryMessage }}</span>
       </div>
 
-      <FormField label="Full Name" :error="errors.name" html-for="name" required>
+      <FormField
+        v-slot="{ controlProps }"
+        label="Full Name"
+        :error="errors.name"
+        html-for="name"
+        required
+      >
         <div class="relative flex items-center">
           <User :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input
-            id="name"
             v-model="name"
-            v-bind="nameAttrs"
-            :aria-invalid="!!errors.name"
-            :aria-describedby="errors.name ? 'name-error' : undefined"
+            v-bind="{ ...nameAttrs, ...controlProps }"
             type="text"
             autocomplete="name"
             placeholder="Nguyen Anh Tu"
@@ -114,15 +118,18 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
         </div>
       </FormField>
 
-      <FormField label="Email Address" :error="errors.email" html-for="reg-email" required>
+      <FormField
+        v-slot="{ controlProps }"
+        label="Email Address"
+        :error="errors.email"
+        html-for="reg-email"
+        required
+      >
         <div class="relative flex items-center">
           <Mail :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input
-            id="reg-email"
             v-model="email"
-            v-bind="emailAttrs"
-            :aria-invalid="!!errors.email"
-            :aria-describedby="errors.email ? 'reg-email-error' : undefined"
+            v-bind="{ ...emailAttrs, ...controlProps }"
             type="email"
             autocomplete="email"
             placeholder="you@example.com"
@@ -136,15 +143,18 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
         </div>
       </FormField>
 
-      <FormField label="Password" :error="errors.password" html-for="reg-password" required>
+      <FormField
+        v-slot="{ controlProps }"
+        label="Password"
+        :error="errors.password"
+        html-for="reg-password"
+        required
+      >
         <div class="relative flex items-center">
           <Lock :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input
-            id="reg-password"
             v-model="password"
-            v-bind="passwordAttrs"
-            :aria-invalid="!!errors.password"
-            :aria-describedby="errors.password ? 'reg-password-error' : undefined"
+            v-bind="{ ...passwordAttrs, ...controlProps }"
             type="password"
             autocomplete="new-password"
             placeholder="••••••••"
@@ -173,6 +183,7 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
       </FormField>
 
       <FormField
+        v-slot="{ controlProps }"
         label="Confirm Password"
         :error="errors.password_confirmation"
         html-for="password-confirm"
@@ -181,11 +192,8 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
         <div class="relative flex items-center">
           <Lock :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
           <input
-            id="password-confirm"
             v-model="passwordConfirmation"
-            v-bind="passwordConfirmationAttrs"
-            :aria-invalid="!!errors.password_confirmation"
-            :aria-describedby="errors.password_confirmation ? 'password-confirm-error' : undefined"
+            v-bind="{ ...passwordConfirmationAttrs, ...controlProps }"
             type="password"
             autocomplete="new-password"
             placeholder="••••••••"
@@ -200,17 +208,17 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
       </FormField>
 
       <div class="pt-2">
-        <AppButton size="lg" type="submit" class="w-full shadow-xs" :loading="isPending">
+        <Button size="lg" type="submit" class="w-full shadow-xs" :loading="isPending">
           <span>Create account</span>
           <ArrowRight :size="16" />
-        </AppButton>
+        </Button>
       </div>
     </form>
 
     <p class="text-center text-sm text-text-muted">
       Already have an account?
       <RouterLink
-        to="/login"
+        :to="ROUTES.LOGIN"
         class="text-primary hover:text-primary-hover font-semibold ml-1 transition-colors"
       >
         Sign in

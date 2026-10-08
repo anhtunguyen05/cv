@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ROUTES } from '@/shared/constants/routes'
-import AppButton from '@/shared/components/atoms/AppButton.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
 import { Sparkles, ArrowRight } from 'lucide-vue-next'
 
 const scrolled = ref(false)
@@ -66,10 +66,10 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
           Sign in
         </RouterLink>
         <RouterLink :to="ROUTES.REGISTER">
-          <AppButton size="sm" class="shadow-brand-soft">
+          <Button size="sm" class="shadow-brand-soft">
             Get started
             <ArrowRight :size="13" :stroke-width="2" />
-          </AppButton>
+          </Button>
         </RouterLink>
       </div>
     </header>

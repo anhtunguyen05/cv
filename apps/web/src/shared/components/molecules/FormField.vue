@@ -19,6 +19,16 @@ const props = withDefaults(defineProps<Props>(), {
 const errorId = computed(() =>
   props.htmlFor && props.error ? `${props.htmlFor}-error` : undefined,
 )
+const hintId = computed(() =>
+  props.htmlFor && props.hint && !props.error ? `${props.htmlFor}-hint` : undefined,
+)
+const controlProps = computed(() => ({
+  id: props.htmlFor,
+  required: props.required || undefined,
+  'aria-required': props.required || undefined,
+  'aria-invalid': props.error ? true : undefined,
+  'aria-describedby': errorId.value ?? hintId.value,
+}))
 </script>
 
 <template>
@@ -28,9 +38,13 @@ const errorId = computed(() =>
       <span v-if="required" class="text-danger ml-0.5" aria-hidden="true">*</span>
     </label>
 
-    <slot />
+    <slot :control-props="controlProps" />
 
-    <p v-if="hint && !error" class="text-xs text-text-muted">{{ hint }}</p>
-    <p v-if="error" :id="errorId" class="text-xs text-danger" role="alert">{{ error }}</p>
+    <p v-if="hint && !error" :id="hintId" class="text-xs text-text-muted">
+      {{ hint }}
+    </p>
+    <p v-if="error" :id="errorId" class="text-xs text-danger" role="alert" aria-live="polite">
+      {{ error }}
+    </p>
   </div>
 </template>

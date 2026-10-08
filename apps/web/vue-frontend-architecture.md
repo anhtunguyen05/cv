@@ -3,18 +3,21 @@
 ## 1. Technology Stack
 
 ### Core
+
 - Vue 3
 - TypeScript
 - Vite
 - Vue Router
 
 ### State Management
+
 - Pinia
   - Dùng cho client/global state.
   - Ví dụ: auth state, UI state, wizard state, temporary shared state.
   - Không dùng Pinia như cache mặc định cho toàn bộ dữ liệu lấy từ API.
 
 ### Server State / Data Fetching
+
 - TanStack Query for Vue (`@tanstack/vue-query`)
   - Quản lý server state.
   - Query caching.
@@ -25,26 +28,32 @@
   - Cache invalidation.
 
 ### HTTP Client
+
 Ưu tiên:
+
 - `ofetch`
 
 Có thể thay bằng:
+
 - Axios
 
 `ofetch` được dùng làm API client chung tại `shared/api/`.
 
 ### Forms & Validation
+
 - VeeValidate
 - Zod
 - `@vee-validate/zod`
 
 ### Styling / UI
+
 - Tailwind CSS
 - shadcn-vue
 - Reka UI
 - lucide-vue-next
 
 ### Code Quality
+
 - ESLint
 - Prettier
 
@@ -159,7 +168,6 @@ src/
 │   │   │   └── ...
 │   │   │
 │   │   ├── atoms/
-│   │   │   ├── AppButton.vue
 │   │   │   ├── AppInput.vue
 │   │   │   ├── AppLabel.vue
 │   │   │   ├── AppBadge.vue
@@ -762,6 +770,39 @@ Types:
 
 ---
 
+# 14a. Implemented Review Remediation Rules
+
+The current frontend applies the following rules to new and changed code:
+
+- Shared code may depend only on other shared modules. Environment mapping used
+  by the shared API client lives in `shared/config/`, not in `app/`.
+- Every feature that owns server state exposes stable query-key factories under
+  its API folder. Feature components and controllers use the feature query
+  modules and update cache through `QueryClient`; route pages do not own query
+  orchestration or assign to a query result ref.
+- Route pages are thin feature-composition wrappers. They import one feature
+  screen component and render it; route-sensitive callbacks, cache writes,
+  loading/retry presentation, and pagination belong to feature components or
+  composables/controllers. This keeps all route screens on the same boundary,
+  including preview, patch, and Match Report routes.
+- Editors keep the latest server representation, the last saved snapshot, and
+  the editable draft separate. Refetches never replace a dirty draft. A
+  Version can only be created after the draft is saved.
+- API modules parse untrusted responses with Zod and expose the parsed type.
+  Editor JSON is parsed with the schema for the active CV section before a
+  mutation is sent.
+- Paginated adapters normalize backend `meta.page`/`meta.current_page`,
+  `per_page`, and `total` into a stable page result. KPI values use `total` and
+  must not be inferred from the current page length.
+- `FormField` owns label, hint, error, and live-error presentation. Controls
+  consume its scoped `controlProps` so `id`, `aria-invalid`, and
+  `aria-describedby` remain linked to the rendered messages.
+- Use the shared `ui/button/Button.vue` primitive directly. Do not add a
+  pass-through project wrapper that only forwards the primitive's props and
+  slot.
+
+---
+
 # 14. Important Architecture Rules
 
 1. Không tạo abstraction chỉ để làm structure trông phức tạp.
@@ -1231,3 +1272,22 @@ Zod            = validation/schema
 shadcn-vue     = UI primitives
 Atomic Design  = reusable component composition
 ```
+
+## 17. Enforced Runtime Boundaries
+
+- Route pages are thin wrappers around feature screen components. They do not import TanStack
+  Query primitives, feature query modules, or `*.api.ts` transport modules directly. Non-trivial
+  save, retry, conflict, cache, pagination, and route-scoping behavior belongs in a feature
+  component or composable/controller.
+- Every server-state feature defines stable query-key factories. Mutation variables capture the
+  resource identity, submitted payload or snapshot, revision, and idempotency key at invocation
+  time; callbacks must not infer the request origin from the current route.
+- API functions receive `unknown` responses and parse them with Zod before returning inferred
+  domain types. The shared pagination schema remains the common list adapter.
+- Application navigation uses `ROUTES`; feature and page code must not duplicate router paths.
+- `FormField` exposes `#default="{ controlProps }"`. Controls bind those props so the label ID,
+  `aria-invalid`, and stable error or hint description IDs stay synchronized. Validation failures
+  use an alert/live region and move keyboard focus to the first invalid field or error summary.
+- Reusable components use semantic color tokens. Literal colors are allowed only for deliberate
+  product branding or CV template rendering where the selected template is itself the visual
+  contract; those exceptions must remain local to the branding/template component.

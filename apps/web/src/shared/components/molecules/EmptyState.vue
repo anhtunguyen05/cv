@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import AppButton from '../atoms/AppButton.vue'
+import Button from '../ui/button/Button.vue'
 
 interface Props {
   icon?: Component
@@ -36,9 +36,9 @@ const emit = defineEmits<{ action: [] }>()
     </div>
 
     <div v-if="actionLabel || $slots.action" class="mt-6 flex items-center gap-3">
-      <AppButton v-if="actionLabel" size="sm" @click="emit('action')">
+      <Button v-if="actionLabel" size="sm" @click="emit('action')">
         {{ actionLabel }}
-      </AppButton>
+      </Button>
       <slot name="action" />
     </div>
 

@@ -25,12 +25,16 @@ test('creates, analyzes, and reviews a source-pinned Match Report', async ({ pag
   await page.getByRole('link', { name: 'Analyze Job' }).click()
   await page.getByLabel('Company').fill('Example Co')
   await page.getByLabel('Role').fill('Frontend Engineer')
-  await page.getByLabel('Job Description source').fill(
-    'Role: Frontend Engineer\nRequirements:\n- Vue 3 and TypeScript\nNice to have:\n- Docker',
-  )
+  await page
+    .getByLabel('Job Description source')
+    .fill('Role: Frontend Engineer\nRequirements:\n- Vue 3 and TypeScript\nNice to have:\n- Docker')
   await page.getByRole('button', { name: 'Save Job Description' }).click()
   await expect(page).toHaveURL(/\/jd\/[0-9A-Z]{26}$/)
   const jobDescriptionUrl = page.url()
+  await page.goto('/jd/new')
+  await expect(page.getByLabel('Job Description source')).toHaveValue('')
+  await expect(page.getByRole('button', { name: 'Analyze revision' })).toHaveCount(0)
+  await page.goto(jobDescriptionUrl)
   await page.reload()
   await expect(page.getByRole('button', { name: 'Analyze revision' })).toBeVisible()
 
@@ -77,16 +81,18 @@ test('creates, analyzes, and reviews a source-pinned Match Report', async ({ pag
         body: JSON.stringify({
           code: 'VALIDATION_FAILED',
           message: 'One or more fields are invalid.',
-          details: { raw_text: [{ code: 'MAX_LENGTH', message: 'The raw_text field is invalid.' }] },
+          details: {
+            raw_text: [{ code: 'MAX_LENGTH', message: 'The raw_text field is invalid.' }],
+          },
         }),
       })
       return
     }
     await route.continue()
   })
-  await page.getByLabel('Job Description source').fill(
-    'Role: Frontend Engineer\nRequirements:\n- Vue 3, TypeScript, and Laravel',
-  )
+  await page
+    .getByLabel('Job Description source')
+    .fill('Role: Frontend Engineer\nRequirements:\n- Vue 3, TypeScript, and Laravel')
   await page.getByRole('button', { name: 'Save new revision' }).click()
   await expect(page.locator('#jd-text')).toHaveAttribute('aria-invalid', 'true')
   await expect(page.locator('#jd-text')).toBeFocused()
@@ -109,7 +115,10 @@ test('creates, analyzes, and reviews a source-pinned Match Report', async ({ pag
       await route.fulfill({
         status: 409,
         contentType: 'application/json',
-        body: JSON.stringify({ code: 'JOB_DESCRIPTION_UPDATE_CONFLICT', message: 'Reload the current revision.' }),
+        body: JSON.stringify({
+          code: 'JOB_DESCRIPTION_UPDATE_CONFLICT',
+          message: 'Reload the current revision.',
+        }),
       })
       return
     }
@@ -130,7 +139,10 @@ test('creates, analyzes, and reviews a source-pinned Match Report', async ({ pag
   let firstReport: Record<string, unknown> | undefined
   await page.route('**/api/v1/match-reports*', async (route) => {
     const response = await route.fetch()
-    const body = await response.json() as { data: Record<string, unknown>[]; meta: Record<string, unknown> }
+    const body = (await response.json()) as {
+      data: Record<string, unknown>[]
+      meta: Record<string, unknown>
+    }
     const requestedPage = new URL(route.request().url()).searchParams.get('page')
     if (requestedPage === '1') {
       firstReport = body.data[0]
@@ -146,7 +158,9 @@ test('creates, analyzes, and reviews a source-pinned Match Report', async ({ pag
   await page.goto('/match')
   await expect(page.getByRole('heading', { name: 'Match Reports' })).toBeVisible()
   await expect(page.getByText('Frontend Engineer', { exact: true })).toBeVisible()
-  await expect(page.getByText(new RegExp('CV ' + selectedCvVersionId + ' · revision'))).toBeVisible()
+  await expect(
+    page.getByText(new RegExp('CV ' + selectedCvVersionId + ' · revision')),
+  ).toBeVisible()
   await expect(page.getByText('Page 1 of 2')).toBeVisible()
   await page.getByRole('button', { name: 'Next' }).click()
   await expect(page.getByText('Page 2 of 2')).toBeVisible()
@@ -161,7 +175,10 @@ test('creates, analyzes, and reviews a source-pinned Match Report', async ({ pag
         status: 503,
         contentType: 'application/json',
         headers: { 'Retry-After': '1' },
-        body: JSON.stringify({ code: 'DERIVATION_TEMPORARILY_UNAVAILABLE', message: 'Retry the stored report.' }),
+        body: JSON.stringify({
+          code: 'DERIVATION_TEMPORARILY_UNAVAILABLE',
+          message: 'Retry the stored report.',
+        }),
       })
       return
     }

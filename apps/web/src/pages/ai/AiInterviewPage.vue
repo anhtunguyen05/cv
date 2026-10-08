@@ -1,83 +1,26 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useMutation, useQuery } from '@tanstack/vue-query'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import { ArrowLeft, RefreshCw, ShieldCheck } from 'lucide-vue-next'
-import {
-  getEvidenceInterview,
-  generatePatch,
-  submitEvidenceAnswer,
-} from '@/features/evidence/api/evidence.api'
-import { ApiRequestError } from '@/shared/api/client'
-import AppButton from '@/shared/components/atoms/AppButton.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
 import AppBadge from '@/shared/components/atoms/AppBadge.vue'
 import Card from '@/shared/components/ui/card/Card.vue'
 import { ROUTES } from '@/shared/constants/routes'
+import {
+  interviewStatusLabels as statusLabels,
+  interviewStatusVariants as statusVariants,
+  useAiInterviewController,
+} from '@/features/evidence/composables/useAiInterviewController'
 
-const route = useRoute()
-const interviewId = computed(() => String(route.params.id || ''))
-const interviewQuery = useQuery({
-  queryKey: computed(() => ['evidence-interviews', interviewId.value]),
-  queryFn: () => getEvidenceInterview(interviewId.value),
-  enabled: computed(() => interviewId.value.length > 0),
-  retry: (count, error) => isRetryable(error) && count < 2,
-})
-const answers = ref<Record<string, string>>({})
-const answerKeys = ref<Record<string, string>>({})
-const activeQuestion = ref<string | null>(null)
-const answerMutation = useMutation({
-  mutationFn: (input: { questionId: string; answer?: string; cannotProvide?: boolean }) =>
-    submitEvidenceAnswer(
-      interviewId.value,
-      {
-        question_id: input.questionId,
-        question_version: '1.0',
-        outcome: input.cannotProvide ? 'cannot_provide' : 'answer',
-        ...(input.cannotProvide ? {} : { answer: input.answer ?? '' }),
-      },
-      (answerKeys.value[input.questionId] ??= crypto.randomUUID()),
-    ),
-  onSuccess: ({ interview }, input) => {
-    interviewQuery.data.value = interview
-    delete answerKeys.value[input.questionId]
-    activeQuestion.value = null
-  },
-})
-const generationKey = ref<string | null>(null)
-const generationMutation = useMutation({
-  mutationFn: () => generatePatch(interviewId.value, (generationKey.value ??= crypto.randomUUID())),
-  onSuccess: (patch) => {
-    generationKey.value = null
-    void router.push(ROUTES.PATCH_REVIEW(patch.id))
-  },
-})
-const router = useRouter()
-
-const retryable = computed(() => {
-  const error = interviewQuery.error.value
-  return isRetryable(error)
-})
-
-function isRetryable(error: unknown): boolean {
-  return error instanceof ApiRequestError ? error.status === 429 || error.status >= 500 : true
-}
-
-function submitAnswer(questionId: string, cannotProvide = false): void {
-  activeQuestion.value = questionId
-  answerKeys.value[questionId] ??= crypto.randomUUID()
-  answerMutation.mutate({ questionId, answer: answers.value[questionId], cannotProvide })
-}
-
-const statusLabels = {
-  active: 'Active',
-  completed: 'Completed',
-  expired: 'Expired',
-} as const
-const statusVariants = {
-  active: 'success',
-  completed: 'muted',
-  expired: 'warning',
-} as const
+const {
+  interviewQuery,
+  answers,
+  activeQuestion,
+  answerMutation,
+  generationMutation,
+  retryable,
+  submitAnswer,
+  generatePatchProposal,
+} = useAiInterviewController()
 </script>
 
 <template>
@@ -126,9 +69,9 @@ const statusVariants = {
             : 'The interview could not be loaded.'
         }}
       </p>
-      <AppButton v-if="retryable" type="button" variant="outline" @click="interviewQuery.refetch()">
+      <Button v-if="retryable" type="button" variant="outline" @click="interviewQuery.refetch()">
         <RefreshCw :size="15" aria-hidden="true" /> Retry
-      </AppButton>
+      </Button>
       <RouterLink
         v-else
         :to="ROUTES.MATCH_REPORTS"
@@ -201,7 +144,7 @@ const statusVariants = {
                 placeholder="Share a specific, truthful example."
               />
               <div class="flex flex-wrap gap-2">
-                <AppButton
+                <Button
                   type="button"
                   size="sm"
                   :loading="activeQuestion === question.id && answerMutation.isPending.value"
@@ -209,8 +152,8 @@ const statusVariants = {
                   @click="submitAnswer(question.id)"
                 >
                   Save answer
-                </AppButton>
-                <AppButton
+                </Button>
+                <Button
                   type="button"
                   size="sm"
                   variant="outline"
@@ -218,7 +161,7 @@ const statusVariants = {
                   @click="submitAnswer(question.id, true)"
                 >
                   I cannot provide evidence
-                </AppButton>
+                </Button>
               </div>
             </template>
             <p
@@ -257,9 +200,9 @@ const statusVariants = {
             The answer could not be saved. Refresh the interview to reconcile its server-owned
             state.
           </p>
-          <AppButton type="button" size="sm" variant="outline" @click="interviewQuery.refetch()">
+          <Button type="button" size="sm" variant="outline" @click="interviewQuery.refetch()">
             <RefreshCw :size="15" aria-hidden="true" /> Refresh interview
-          </AppButton>
+          </Button>
         </div>
         <div
           v-if="interviewQuery.data.value.status === 'completed'"
@@ -268,14 +211,14 @@ const statusVariants = {
           <p class="text-sm text-text-muted">
             All outcomes are recorded. Generate one bounded Patch proposal for your review.
           </p>
-          <AppButton
+          <Button
             type="button"
             :loading="generationMutation.isPending.value"
             :disabled="generationMutation.isPending.value"
-            @click="generationMutation.mutate()"
+            @click="generatePatchProposal"
           >
             Generate Patch proposal
-          </AppButton>
+          </Button>
           <p v-if="generationMutation.isError.value" class="text-sm text-danger-text" role="alert">
             The proposal could not be generated. You can retry safely.
           </p>

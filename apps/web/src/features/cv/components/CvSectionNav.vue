@@ -19,21 +19,27 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  completedSections: () => ['personal_information', 'summary', 'skills', 'projects', 'education'],
+  completedSections: () => [],
 })
 
 const emit = defineEmits<{ select: [section: CvSectionKey] }>()
 
-const sections: Array<{ key: CvSectionKey; label: string; icon: Component }> = [
-  { key: 'personal_information', label: 'Personal Info', icon: User },
-  { key: 'summary', label: 'Summary', icon: FileText },
-  { key: 'skills', label: 'Skills & Stack', icon: Code2 },
-  { key: 'projects', label: 'Projects', icon: FolderGit2 },
-  { key: 'education', label: 'Education', icon: GraduationCap },
-  { key: 'certificates', label: 'Certificates', icon: Award },
-  { key: 'languages', label: 'Languages', icon: Globe },
-  { key: 'activities', label: 'Activities', icon: Users },
-]
+const sectionMetadata: Record<CvSectionKey, { label: string; icon: Component }> = {
+  personal_information: { label: 'Personal Info', icon: User },
+  summary: { label: 'Summary', icon: FileText },
+  skills: { label: 'Skills & Stack', icon: Code2 },
+  projects: { label: 'Projects', icon: FolderGit2 },
+  experience: { label: 'Experience', icon: Users },
+  education: { label: 'Education', icon: GraduationCap },
+  certificates: { label: 'Certificates', icon: Award },
+  languages: { label: 'Languages', icon: Globe },
+  activities: { label: 'Activities', icon: Users },
+}
+
+const sections = (Object.keys(sectionMetadata) as CvSectionKey[]).map((key) => ({
+  key,
+  ...sectionMetadata[key],
+}))
 </script>
 
 <template>

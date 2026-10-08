@@ -51,7 +51,9 @@ describe('registration transport', () => {
     const { ApiRequestError } = await import('@/shared/api/client')
     api
       .mockRejectedValueOnce(new ApiRequestError(419))
-      .mockResolvedValueOnce({ data: { user: {} } })
+      .mockResolvedValueOnce({
+        data: { user: { id: '1', name: credentials.name, email: credentials.email } },
+      })
     const { register } = await import('@/features/auth/api/auth.api')
 
     await register(credentials)
@@ -81,5 +83,12 @@ describe('registration transport', () => {
       email: credentials.email,
     })
     expect(api).toHaveBeenCalledWith('/auth/me')
+  })
+
+  it('rejects a malformed authentication payload at the API boundary', async () => {
+    api.mockResolvedValue({ data: { user: { id: '1', name: credentials.name } } })
+    const { getMe } = await import('@/features/auth/api/auth.api')
+
+    await expect(getMe()).rejects.toThrow()
   })
 })

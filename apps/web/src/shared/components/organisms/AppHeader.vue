@@ -116,7 +116,7 @@ function logout() {
 
           <div class="py-1">
             <RouterLink
-              to="/dashboard"
+              :to="ROUTES.DASHBOARD"
               class="flex items-center gap-2 px-3.5 py-1.5 text-xs text-text-quiet hover:bg-surface hover:text-text transition-colors"
               @click="userMenuOpen = false"
             >
@@ -124,7 +124,7 @@ function logout() {
               Profile & Account
             </RouterLink>
             <RouterLink
-              to="/templates"
+              :to="ROUTES.TEMPLATES"
               class="flex items-center gap-2 px-3.5 py-1.5 text-xs text-text-quiet hover:bg-surface hover:text-text transition-colors"
               @click="userMenuOpen = false"
             >

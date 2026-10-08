@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import type { CvTemplate } from '../types/template.types'
 import { Check } from 'lucide-vue-next'
-import AppButton from '@/shared/components/atoms/AppButton.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
 
 interface Props {
   template: CvTemplate
@@ -53,7 +53,7 @@ function onMouseLeave() {
         class="pointer-events-none absolute inset-0 z-10 transition-opacity duration-300 rounded-xl"
         :style="{
           opacity: spotlight.opacity,
-          background: `radial-gradient(250px circle at ${spotlight.x}px ${spotlight.y}px, rgba(99,102,241,0.09), transparent 70%)`,
+          background: `radial-gradient(250px circle at ${spotlight.x}px ${spotlight.y}px, color-mix(in srgb, var(--color-primary) 9%, transparent), transparent 70%)`,
         }"
       />
 
@@ -122,7 +122,7 @@ function onMouseLeave() {
         </div>
 
         <div class="pt-3">
-          <AppButton
+          <Button
             :variant="selected ? 'default' : 'outline'"
             size="sm"
             class="w-full"
@@ -130,7 +130,7 @@ function onMouseLeave() {
             @click.stop="emit('select', template)"
           >
             {{ selected ? 'Selected' : 'Use Template' }}
-          </AppButton>
+          </Button>
         </div>
       </div>
     </div>

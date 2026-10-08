@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { Search, X } from 'lucide-vue-next'
-import { useDebounce } from '@/shared/composables/useDebounce'
 
 interface Props {
   modelValue?: string
@@ -21,17 +20,42 @@ const emit = defineEmits<{
 }>()
 
 const inputValue = ref(props.modelValue)
-const debounced = useDebounce(inputValue, 350)
+let pendingSearch: ReturnType<typeof setTimeout> | undefined
 
-import { watch } from 'vue'
-watch(debounced, (val) => {
-  emit('update:modelValue', val)
-  emit('search', val)
-})
+function cancelPendingSearch(): void {
+  if (pendingSearch !== undefined) clearTimeout(pendingSearch)
+  pendingSearch = undefined
+}
+
+function scheduleSearch(value: string): void {
+  cancelPendingSearch()
+  pendingSearch = setTimeout(() => {
+    emit('update:modelValue', value)
+    emit('search', value)
+    pendingSearch = undefined
+  }, 350)
+}
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    cancelPendingSearch()
+    if (value !== inputValue.value) inputValue.value = value
+  },
+)
+
+function onInput(event: Event): void {
+  const value = (event.target as HTMLInputElement).value
+  inputValue.value = value
+  scheduleSearch(value)
+}
 
 function clear() {
   inputValue.value = ''
+  scheduleSearch('')
 }
+
+onBeforeUnmount(cancelPendingSearch)
 </script>
 
 <template>
@@ -42,10 +66,11 @@ function clear() {
       :stroke-width="1.5"
     />
     <input
-      v-model="inputValue"
+      :value="inputValue"
       type="search"
       :placeholder="placeholder"
       class="w-full h-10 sm:h-11 pl-10 pr-9 text-sm rounded-xl border border-border bg-white placeholder:text-text-subtle focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all"
+      @input="onInput"
     />
     <button
       v-if="inputValue"

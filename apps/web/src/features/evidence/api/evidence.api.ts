@@ -101,7 +101,7 @@ export async function startEvidenceInterview(
     },
   )
 
-  return evidenceInterviewSchema.parse(response.data) as EvidenceInterview
+  return evidenceInterviewSchema.parse(response.data)
 }
 
 export async function getEvidenceInterview(interviewId: string): Promise<EvidenceInterview> {
@@ -109,7 +109,7 @@ export async function getEvidenceInterview(interviewId: string): Promise<Evidenc
     `/evidence-interviews/${encodeURIComponent(interviewId)}`,
   )
 
-  return evidenceInterviewSchema.parse(response.data) as EvidenceInterview
+  return evidenceInterviewSchema.parse(response.data)
 }
 
 const answerSchema = z.object({
@@ -162,7 +162,7 @@ const patchSchema = z.object({
 })
 
 function patchData(response: { data: unknown }): Patch {
-  return patchSchema.parse(response.data) as Patch
+  return patchSchema.parse(response.data)
 }
 
 export async function submitEvidenceAnswer(
@@ -186,7 +186,7 @@ export async function submitEvidenceAnswer(
   const data = z
     .object({ answer: answerSchema, interview: evidenceInterviewSchema })
     .parse(response.data)
-  return { answer: data.answer as EvidenceAnswer, interview: data.interview as EvidenceInterview }
+  return { answer: data.answer, interview: data.interview }
 }
 
 export async function generatePatch(interviewId: string, idempotencyKey = uuid()): Promise<Patch> {
