@@ -1,0 +1,118 @@
+{
+  "contract_version": "1.0",
+  "valid": [
+    {
+      "name": "valid_summary_replacement",
+      "request": {
+        "contract_version": "1.0",
+        "execution_id": "01J00000000000000000000000",
+        "request_hash": "cef83c27d6c997c9826f409ef4cace2d21a2b57382ce6b7ef14c37c97c7947b8",
+        "source": {
+          "cv_version_id": "01J00000000000000000000001",
+          "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+        },
+        "context": {
+          "source_fragment": {
+            "kind": "summary",
+            "current_value": "Backend developer with Laravel experience."
+          },
+          "positive_evidence": [
+            {
+              "id": "01J00000000000000000000002",
+              "area_signal_id": "docker",
+              "answer": "Configured Docker Compose for a Laravel development environment."
+            }
+          ]
+        },
+        "constraints": {
+          "target_allowlist": ["summary"],
+          "locale": "en"
+        }
+      },
+      "response": {
+        "contract_version": "1.0",
+        "execution_id": "01J00000000000000000000000",
+        "request_hash": "cef83c27d6c997c9826f409ef4cace2d21a2b57382ce6b7ef14c37c97c7947b8",
+        "source": {
+          "cv_version_id": "01J00000000000000000000001",
+          "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+        },
+        "status": "succeeded",
+        "candidate": {
+          "target": {"section": "summary", "field": "summary", "item_id": null, "operation": "replace"},
+          "proposed_text": "Configured Docker Compose for a Laravel development environment.",
+          "reason": "Clarifies the Docker experience stated in the user's Evidence.",
+          "evidence_source_ids": ["01J00000000000000000000002"]
+        },
+        "metadata": {
+          "provider": "remote_mock",
+          "model": "deterministic-remote-mock-1.0",
+          "prompt_version": "patch-v1",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_ms": 0
+        }
+      }
+    },
+    {
+      "name": "summary_text_at_max_boundary",
+      "request": {
+        "contract_version": "1.0",
+        "execution_id": "01J00000000000000000000003",
+        "request_hash": "3a185c1d6db714abf343c8e7449d97de589c434f9584b33c59455019b3eec0c3",
+        "source": {
+          "cv_version_id": "01J00000000000000000000004",
+          "snapshot_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "context": {
+          "source_fragment": {"kind": "summary", "current_value": null},
+          "positive_evidence": [{"id": "01J00000000000000000000005", "area_signal_id": "docker", "answer": "Docker"}]
+        },
+        "constraints": {"target_allowlist": ["summary"], "locale": "en"}
+      },
+      "response": {
+        "contract_version": "1.0",
+        "execution_id": "01J00000000000000000000003",
+        "request_hash": "3a185c1d6db714abf343c8e7449d97de589c434f9584b33c59455019b3eec0c3",
+        "source": {
+          "cv_version_id": "01J00000000000000000000004",
+          "snapshot_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "status": "succeeded",
+        "candidate": {
+          "target": {"section": "summary", "field": "summary", "item_id": null, "operation": "replace"},
+          "proposed_text": "Docker",
+          "reason": "Evidence supports this summary.",
+          "evidence_source_ids": ["01J00000000000000000000005"]
+        },
+        "metadata": {
+          "provider": "remote_mock",
+          "model": "deterministic-remote-mock-1.0",
+          "prompt_version": "patch-v1",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_ms": 0
+        }
+      }
+    }
+  ],
+  "invalid": [
+    {"name": "unknown_top_level_request_field", "kind": "request", "case": {"contract_version": "1.0", "execution_id": "01J00000000000000000000000", "request_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "source": {"cv_version_id": "01J00000000000000000000001", "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"}, "context": {"source_fragment": {"kind": "summary", "current_value": null}, "positive_evidence": [{"id": "01J00000000000000000000002", "area_signal_id": "docker", "answer": "Docker"}]}, "constraints": {"target_allowlist": ["summary"], "locale": "en"}, "unsafe": "PROMPT_INJECTION_CANARY"}},
+    {"name": "invalid_hash", "kind": "request", "case": {"contract_version": "1.0", "execution_id": "01J00000000000000000000000", "request_hash": "NOT-A-HASH", "source": {"cv_version_id": "01J00000000000000000000001", "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"}, "context": {"source_fragment": {"kind": "summary", "current_value": null}, "positive_evidence": [{"id": "01J00000000000000000000002", "area_signal_id": "docker", "answer": "Docker"}]}, "constraints": {"target_allowlist": ["summary"], "locale": "en"}}},
+    {"name": "wrong_target_allowlist", "kind": "request", "case": {"contract_version": "1.0", "execution_id": "01J00000000000000000000000", "request_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "source": {"cv_version_id": "01J00000000000000000000001", "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"}, "context": {"source_fragment": {"kind": "summary", "current_value": null}, "positive_evidence": [{"id": "01J00000000000000000000002", "area_signal_id": "docker", "answer": "Docker"}]}, "constraints": {"target_allowlist": ["experience.highlights"], "locale": "en"}}},
+    {"name": "response_unknown_nested_field", "kind": "response", "case": {"contract_version": "1.0", "execution_id": "01J00000000000000000000000", "request_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "source": {"cv_version_id": "01J00000000000000000000001", "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"}, "status": "succeeded", "candidate": {"target": {"section": "summary", "field": "summary", "item_id": null, "operation": "replace", "old_value": "SENSITIVE_CANARY"}, "proposed_text": "Docker", "reason": "Safe evidence.", "evidence_source_ids": ["01J00000000000000000000002"]}, "metadata": {"provider": "remote_mock", "model": "deterministic-remote-mock-1.0", "prompt_version": "patch-v1", "input_tokens": 0, "output_tokens": 0, "latency_ms": 0}}},
+    {"name": "foreign_evidence_reference", "kind": "response", "case": {"contract_version": "1.0", "execution_id": "01J00000000000000000000000", "request_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "source": {"cv_version_id": "01J00000000000000000000001", "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"}, "status": "succeeded", "candidate": {"target": {"section": "summary", "field": "summary", "item_id": null, "operation": "replace"}, "proposed_text": "Docker", "reason": "Safe evidence.", "evidence_source_ids": ["01J00000000000000000000006"]}, "metadata": {"provider": "remote_mock", "model": "deterministic-remote-mock-1.0", "prompt_version": "patch-v1", "input_tokens": 0, "output_tokens": 0, "latency_ms": 0}}},
+    {"name": "duplicate_evidence_reference", "kind": "response", "case": {"contract_version": "1.0", "execution_id": "01J00000000000000000000000", "request_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "source": {"cv_version_id": "01J00000000000000000000001", "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"}, "status": "succeeded", "candidate": {"target": {"section": "summary", "field": "summary", "item_id": null, "operation": "replace"}, "proposed_text": "Docker", "reason": "Safe evidence.", "evidence_source_ids": ["01J00000000000000000000002", "01J00000000000000000000002"]}, "metadata": {"provider": "remote_mock", "model": "deterministic-remote-mock-1.0", "prompt_version": "patch-v1", "input_tokens": 0, "output_tokens": 0, "latency_ms": 0}}},
+    {"name": "mismatched_execution_binding", "kind": "response", "case": {"contract_version": "1.0", "execution_id": "01J00000000000000000000009", "request_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "source": {"cv_version_id": "01J00000000000000000000001", "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"}, "status": "succeeded", "candidate": {"target": {"section": "summary", "field": "summary", "item_id": null, "operation": "replace"}, "proposed_text": "Docker", "reason": "Safe evidence.", "evidence_source_ids": ["01J00000000000000000000002"]}, "metadata": {"provider": "remote_mock", "model": "deterministic-remote-mock-1.0", "prompt_version": "patch-v1", "input_tokens": 0, "output_tokens": 0, "latency_ms": 0}}},
+    {"name": "empty_evidence_answer", "kind": "request", "case": {"contract_version": "1.0", "execution_id": "01J00000000000000000000000", "request_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "source": {"cv_version_id": "01J00000000000000000000001", "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"}, "context": {"source_fragment": {"kind": "summary", "current_value": null}, "positive_evidence": [{"id": "01J00000000000000000000002", "area_signal_id": "docker", "answer": ""}]}, "constraints": {"target_allowlist": ["summary"], "locale": "en"}}},
+    {"name": "unsafe_metadata", "kind": "response", "case": {"contract_version": "1.0", "execution_id": "01J00000000000000000000000", "request_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", "source": {"cv_version_id": "01J00000000000000000000001", "snapshot_hash": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"}, "status": "succeeded", "candidate": {"target": {"section": "summary", "field": "summary", "item_id": null, "operation": "replace"}, "proposed_text": "Docker", "reason": "Safe evidence.", "evidence_source_ids": ["01J00000000000000000000002"]}, "metadata": {"provider": "raw prompt SECRET_CANARY", "model": "deterministic-remote-mock-1.0", "prompt_version": "patch-v1", "input_tokens": 0, "output_tokens": 0, "latency_ms": 0}}}
+  ],
+  "transport_failures": [
+    {"name": "malformed_json", "status": 400, "code": "AI_REQUEST_INVALID"},
+    {"name": "unauthorized", "status": 401, "code": "AI_UNAUTHENTICATED"},
+    {"name": "timeout", "status": 504, "code": "AI_TIMEOUT"},
+    {"name": "rate_limited", "status": 429, "code": "AI_RATE_LIMITED"},
+    {"name": "unavailable", "status": 503, "code": "AI_UNAVAILABLE"}
+  ],
+  "canaries": ["PROMPT_INJECTION_CANARY", "SENSITIVE_CANARY", "SECRET_CANARY"]
+}

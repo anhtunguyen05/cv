@@ -5,6 +5,19 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "careerfit-worker"
 version = "0.0.0"
-description = "Lightweight CareerFit worker service"
+description = "CareerFit internal AI service foundation"
 requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "pydantic-settings>=2.7,<3.0",
+    "uvicorn[standard]>=0.34,<1.0",
+]
 
+[project.optional-dependencies]
+test = [
+    "httpx>=0.28,<1.0",
+    "pytest>=8.3,<9.0",
+]
+
+[project.scripts]
+careerfit-ai-service = "app.main:main"
