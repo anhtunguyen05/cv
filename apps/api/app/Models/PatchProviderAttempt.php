@@ -21,6 +21,8 @@ final class PatchProviderAttempt extends Model
         'id', 'user_id', 'interview_id', 'patch_id', 'predecessor_patch_id', 'status',
         'outcome_code', 'prompt_version', 'tool_schema_version',
         'provider_model_version', 'latency_class', 'correlation_id',
+        'execution_id', 'request_hash', 'source_cv_version_id', 'source_snapshot_hash',
+        'logical_operation_key', 'response_metadata',
         'created_at', 'completed_at',
     ];
 
@@ -29,6 +31,7 @@ final class PatchProviderAttempt extends Model
         return [
             'created_at' => 'immutable_datetime',
             'completed_at' => 'immutable_datetime',
+            'response_metadata' => 'array',
         ];
     }
 

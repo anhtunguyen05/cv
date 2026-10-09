@@ -12,6 +12,7 @@ use App\Application\Cv\ProfileDocumentValidator;
 use App\Application\OperationalSafety\OperationalAuditEventStore;
 use App\Application\OperationalSafety\ProviderFailureClassifier;
 use App\Application\OperationalSafety\ProviderRetryPolicy;
+use App\Application\Patch\Contracts\PatchProposalContractValidator;
 use App\Models\CvVersion;
 use App\Models\EvidenceAnswer;
 use App\Models\EvidenceInterview;
@@ -20,6 +21,7 @@ use App\Models\JobDescriptionAnalysis;
 use App\Models\JobDescriptionRevision;
 use App\Models\MatchReport;
 use App\Models\Patch;
+use App\Models\PatchGenerationReservation;
 use App\Models\PatchProviderAttempt;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -56,8 +58,10 @@ final class PatchService
             'interview_id' => $interviewId,
             'predecessor_patch_id' => $predecessorId,
         ])."\n".$route);
+        $providerMetadata = $this->providerMetadata();
+        $logicalOperationKey = hash('sha256', "patch-generation:v1\n".$interviewId."\n".($predecessorId ?? '')."\n".($predecessorRevision === null ? '' : (string) $predecessorRevision));
 
-        $state = DB::transaction(function () use ($user, $interviewId, $idempotencyKey, $hash, $predecessorId, $operation, $predecessorRevision): array {
+        $state = DB::transaction(function () use ($user, $interviewId, $idempotencyKey, $hash, $predecessorId, $operation, $predecessorRevision, $providerMetadata, $logicalOperationKey): array {
             $existing = CvIdempotency::existing($user, $operation, $idempotencyKey, $hash);
             if ($existing['replayed']) {
                 return ['replayed' => true, 'body' => $existing['body'] ?? [], 'status' => $existing['status'] ?? 201];
@@ -66,9 +70,6 @@ final class PatchService
             $interview = $context['interview'];
             if ($interview->status !== 'completed') {
                 throw new ApiProblem('EVIDENCE_SESSION_CONFLICT', 'Complete the active Evidence Interview before generating a Patch.', 409);
-            }
-            if ($predecessorId === null && Patch::query()->where('interview_id', $interview->getKey())->whereNull('predecessor_patch_id')->exists()) {
-                throw new ApiProblem('PATCH_STATE_CONFLICT', 'A Patch proposal already exists for this Interview.', 409);
             }
             $active = PatchProviderAttempt::query()
                 ->where('interview_id', $interview->getKey())
@@ -80,6 +81,13 @@ final class PatchService
                     throw new ApiProblem('PATCH_STATE_CONFLICT', 'A Patch generation attempt is already active for this Interview.', 409);
                 }
                 $active->forceFill(['status' => 'retryable_failure', 'outcome_code' => 'PATCH_PROVIDER_TIMEOUT', 'completed_at' => Carbon::now()])->save();
+                if ($active->logical_operation_key !== null) {
+                    PatchGenerationReservation::query()
+                        ->where('user_id', $user->getKey())
+                        ->where('logical_operation_key', $active->logical_operation_key)
+                        ->whereIn('status', ['requested', 'running'])
+                        ->update(['status' => 'retryable_failure', 'updated_at' => Carbon::now()]);
+                }
             }
             $attemptQuery = PatchProviderAttempt::query()
                 ->where('user_id', $user->getKey())
@@ -114,16 +122,104 @@ final class PatchService
             if ($positive->isEmpty()) {
                 throw new ApiProblem('PATCH_PROPOSAL_INVALID', 'A Patch requires at least one positive User Evidence answer.', 422);
             }
+            $reservation = PatchGenerationReservation::query()
+                ->where('user_id', $user->getKey())
+                ->where('logical_operation_key', $logicalOperationKey)
+                ->lockForUpdate()
+                ->first();
+            if ($reservation instanceof PatchGenerationReservation && $reservation->status === 'succeeded' && is_array($reservation->response)) {
+                CvIdempotency::record($user, $operation, $idempotencyKey, $hash, $reservation->response, 201);
+
+                return ['replayed' => true, 'body' => $reservation->response, 'status' => 201];
+            }
+            if ($reservation instanceof PatchGenerationReservation && in_array($reservation->status, ['requested', 'running'], true)) {
+                throw new ApiProblem('PATCH_STATE_CONFLICT', 'A Patch generation attempt is already active for this Interview.', 409);
+            }
+            if ($predecessorId === null && Patch::query()->where('interview_id', $interview->getKey())->whereNull('predecessor_patch_id')->exists()) {
+                throw new ApiProblem('PATCH_STATE_CONFLICT', 'A Patch proposal already exists for this Interview.', 409);
+            }
+            $executionId = $reservation instanceof PatchGenerationReservation ? (string) $reservation->execution_id : ProfileDocument::id();
+            $requestSource = [
+                'cv_version_id' => (string) $context['version']->getKey(),
+                'snapshot_hash' => (string) $context['version']->snapshot_hash,
+            ];
+            if ($reservation instanceof PatchGenerationReservation
+                && ((string) $reservation->source_cv_version_id !== $requestSource['cv_version_id']
+                    || ! hash_equals((string) $reservation->source_snapshot_hash, $requestSource['snapshot_hash']))) {
+                throw new ApiProblem('PATCH_SOURCE_STALE', 'The source CV Version has changed. Review the Patch again.', 409);
+            }
+            $contractRequest = $this->contractRequest($executionId, $requestSource, $context['version']->snapshot['summary'] ?? null, $positive->all());
+            $requestHash = (string) $contractRequest['request_hash'];
+            if ($reservation instanceof PatchGenerationReservation
+                && ! hash_equals((string) $reservation->request_hash, $requestHash)) {
+                throw new ApiProblem('PATCH_STATE_CONFLICT', 'The Patch generation input has changed. Retry with a new operation.', 409);
+            }
+            $correlationId = $reservation instanceof PatchGenerationReservation ? (string) $reservation->correlation_id : bin2hex(random_bytes(16));
+            if (! $reservation instanceof PatchGenerationReservation) {
+                $reservationValues = [
+                    'id' => ProfileDocument::id(),
+                    'user_id' => $user->getKey(),
+                    'interview_id' => $interview->getKey(),
+                    'predecessor_patch_id' => $predecessor?->getKey(),
+                    'logical_operation_key' => $logicalOperationKey,
+                    'execution_id' => $executionId,
+                    'request_hash' => $requestHash,
+                    'source_cv_version_id' => $requestSource['cv_version_id'],
+                    'source_snapshot_hash' => $requestSource['snapshot_hash'],
+                    'correlation_id' => $correlationId,
+                    'status' => 'running',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ];
+                $inserted = PatchGenerationReservation::query()->insertOrIgnore($reservationValues);
+                $reservation = PatchGenerationReservation::query()
+                    ->where('user_id', $user->getKey())
+                    ->where('logical_operation_key', $logicalOperationKey)
+                    ->lockForUpdate()
+                    ->first();
+                if (! $reservation instanceof PatchGenerationReservation) {
+                    throw new ApiProblem('PATCH_STATE_CONFLICT', 'The Patch generation reservation could not be acquired. Retry the operation.', 409);
+                }
+                if ($inserted === 0) {
+                    if ($reservation->status === 'succeeded' && is_array($reservation->response)) {
+                        CvIdempotency::record($user, $operation, $idempotencyKey, $hash, $reservation->response, 201);
+
+                        return ['replayed' => true, 'body' => $reservation->response, 'status' => 201];
+                    }
+                    if (in_array($reservation->status, ['requested', 'running'], true)) {
+                        throw new ApiProblem('PATCH_STATE_CONFLICT', 'A Patch generation attempt is already active for this Interview.', 409);
+                    }
+                    $executionId = (string) $reservation->execution_id;
+                    $correlationId = (string) $reservation->correlation_id;
+                    if ((string) $reservation->source_cv_version_id !== $requestSource['cv_version_id']
+                        || ! hash_equals((string) $reservation->source_snapshot_hash, $requestSource['snapshot_hash'])) {
+                        throw new ApiProblem('PATCH_SOURCE_STALE', 'The source CV Version has changed. Review the Patch again.', 409);
+                    }
+                    $contractRequest = $this->contractRequest($executionId, $requestSource, $context['version']->snapshot['summary'] ?? null, $positive->all());
+                    $requestHash = (string) $contractRequest['request_hash'];
+                    if (! hash_equals((string) $reservation->request_hash, $requestHash)) {
+                        throw new ApiProblem('PATCH_STATE_CONFLICT', 'The Patch generation input has changed. Retry with a new operation.', 409);
+                    }
+                }
+            }
+            if ($reservation instanceof PatchGenerationReservation && $reservation->status !== 'running') {
+                $reservation->forceFill(['status' => 'running', 'updated_at' => Carbon::now()])->save();
+            }
             $attempt = PatchProviderAttempt::query()->create([
                 'id' => ProfileDocument::id(),
                 'user_id' => $user->getKey(),
                 'interview_id' => $interview->getKey(),
                 'predecessor_patch_id' => $predecessor?->getKey(),
                 'status' => 'running',
-                'prompt_version' => self::PROMPT_VERSION,
-                'tool_schema_version' => self::TOOL_SCHEMA_VERSION,
-                'provider_model_version' => self::PROVIDER_MODEL_VERSION,
-                'correlation_id' => bin2hex(random_bytes(16)),
+                'prompt_version' => $providerMetadata['prompt_version'],
+                'tool_schema_version' => $providerMetadata['tool_schema_version'],
+                'provider_model_version' => $providerMetadata['model'],
+                'correlation_id' => $correlationId,
+                'execution_id' => $executionId,
+                'request_hash' => $requestHash,
+                'source_cv_version_id' => $requestSource['cv_version_id'],
+                'source_snapshot_hash' => $requestSource['snapshot_hash'],
+                'logical_operation_key' => $logicalOperationKey,
                 'created_at' => Carbon::now(),
             ]);
 
@@ -134,6 +230,9 @@ final class PatchService
                 'context' => $context,
                 'predecessor' => $predecessor,
                 'positive' => $positive->all(),
+                'contract_request' => $contractRequest,
+                'reservation_id' => (string) $reservation->getKey(),
+                'provider_metadata' => $providerMetadata,
                 'hash' => $hash,
                 'operation' => $operation,
                 'idempotency_key' => $idempotencyKey,
@@ -146,21 +245,31 @@ final class PatchService
         $startedAt = hrtime(true);
         try {
             $context = $state['context'];
-            $proposal = $this->provider->propose([
-                'source_fragments' => [
-                    'summary' => $context['version']->snapshot['summary'] ?? null,
-                    'experience' => $context['version']->snapshot['experience'] ?? [],
-                    'projects' => $context['version']->snapshot['projects'] ?? [],
-                ],
-                'positive_evidence' => array_map(static fn (EvidenceAnswer $answer): array => [
-                    'id' => (string) $answer->getKey(),
-                    'area_signal_id' => (string) $answer->area_signal_id,
-                    'answer' => (string) $answer->answer_normalized,
-                ], $state['positive']),
-                'target_allowlist' => ['summary', 'experience.highlights', 'projects.highlights'],
+            $providerRequest = [
+                'execution_id' => $state['contract_request']['execution_id'],
+                'request_hash' => $state['contract_request']['request_hash'],
+                'source' => $state['contract_request']['source'],
+                'source_fragments' => ['summary' => $context['version']->snapshot['summary'] ?? null],
+                'positive_evidence' => $state['contract_request']['context']['positive_evidence'],
+                'target_allowlist' => ['summary'],
                 'locale' => 'en',
-                'prompt_version' => self::PROMPT_VERSION,
-                'tool_schema_version' => self::TOOL_SCHEMA_VERSION,
+                'prompt_version' => $state['provider_metadata']['prompt_version'],
+                'tool_schema_version' => $state['provider_metadata']['tool_schema_version'],
+                '_correlation_id' => $state['correlation_id'],
+            ];
+            $proposal = $this->provider->propose($providerRequest);
+            $state['provider_metadata'] = $this->providerMetadata();
+            PatchProviderAttempt::query()->whereKey($state['attempt_id'])->update([
+                'prompt_version' => $state['provider_metadata']['prompt_version'],
+                'provider_model_version' => $state['provider_metadata']['model'],
+                'response_metadata' => [
+                    'provider' => $state['provider_metadata']['provider'],
+                    'model' => $state['provider_metadata']['model'],
+                    'prompt_version' => $state['provider_metadata']['prompt_version'],
+                    'input_tokens' => $state['provider_metadata']['input_tokens'] ?? null,
+                    'output_tokens' => $state['provider_metadata']['output_tokens'] ?? null,
+                    'latency_ms' => $state['provider_metadata']['latency_ms'] ?? null,
+                ],
             ]);
             if ((hrtime(true) - $startedAt) / 1_000_000_000 > self::GENERATION_DEADLINE_SECONDS) {
                 throw new ApiProblem('PATCH_PROVIDER_TIMEOUT', 'The Patch provider exceeded the synchronous deadline. Please retry.', 503);
@@ -179,16 +288,22 @@ final class PatchService
             } else {
                 $this->finishAttempt((string) $state['attempt_id'], 'terminal_failure', $problem->errorCode);
             }
+            $this->finishReservation($state, $problem->errorCode);
             $this->appendAuditEvent($state, $problem->errorCode, $startedAt);
             throw $problem;
         } catch (Throwable) {
             $this->finishClassifiedAttempt((string) $state['attempt_id'], 'PATCH_PROVIDER_UNAVAILABLE');
+            $this->finishReservation($state, 'PATCH_PROVIDER_UNAVAILABLE');
             $this->appendAuditEvent($state, 'PATCH_PROVIDER_UNAVAILABLE', $startedAt);
             throw new ApiProblem('PATCH_PROVIDER_UNAVAILABLE', 'The Patch provider is unavailable. Please retry.', 503);
         }
 
         try {
             $result = DB::transaction(function () use ($user, $state, $proposal): array {
+                $latestVersion = CvVersion::query()->whereKey($state['context']['version']->getKey())->where('user_id', $user->getKey())->lockForUpdate()->first();
+                if (! $latestVersion instanceof CvVersion || ! hash_equals((string) $state['contract_request']['source']['snapshot_hash'], (string) $latestVersion->snapshot_hash)) {
+                    throw new ApiProblem('PATCH_SOURCE_STALE', 'The source CV Version has changed. Review the Patch again.', 409);
+                }
                 $patch = Patch::query()->create([
                     'id' => ProfileDocument::id(),
                     'user_id' => $user->getKey(),
@@ -199,8 +314,8 @@ final class PatchService
                     'status' => 'pending',
                     'revision' => 1,
                     'patch_schema_version' => self::PATCH_SCHEMA_VERSION,
-                    'prompt_version' => self::PROMPT_VERSION,
-                    'provider_model_version' => self::PROVIDER_MODEL_VERSION,
+                    'prompt_version' => $state['provider_metadata']['prompt_version'],
+                    'provider_model_version' => $state['provider_metadata']['model'],
                     'target' => $proposal['target'],
                     'old_value' => $proposal['old_value'],
                     'new_value' => $proposal['new_value'],
@@ -212,7 +327,12 @@ final class PatchService
                             'match_report_id' => (string) $state['context']['report']->getKey(),
                             'interview_id' => (string) $state['context']['interview']->getKey(),
                         ],
-                        'provider' => ['kind' => 'deterministic_fake', 'model_version' => self::PROVIDER_MODEL_VERSION],
+                        'provider' => ['kind' => $state['provider_metadata']['kind'], 'model_version' => $state['provider_metadata']['model']],
+                        'contract' => [
+                            'execution_id' => $state['contract_request']['execution_id'],
+                            'request_hash' => $state['contract_request']['request_hash'],
+                            'source_snapshot_hash' => $state['contract_request']['source']['snapshot_hash'],
+                        ],
                         'evidence_source_ids' => $proposal['evidence_source_ids'],
                         'decisions' => [],
                     ],
@@ -223,11 +343,23 @@ final class PatchService
                 $body = ['data' => PatchPresenter::data($patch->fresh(['sourceVersion', 'interview.answers']))];
                 CvIdempotency::record($user, $state['operation'], $state['idempotency_key'], $state['hash'], $body, 201);
                 $this->finishClassifiedAttempt((string) $state['attempt_id'], 'PATCH_SUCCEEDED', true, (string) $patch->getKey());
+                PatchGenerationReservation::query()->whereKey($state['reservation_id'])->update([
+                    'status' => 'succeeded',
+                    'patch_id' => (string) $patch->getKey(),
+                    'response' => $body,
+                    'updated_at' => Carbon::now(),
+                ]);
 
                 return ['body' => $body, 'status' => 201, 'replayed' => false];
             });
+        } catch (ApiProblem $problem) {
+            $this->finishAttempt((string) $state['attempt_id'], 'terminal_failure', $problem->errorCode);
+            $this->finishReservation($state, $problem->errorCode);
+            $this->appendAuditEvent($state, $problem->errorCode, $startedAt);
+            throw $problem;
         } catch (Throwable $exception) {
             $this->finishAttempt((string) $state['attempt_id'], 'retryable_failure', 'PATCH_PERSISTENCE_FAILED');
+            $this->finishReservation($state, 'PATCH_PERSISTENCE_FAILED');
             $this->appendAuditEvent($state, 'PATCH_PERSISTENCE_FAILED', $startedAt);
             throw $exception;
         }
@@ -715,6 +847,59 @@ final class PatchService
         PatchProviderAttempt::query()->whereKey($id)->update($updates);
     }
 
+    /** @param array<string,mixed> $state */
+    private function finishReservation(array $state, string $outcomeCode): void
+    {
+        $status = in_array($outcomeCode, ['PATCH_PROVIDER_TIMEOUT', 'PATCH_PROVIDER_UNAVAILABLE', 'PATCH_RATE_LIMITED', 'PATCH_PERSISTENCE_FAILED'], true)
+            ? 'retryable_failure'
+            : 'terminal_failure';
+        PatchGenerationReservation::query()->whereKey($state['reservation_id'] ?? '')->update([
+            'status' => $status,
+            'updated_at' => Carbon::now(),
+        ]);
+    }
+
+    /** @return array{provider:string,model:string,prompt_version:string,tool_schema_version:string,kind:string} */
+    private function providerMetadata(): array
+    {
+        if ($this->provider instanceof PatchProviderMetadata) {
+            return $this->provider->providerMetadata();
+        }
+
+        return [
+            'provider' => 'deterministic-fake',
+            'model' => self::PROVIDER_MODEL_VERSION,
+            'prompt_version' => self::PROMPT_VERSION,
+            'tool_schema_version' => self::TOOL_SCHEMA_VERSION,
+            'kind' => 'deterministic_fake',
+        ];
+    }
+
+    /** @param array<int,EvidenceAnswer> $positive @return array<string,mixed> */
+    private function contractRequest(string $executionId, array $source, mixed $summary, array $positive): array
+    {
+        $request = [
+            'contract_version' => '1.0',
+            'execution_id' => $executionId,
+            'request_hash' => '',
+            'source' => $source,
+            'context' => [
+                'source_fragment' => ['kind' => 'summary', 'current_value' => $summary],
+                'positive_evidence' => array_map(static fn (EvidenceAnswer $answer): array => [
+                    'id' => (string) $answer->getKey(),
+                    'area_signal_id' => (string) $answer->area_signal_id,
+                    'answer' => (string) $answer->answer_normalized,
+                ], array_slice($positive, 0, 5)),
+            ],
+            'constraints' => ['target_allowlist' => ['summary'], 'locale' => 'en'],
+        ];
+        $withoutHash = $request;
+        unset($withoutHash['request_hash']);
+        $request['request_hash'] = PatchProposalContractValidator::canonicalRequestHash($withoutHash);
+
+        return $request;
+    }
+
     private function finishClassifiedAttempt(string $id, string $outcomeCode, bool $validated = false, ?string $patchId = null): void
     {
         $result = $this->failureClassifier->classify($outcomeCode, $validated);
@@ -760,11 +945,11 @@ final class PatchService
                 'actor_type' => 'system',
                 'operation' => 'generate-patch',
                 'tool' => 'patch-proposal',
-                'provider' => 'deterministic-fake',
-                'model' => self::PROVIDER_MODEL_VERSION,
+                'provider' => (string) ($state['provider_metadata']['provider'] ?? 'deterministic-fake'),
+                'model' => (string) ($state['provider_metadata']['model'] ?? self::PROVIDER_MODEL_VERSION),
                 'contract_version' => 'patch-1.0',
-                'prompt_version' => self::PROMPT_VERSION,
-                'tool_schema_version' => self::TOOL_SCHEMA_VERSION,
+                'prompt_version' => (string) ($state['provider_metadata']['prompt_version'] ?? self::PROMPT_VERSION),
+                'tool_schema_version' => (string) ($state['provider_metadata']['tool_schema_version'] ?? self::TOOL_SCHEMA_VERSION),
                 'resource_type' => 'patch',
                 'correlation_id' => (string) ($state['correlation_id'] ?? ''),
                 'attempt_id' => (string) ($state['attempt_id'] ?? ''),

@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     internal_auth_token: SecretStr | None = None
     max_request_bytes: int = 64 * 1024
     max_response_bytes: int = 16 * 1024
+    # Test-only process-local mock outcome. Production cannot select outcomes
+    # from an HTTP request and leaves this unset.
+    mock_outcome: str | None = None
+    patch_cache_ttl_seconds: int = 300
 
     @field_validator("port")
     @classmethod
@@ -51,6 +55,13 @@ class Settings(BaseSettings):
     def validate_response_limit(cls, value: int) -> int:
         if value > 16 * 1024:
             raise ValueError("max_response_bytes cannot exceed 16 KiB")
+        return value
+
+    @field_validator("patch_cache_ttl_seconds")
+    @classmethod
+    def validate_patch_cache_ttl(cls, value: int) -> int:
+        if not 1 <= value <= 3600:
+            raise ValueError("patch_cache_ttl_seconds must be between 1 and 3600 seconds")
         return value
 
 

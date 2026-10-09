@@ -31,13 +31,15 @@ def require_internal_identity(settings: Settings, authorization: str | None = He
 
 
 class InternalIdentityMiddleware:
-    def __init__(self, app, settings: Settings, protected_path: str) -> None:
+    def __init__(self, app, settings: Settings, protected_path: str | None = None, protected_paths: set[str] | None = None) -> None:
         self.app = app
         self.settings = settings
-        self.protected_path = protected_path
+        self.protected_paths = set(protected_paths or ())
+        if protected_path is not None:
+            self.protected_paths.add(protected_path)
 
     async def __call__(self, scope, receive, send) -> None:
-        if scope["type"] != "http" or scope.get("path") != self.protected_path:
+        if scope["type"] != "http" or scope.get("path") not in self.protected_paths:
             await self.app(scope, receive, send)
             return
 
@@ -47,11 +49,19 @@ class InternalIdentityMiddleware:
             check_internal_identity(self.settings, authorization)
         except InternalIdentityError as error:
             correlation = scope.get("state", {}).get("correlation_id", "")
+            code = error.code
+            message = error.message
+            if scope.get("path") == "/internal/v1/patch-proposals" and error.status_code in {401, 403}:
+                code = "AI_UNAUTHENTICATED"
+                message = "The internal request could not be authenticated."
+            elif scope.get("path") == "/internal/v1/patch-proposals" and error.status_code == 503:
+                code = "AI_UNAVAILABLE"
+                message = "The internal service is unavailable."
             body = (
                 '{"code":"'
-                + error.code
+                + code
                 + '","message":"'
-                + error.message
+                + message
                 + '","correlation_id":"'
                 + correlation
                 + '"}'

@@ -8,10 +8,10 @@ def _correlation_for(scope: Scope) -> str:
 
 
 class RequestBoundaryMiddleware:
-    def __init__(self, app: ASGIApp, max_request_bytes: int, json_path: str) -> None:
+    def __init__(self, app: ASGIApp, max_request_bytes: int, json_path: str | set[str]) -> None:
         self.app = app
         self.max_request_bytes = max_request_bytes
-        self.json_path = json_path
+        self.json_paths = {json_path} if isinstance(json_path, str) else set(json_path)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
@@ -23,28 +23,29 @@ class RequestBoundaryMiddleware:
             header_values.setdefault(key.lower(), []).append(value)
         headers = {key: values[-1] for key, values in header_values.items()}
         encodings = header_values.get(b"content-encoding", [b"identity"])
+        contract_error = scope.get("path") == "/internal/v1/patch-proposals"
         if len(encodings) != 1 or encodings[0].lower() != b"identity":
-            await self._send_error(scope, send, 415, "UNSUPPORTED_MEDIA_TYPE", "Only identity content encoding is supported.")
+            await self._send_error(scope, send, 415, "AI_REQUEST_INVALID" if contract_error else "UNSUPPORTED_MEDIA_TYPE", "Only identity content encoding is supported.")
             return
 
-        if scope.get("path") == self.json_path and scope.get("method") == "POST":
+        if scope.get("path") in self.json_paths and scope.get("method") == "POST":
             content_type = headers.get(b"content-type", b"").split(b";", 1)[0].strip().lower()
             if content_type != b"application/json" and not content_type.endswith(b"+json"):
-                await self._send_error(scope, send, 415, "UNSUPPORTED_MEDIA_TYPE", "The request media type is not supported.")
+                await self._send_error(scope, send, 415, "AI_REQUEST_INVALID" if contract_error else "UNSUPPORTED_MEDIA_TYPE", "The request media type is not supported.")
                 return
 
         content_lengths = header_values.get(b"content-length", [])
         if len(content_lengths) > 1:
-            await self._send_error(scope, send, 400, "INVALID_CONTENT_LENGTH", "The request could not be processed.")
+            await self._send_error(scope, send, 400, "AI_REQUEST_INVALID" if contract_error else "INVALID_CONTENT_LENGTH", "The request could not be processed.")
             return
         content_length = content_lengths[0] if content_lengths else None
         if content_length is not None:
             try:
                 if int(content_length) > self.max_request_bytes:
-                    await self._send_error(scope, send, 413, "REQUEST_TOO_LARGE", "The request body is too large.")
+                    await self._send_error(scope, send, 413, "AI_REQUEST_INVALID" if contract_error else "REQUEST_TOO_LARGE", "The request body is too large.")
                     return
             except ValueError:
-                await self._send_error(scope, send, 400, "INVALID_CONTENT_LENGTH", "The request could not be processed.")
+                await self._send_error(scope, send, 400, "AI_REQUEST_INVALID" if contract_error else "INVALID_CONTENT_LENGTH", "The request could not be processed.")
                 return
 
         messages: list[Message] = []
@@ -60,7 +61,7 @@ class RequestBoundaryMiddleware:
             body = message.get("body", b"")
             total += len(body)
             if total > self.max_request_bytes:
-                await self._send_error(scope, send, 413, "REQUEST_TOO_LARGE", "The request body is too large.")
+                await self._send_error(scope, send, 413, "AI_REQUEST_INVALID" if contract_error else "REQUEST_TOO_LARGE", "The request body is too large.")
                 return
             messages.append(message)
             if not message.get("more_body", False):

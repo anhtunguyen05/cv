@@ -34,6 +34,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException) 
         429: "RATE_LIMITED",
     }
     code = code_by_status.get(status, "REQUEST_FAILED")
+    if request.url.path == "/internal/v1/patch-proposals" and status in {400, 415, 422}:
+        code = "AI_REQUEST_INVALID"
     message = {
         404: "The requested route was not found.",
         405: "The HTTP method is not supported.",
@@ -51,9 +53,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         ".".join(str(part) for part in error.get("loc", ()) if part != "body"): [error.get("type", "invalid")]
         for error in exc.errors()
     }
+    code = "AI_REQUEST_INVALID" if request.url.path == "/internal/v1/patch-proposals" else "VALIDATION_FAILED"
     return JSONResponse(
         status_code=422,
-        content=safe_error("VALIDATION_FAILED", "The request could not be validated.", correlation_id(request), {"fields": fields}),
+        content=safe_error(code, "The request could not be validated.", correlation_id(request), {"fields": fields}),
     )
 
 

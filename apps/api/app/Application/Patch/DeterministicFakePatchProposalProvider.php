@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Patch;
 
-final class DeterministicFakePatchProposalProvider implements PatchProposalProvider
+final class DeterministicFakePatchProposalProvider implements PatchProposalProvider, PatchProviderMetadata
 {
     /** @param array<string,mixed> $request */
     public function propose(array $request): mixed
@@ -35,6 +35,18 @@ final class DeterministicFakePatchProposalProvider implements PatchProposalProvi
                 static fn (mixed $item): ?string => is_array($item) && is_string($item['id'] ?? null) ? $item['id'] : null,
                 $evidence,
             ))),
+        ];
+    }
+
+    /** @return array{provider:string,model:string,prompt_version:string,tool_schema_version:string,kind:string} */
+    public function providerMetadata(): array
+    {
+        return [
+            'provider' => 'deterministic-fake',
+            'model' => 'deterministic-fake-1.0',
+            'prompt_version' => 'fake-1.0',
+            'tool_schema_version' => '1.0',
+            'kind' => 'deterministic_fake',
         ];
     }
 }

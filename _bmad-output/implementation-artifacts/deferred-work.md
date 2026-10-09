@@ -142,3 +142,19 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-01-worker-foundation.md`
   summary: Add the AI-PR-02 valid/invalid fixture corpus and compatibility validator tests.
   evidence: The foundation references the contract but explicitly excludes AI-PR-02 implementation; fixture and contract-validation coverage must land with that slice.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-02-03-remote-mock.md`
+  summary: Replace the mock static bearer token and configurable HTTP URL with the approved production internal identity and private-network policy.
+  evidence: This increment intentionally keeps the AI-PR-01 deterministic token seam; audience binding, rotation, replay protection, TLS or mTLS, and production endpoint policy remain separate approval gates.
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-02-03-remote-mock.md`
+  summary: Run concurrent logical-operation and migration verification against PostgreSQL and a live private worker process.
+  evidence: Local evidence covers SQLite feature tests and in-process ASGI/HTTP fakes; the production locking, uniqueness, serialization, timeout, and network-auth paths were not exercised.
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-02-03-remote-mock.md`
+  summary: Add direct compatibility checks between the published JSON Schemas, shared fixtures, and both handwritten runtime validators.
+  evidence: Current suites validate fixtures through PHP and Pydantic models but do not load the schema files, so schema edits can drift without a failing test.
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-02-03-remote-mock.md`
+  summary: Define a shared replay-cache strategy for multiple worker processes and restarts.
+  evidence: The deterministic mock uses a bounded process-local TTL cache; it is suitable for the local mock but does not provide cross-replica replay/conflict guarantees.
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-02-03-remote-mock.md`
+  summary: Finalize retry semantics for terminal reservation failures and distinguish connection refusal from read timeout.
+  evidence: The synchronous slice records terminal versus retryable states, while user recovery policy and Laravel's ConnectionException does not expose a stable timeout/refusal discriminator for finer mapping.

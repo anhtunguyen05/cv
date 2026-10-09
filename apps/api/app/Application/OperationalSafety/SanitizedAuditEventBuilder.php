@@ -40,7 +40,7 @@ final class SanitizedAuditEventBuilder
     private const TOOLS = ['patch-proposal', 'job-description-analysis', 'deterministic-match'];
 
     /** @var array<int,string> */
-    private const PROVIDERS = ['deterministic-fake', 'none'];
+    private const PROVIDERS = ['deterministic-fake', 'remote-mock', 'none'];
 
     /** @var array<int,string> */
     private const RESOURCE_TYPES = ['cv_version', 'job_description', 'match_report', 'evidence_interview', 'patch'];

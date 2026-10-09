@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Application\Patch\AiServiceClient;
 use App\Application\Patch\DeterministicFakePatchProposalProvider;
+use App\Application\Patch\PatchCandidateMapper;
 use App\Application\Patch\PatchProposalProvider;
+use App\Application\Patch\RemotePatchProposalProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -16,7 +19,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(PatchProposalProvider::class, DeterministicFakePatchProposalProvider::class);
+        $this->app->singleton(AiServiceClient::class);
+        $this->app->singleton(PatchCandidateMapper::class);
+        $this->app->bind(PatchProposalProvider::class, function ($app): PatchProposalProvider {
+            if (config('ai.patch_provider', 'fake') === 'remote') {
+                return $app->make(RemotePatchProposalProvider::class);
+            }
+
+            return $app->make(DeterministicFakePatchProposalProvider::class);
+        });
     }
 
     /**
