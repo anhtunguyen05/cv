@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\Patch;
 
 use App\Application\Patch\Contracts\PatchProposalContractValidator;
-use App\Models\CvVersion;
 use App\Models\OperationalAuditEvent;
 use App\Models\Patch;
 use App\Models\PatchGenerationReservation;
@@ -141,7 +140,7 @@ final class RemotePatchProposalTest extends TestCase
         self::assertSame(1, Patch::query()->count());
     }
 
-    public function test_source_changed_while_remote_call_is_in_flight_creates_no_patch(): void
+    public function test_remote_source_binding_mismatch_creates_no_patch(): void
     {
         config([
             'ai.patch_provider' => 'remote',
@@ -150,15 +149,16 @@ final class RemotePatchProposalTest extends TestCase
         ]);
         $user = User::factory()->create();
         $context = $this->startCompleteEpic4Interview($user);
-        Http::fake(function (Request $request) use ($context) {
+        Http::fake(function (Request $request) {
             $payload = $request->data();
-            CvVersion::query()->whereKey($context['context']['version']->getKey())->update(['snapshot_hash' => str_repeat('f', 64)]);
+            $mismatchedSource = $payload['source'];
+            $mismatchedSource['snapshot_hash'] = str_repeat('f', 64);
 
             return Http::response([
                 'contract_version' => '1.0',
                 'execution_id' => $payload['execution_id'],
                 'request_hash' => $payload['request_hash'],
-                'source' => $payload['source'],
+                'source' => $mismatchedSource,
                 'status' => 'succeeded',
                 'candidate' => [
                     'target' => ['section' => 'summary', 'field' => 'summary', 'item_id' => null, 'operation' => 'replace'],
@@ -180,7 +180,7 @@ final class RemotePatchProposalTest extends TestCase
         $this->postJson('/api/v1/evidence-interviews/'.$context['interview']->getKey().'/patches', [], [
             'X-CSRF-TOKEN' => 'csrf-token',
             'Idempotency-Key' => (string) Str::uuid(),
-        ])->assertStatus(409)->assertJsonPath('code', 'PATCH_SOURCE_STALE');
+        ])->assertStatus(422)->assertJsonPath('code', 'PATCH_PROPOSAL_INVALID');
         self::assertDatabaseCount('patches', 0);
     }
 
