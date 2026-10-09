@@ -1,5 +1,4 @@
 export { useAuthStore } from './stores/auth.store'
-export { useAuth } from './composables/useAuth'
 export {
   useLoginMutation,
   useRegisterMutation,

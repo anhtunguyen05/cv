@@ -1,50 +1,50 @@
 <script setup lang="ts">
 import Button from '@/shared/components/ui/button/Button.vue'
 import FormField from '@/shared/components/molecules/FormField.vue'
-import type { JdEditorController } from '../composables/useJdEditorController'
+import type { JdFormContract } from '../composables/useJdEditorController'
 import JdDeleteConfirmation from './JdDeleteConfirmation.vue'
-defineProps<{ controller: JdEditorController }>()
+defineProps<{ form: JdFormContract }>()
 </script>
 <template>
-  <form class="space-y-5" @submit.prevent="controller.submit">
+  <form class="space-y-5" @submit.prevent="form.submit">
     <div
-      v-if="controller.localError.value || controller.errorMessage.value"
-      :ref="(element) => controller.setErrorSummary(element as HTMLElement | null)"
+      v-if="form.localError.value || form.errorMessage.value"
+      :ref="(element) => form.setErrorSummary(element as HTMLElement | null)"
       role="alert"
       tabindex="-1"
       class="p-3 rounded-xl bg-danger-muted border border-danger-border text-sm text-danger-hover"
     >
-      <p>{{ controller.localError.value || controller.errorMessage.value }}</p>
+      <p>{{ form.localError.value || form.errorMessage.value }}</p>
       <Button
-        v-if="controller.saveConflict.value"
+        v-if="form.saveConflict.value"
         type="button"
         variant="outline"
         class="mt-3"
-        @click="controller.reloadCurrentRevision"
+        @click="form.reloadCurrentRevision"
         >Reload current revision</Button
       >
       <Button
-        v-if="controller.saveRetryable.value"
+        v-if="form.saveRetryable.value"
         type="button"
         variant="outline"
         class="mt-3"
-        @click="controller.retrySave"
+        @click="form.retrySave"
         >Retry save</Button
       >
       <Button
-        v-if="controller.deleteConflict.value"
+        v-if="form.deleteConflict.value"
         type="button"
         variant="outline"
         class="mt-3"
-        @click="controller.reloadCurrentRevision"
+        @click="form.reloadCurrentRevision"
         >Reload current revision</Button
       >
       <Button
-        v-if="controller.deleteRetryable.value"
+        v-if="form.deleteRetryable.value"
         type="button"
         variant="outline"
         class="mt-3"
-        @click="controller.retryDelete"
+        @click="form.retryDelete"
         >Retry delete</Button
       >
     </div>
@@ -54,13 +54,13 @@ defineProps<{ controller: JdEditorController }>()
         label="Company"
         hint="Optional"
         html-for="company"
-        :error="controller.fieldError('company')"
+        :error="form.fieldError('company')"
       >
         <input
           v-bind="controlProps"
-          :value="controller.company.value"
+          :value="form.company.value"
           class="h-10 px-3 rounded-lg border border-border bg-white font-normal focus:outline-none focus:ring-2 focus:ring-primary/20"
-          @input="controller.setCompany(($event.target as HTMLInputElement).value)"
+          @input="form.setCompany(($event.target as HTMLInputElement).value)"
         />
       </FormField>
       <FormField
@@ -68,13 +68,13 @@ defineProps<{ controller: JdEditorController }>()
         label="Role"
         hint="Optional"
         html-for="role"
-        :error="controller.fieldError('role')"
+        :error="form.fieldError('role')"
       >
         <input
           v-bind="controlProps"
-          :value="controller.role.value"
+          :value="form.role.value"
           class="h-10 px-3 rounded-lg border border-border bg-white font-normal focus:outline-none focus:ring-2 focus:ring-primary/20"
-          @input="controller.setRole(($event.target as HTMLInputElement).value)"
+          @input="form.setRole(($event.target as HTMLInputElement).value)"
         />
       </FormField>
     </div>
@@ -82,44 +82,42 @@ defineProps<{ controller: JdEditorController }>()
       v-slot="{ controlProps }"
       label="Job Description source"
       html-for="jd-text"
-      :error="controller.fieldError('raw_text')"
+      :error="form.fieldError('raw_text')"
       required
     >
       <textarea
         v-bind="controlProps"
-        :value="controller.rawText.value"
+        :value="form.rawText.value"
         rows="16"
-        :aria-describedby="controller.fieldError('raw_text') ? 'jd-help jd-text-error' : 'jd-help'"
+        :aria-describedby="form.fieldError('raw_text') ? 'jd-help jd-text-error' : 'jd-help'"
         class="w-full p-4 rounded-xl text-sm font-mono border border-border bg-white text-text focus:outline-none focus:ring-2 focus:ring-primary/20 leading-relaxed resize-y"
-        @input="controller.setRawText(($event.target as HTMLTextAreaElement).value)"
+        @input="form.setRawText(($event.target as HTMLTextAreaElement).value)"
       />
       <div id="jd-help" class="flex justify-between text-xs text-text-muted">
-        <span>{{ controller.charCount.value }} / 50,000 Unicode code points</span
+        <span>{{ form.charCount.value }} / 50,000 Unicode code points</span
         ><span>Raw source is preserved after decoding.</span>
       </div>
     </FormField>
     <div class="flex flex-wrap gap-3">
       <Button
         type="submit"
-        :loading="controller.saveMutation.isPending.value"
-        :disabled="controller.saveMutation.isPending.value"
-        >{{ controller.current.value ? 'Save new revision' : 'Save Job Description' }}</Button
+        :loading="form.saveMutation.isPending.value"
+        :disabled="form.saveMutation.isPending.value"
+        >{{ form.current.value ? 'Save new revision' : 'Save Job Description' }}</Button
       >
       <Button
-        v-if="controller.current.value"
+        v-if="form.current.value"
         type="button"
         variant="outline"
-        :loading="controller.analysisMutation.isPending.value"
-        :disabled="
-          controller.analysisMutation.isPending.value || controller.hasUnsavedChanges.value
-        "
-        @click="controller.analyze"
+        :loading="form.analysisMutation.isPending.value"
+        :disabled="form.analysisMutation.isPending.value || form.hasUnsavedChanges.value"
+        @click="form.analyze"
         >Analyze revision</Button
       >
       <JdDeleteConfirmation
-        v-if="controller.current.value"
-        :loading="controller.deleteMutation.isPending.value"
-        @confirm="controller.confirmDelete"
+        v-if="form.current.value"
+        :loading="form.deleteMutation.isPending.value"
+        @confirm="form.confirmDelete"
       />
     </div>
   </form>

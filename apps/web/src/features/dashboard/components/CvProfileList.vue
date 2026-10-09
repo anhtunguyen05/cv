@@ -5,9 +5,10 @@ import Button from '@/shared/components/ui/button/Button.vue'
 import Card from '@/shared/components/ui/card/Card.vue'
 import EmptyState from '@/shared/components/molecules/EmptyState.vue'
 import SkeletonCard from '@/shared/components/molecules/SkeletonCard.vue'
+import PaginationNav from '@/shared/components/PaginationNav.vue'
 import { ROUTES } from '@/shared/constants/routes'
-import type { DashboardController } from '../composables/useDashboardController'
-defineProps<{ controller: DashboardController }>()
+import type { DashboardProfilesContract } from '../composables/useDashboardController'
+defineProps<{ profiles: DashboardProfilesContract }>()
 </script>
 <template>
   <section class="space-y-4">
@@ -24,22 +25,22 @@ defineProps<{ controller: DashboardController }>()
           >Create another <ArrowRight :size="13" /></span
       ></RouterLink>
     </div>
-    <SkeletonCard v-if="controller.isLoading.value" :rows="3" />
-    <Card v-else-if="controller.isError.value"
+    <SkeletonCard v-if="profiles.isLoading.value" :rows="3" />
+    <Card v-else-if="profiles.isError.value"
       ><EmptyState
         title="Unable to load profiles"
         description="There was a connection issue loading CV data."
         action-label="Retry"
-        @action="controller.refetch()"
+        @action="profiles.refetch()"
     /></Card>
-    <Card v-else-if="!controller.cvProfiles.value?.length"
+    <Card v-else-if="!profiles.items.value?.length"
       ><EmptyState
         title="No CV Profiles yet"
         description="Create a Profile to start building your trusted CV source."
     /></Card>
     <div v-else class="space-y-3">
       <div
-        v-for="profile in controller.cvProfiles.value"
+        v-for="profile in profiles.items.value"
         :key="profile.id"
         class="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 p-4 sm:p-5 bg-white border border-border rounded-xl hover:border-primary-border hover:shadow-2xs transition-all group"
       >
@@ -78,30 +79,13 @@ defineProps<{ controller: DashboardController }>()
           >
         </div>
       </div>
-      <nav
-        v-if="controller.cvProfileTotalPages.value > 1"
-        class="flex items-center justify-between"
-        aria-label="CV Profile pages"
-      >
-        <Button
-          type="button"
-          variant="outline"
-          :disabled="controller.cvProfilePage.value <= 1"
-          @click="controller.previousProfilePage"
-          >Previous</Button
-        >
-        <span class="text-xs text-text-muted"
-          >Page {{ controller.cvProfilePage.value }} of
-          {{ controller.cvProfileTotalPages.value }}</span
-        >
-        <Button
-          type="button"
-          variant="outline"
-          :disabled="controller.cvProfilePage.value >= controller.cvProfileTotalPages.value"
-          @click="controller.nextProfilePage"
-          >Next</Button
-        >
-      </nav>
+      <PaginationNav
+        :page="profiles.navigation.page.value"
+        :last-page="profiles.navigation.lastPage.value"
+        label="CV Profile pages"
+        @previous="profiles.navigation.previous"
+        @next="profiles.navigation.next"
+      />
     </div>
   </section>
 </template>

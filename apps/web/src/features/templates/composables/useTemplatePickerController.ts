@@ -2,6 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCvVersionsPageQuery } from '@/features/cv/api/cv.queries'
 import { ROUTES } from '@/shared/constants/routes'
+import { usePageNavigation } from '@/shared/composables/usePageNavigation'
 import { useTemplatesQuery } from '../api/templates.queries'
 import type { CvTemplate } from '../types/template.types'
 
@@ -20,6 +21,11 @@ export function useTemplatePickerController() {
     undefined,
     computed(() => !versionId.value),
   )
+  const versionNavigation = usePageNavigation({
+    page: versionPage,
+    lastPage: () => versionsQuery.data.value?.lastPage,
+    isFetching: versionsQuery.isFetching,
+  })
   const templates = computed(() => templatesQuery.data.value ?? [])
   const savedVersions = computed(() => versionsQuery.data.value?.items ?? [])
   const filtered = computed(() => {
@@ -75,15 +81,6 @@ export function useTemplatePickerController() {
     else openDashboard()
   }
 
-  function previousVersionPage(): void {
-    if (versionPage.value > 1) versionPage.value -= 1
-  }
-
-  function nextVersionPage(): void {
-    const lastPage = versionsQuery.data.value?.lastPage ?? 1
-    if (versionPage.value < lastPage) versionPage.value += 1
-  }
-
   return {
     search,
     selected,
@@ -91,14 +88,11 @@ export function useTemplatePickerController() {
     templatesQuery,
     versionsQuery,
     savedVersions,
-    versionPage,
-    versionTotalPages: computed(() => versionsQuery.data.value?.lastPage ?? 1),
+    versionNavigation,
     filtered,
     onSelect,
     applyTemplate,
     openDashboard,
     resetSearchOrOpenDashboard,
-    previousVersionPage,
-    nextVersionPage,
   }
 }

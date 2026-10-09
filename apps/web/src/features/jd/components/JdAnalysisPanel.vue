@@ -2,55 +2,55 @@
 import { RefreshCw } from 'lucide-vue-next'
 import Button from '@/shared/components/ui/button/Button.vue'
 import Card from '@/shared/components/ui/card/Card.vue'
-import type { JdEditorController } from '../composables/useJdEditorController'
+import type { JdAnalysisContract, JdMatchContract } from '../composables/useJdEditorController'
 import JdMatchCreator from './JdMatchCreator.vue'
-defineProps<{ controller: JdEditorController }>()
+defineProps<{ analysis: JdAnalysisContract; match: JdMatchContract }>()
 </script>
 <template>
   <Card
-    v-if="controller.analysisQuery.isError.value || controller.analysisMutation.isError.value"
+    v-if="analysis.analysisQuery.isError.value || analysis.analysisMutation.isError.value"
     class="space-y-3"
     role="alert"
   >
     <h2 class="text-lg font-bold text-text">Analysis unavailable</h2>
     <p class="text-sm text-text-muted">
       {{
-        controller.analysisMutation.error.value instanceof Error
-          ? controller.analysisMutation.error.value.message
-          : controller.analysisQuery.error.value instanceof Error
-            ? controller.analysisQuery.error.value.message
+        analysis.analysisMutation.error.value instanceof Error
+          ? analysis.analysisMutation.error.value.message
+          : analysis.analysisQuery.error.value instanceof Error
+            ? analysis.analysisQuery.error.value.message
             : 'The analysis could not be loaded.'
       }}
     </p>
     <div class="flex flex-wrap gap-3">
       <Button
-        v-if="controller.analysisQuery.isError.value"
+        v-if="analysis.analysisQuery.isError.value"
         type="button"
         variant="outline"
-        @click="controller.analysisQuery.refetch()"
+        @click="analysis.analysisQuery.refetch()"
         ><RefreshCw :size="15" aria-hidden="true" /> Retry analysis load</Button
-      ><Button type="button" variant="outline" @click="controller.analyze">Analyze again</Button
+      ><Button type="button" variant="outline" @click="analysis.analyze">Analyze again</Button
       ><Button
-        v-if="controller.analysisConflict.value"
+        v-if="analysis.analysisConflict.value"
         type="button"
         variant="outline"
-        @click="controller.reloadCurrentRevision"
+        @click="analysis.reloadCurrentRevision"
         >Reload current revision</Button
       >
     </div>
   </Card>
-  <Card v-if="controller.analysis.value" class="space-y-4" aria-live="polite">
+  <Card v-if="analysis.analysis.value" class="space-y-4" aria-live="polite">
     <div>
       <h2 class="text-lg font-bold text-text">Deterministic analysis</h2>
       <p class="text-xs text-text-muted">
-        Analysis rule {{ controller.analysis.value.analysis_rule_version }} · revision
-        {{ controller.analysis.value.job_description_revision_id }} · Analysis ID
-        {{ controller.analysis.value.id }}
+        Analysis rule {{ analysis.analysis.value.analysis_rule_version }} · revision
+        {{ analysis.analysis.value.job_description_revision_id }} · Analysis ID
+        {{ analysis.analysis.value.id }}
       </p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
       <div
-        v-for="(signal, name) in controller.analysis.value.signals"
+        v-for="(signal, name) in analysis.analysis.value.signals"
         :key="name"
         class="rounded-lg border border-border p-3"
       >
@@ -69,6 +69,6 @@ defineProps<{ controller: JdEditorController }>()
         </p>
       </div>
     </div>
-    <JdMatchCreator :controller />
+    <JdMatchCreator :match="match" />
   </Card>
 </template>

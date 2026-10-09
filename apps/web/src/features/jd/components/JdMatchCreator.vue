@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Button from '@/shared/components/ui/button/Button.vue'
-import type { JdEditorController } from '../composables/useJdEditorController'
-defineProps<{ controller: JdEditorController }>()
+import PaginationNav from '@/shared/components/PaginationNav.vue'
+import type { JdMatchContract } from '../composables/useJdEditorController'
+defineProps<{ match: JdMatchContract }>()
 </script>
 <template>
   <div class="rounded-xl border border-border bg-surface-muted/40 p-4 space-y-3">
@@ -16,13 +17,13 @@ defineProps<{ controller: JdEditorController }>()
         >CV Version
         <select
           id="cv-version"
-          :value="controller.selectedCvVersionId.value"
+          :value="match.selectedCvVersionId.value"
           class="h-10 px-3 rounded-lg border border-border bg-white font-normal focus:outline-none focus:ring-2 focus:ring-primary/20"
-          @change="controller.setSelectedCvVersionId(($event.target as HTMLSelectElement).value)"
+          @change="match.setSelectedCvVersionId(($event.target as HTMLSelectElement).value)"
         >
           <option value="">Select a CV Version</option>
           <option
-            v-for="version in controller.versionsQuery.data.value?.items ?? []"
+            v-for="version in match.versionsQuery.data.value?.items ?? []"
             :key="version.id"
             :value="version.id"
           >
@@ -32,64 +33,48 @@ defineProps<{ controller: JdEditorController }>()
       </label>
       <Button
         type="button"
-        :loading="controller.matchMutation.isPending.value"
+        :loading="match.matchMutation.isPending.value"
         :disabled="
-          !controller.selectedCvVersionId.value ||
-          controller.matchMutation.isPending.value ||
-          controller.hasUnsavedChanges.value
+          !match.selectedCvVersionId.value ||
+          match.matchMutation.isPending.value ||
+          match.hasUnsavedChanges.value
         "
-        @click="controller.createReport"
+        @click="match.createReport"
         >Create Match Report</Button
       >
     </div>
-    <p v-if="controller.versionsQuery.isLoading.value" class="text-xs text-text-muted">
+    <p v-if="match.versionsQuery.isLoading.value" class="text-xs text-text-muted">
       Loading CV Versions…
     </p>
-    <div
-      v-if="(controller.versionsQuery.data.value?.lastPage ?? 1) > 1"
-      class="flex items-center justify-between text-xs text-text-muted"
-    >
-      <button
-        type="button"
-        class="underline"
-        :disabled="controller.cvVersionPage.value <= 1"
-        @click="controller.previousCvVersionPage"
-      >
-        Previous versions</button
-      ><span
-        >Page {{ controller.cvVersionPage.value }} of
-        {{ controller.versionsQuery.data.value?.lastPage }}</span
-      ><button
-        type="button"
-        class="underline"
-        :disabled="
-          controller.cvVersionPage.value >= (controller.versionsQuery.data.value?.lastPage ?? 1)
-        "
-        @click="controller.nextCvVersionPage"
-      >
-        Next versions
-      </button>
-    </div>
-    <p v-else-if="controller.versionsQuery.isError.value" class="text-xs text-danger">
+    <PaginationNav
+      v-if="(match.versionsQuery.data.value?.lastPage ?? 1) > 1"
+      :page="match.navigation.page.value"
+      :last-page="match.navigation.lastPage.value"
+      label="CV Version pages"
+      previous-label="Previous versions"
+      next-label="Next versions"
+      appearance="text"
+      @previous="match.navigation.previous"
+      @next="match.navigation.next"
+    />
+    <p v-else-if="match.versionsQuery.isError.value" class="text-xs text-danger">
       Unable to load CV Versions.
-      <button type="button" class="underline" @click="controller.versionsQuery.refetch()">
-        Retry
-      </button>
+      <button type="button" class="underline" @click="match.versionsQuery.refetch()">Retry</button>
     </p>
-    <p v-if="controller.hasUnsavedChanges.value" class="text-xs text-warning-text" role="status">
+    <p v-if="match.hasUnsavedChanges.value" class="text-xs text-warning-text" role="status">
       Save this edited revision before analyzing or matching.
     </p>
-    <p v-if="controller.matchMutation.isError.value" class="text-xs text-danger" role="alert">
+    <p v-if="match.matchMutation.isError.value" class="text-xs text-danger" role="alert">
       {{
-        controller.matchMutation.error.value instanceof Error
-          ? controller.matchMutation.error.value.message
+        match.matchMutation.error.value instanceof Error
+          ? match.matchMutation.error.value.message
           : 'The Match Report could not be created.'
       }}
       <button
-        v-if="controller.matchRetryable.value"
+        v-if="match.matchRetryable.value"
         type="button"
         class="underline"
-        @click="controller.retryMatch"
+        @click="match.retryMatch"
       >
         Retry
       </button>
