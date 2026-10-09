@@ -2,7 +2,7 @@
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { loginSchema } from '../schemas/auth.schema'
-import { useLoginMutation } from '../api/auth.mutations'
+import { useLoginMutation } from '../composables/useAuthMutations'
 import FormField from '@/shared/components/molecules/FormField.vue'
 import Button from '@/shared/components/ui/button/Button.vue'
 import { ROUTES } from '@/shared/constants/routes'

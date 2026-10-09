@@ -1,6 +1,6 @@
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth.store'
-import { useLoginMutation, useRegisterMutation, useLogoutMutation } from '../api/auth.mutations'
+import { useLoginMutation, useRegisterMutation, useLogoutMutation } from './useAuthMutations'
 
 export function useAuth() {
   const authStore = useAuthStore()

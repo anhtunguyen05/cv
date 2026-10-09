@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/vue-query'
-import { getMe, login, register, logout } from './auth.api'
+import { getMe, login, register, logout } from '../api/auth.api'
 import { useAuthStore } from '../stores/auth.store'
 import { useRouter } from 'vue-router'
 import { ROUTES } from '@/shared/constants/routes'
