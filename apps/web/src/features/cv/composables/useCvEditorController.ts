@@ -3,6 +3,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ZodError } from 'zod'
 import { ApiRequestError } from '@/shared/api/client'
 import { ROUTES } from '@/shared/constants/routes'
+import { usePageNavigation } from '@/shared/composables/usePageNavigation'
 import type { CvProfile, CvSectionKey, PersonalInformation } from '../types/cv.types'
 import { useCvEditorDraft } from './useCvEditorDraft'
 import { useCvEditorOperations } from './useCvEditorOperations'
@@ -26,6 +27,11 @@ export function useCvEditorController() {
   const createdRouteId = ref('')
   const operations = useCvEditorOperations(profileId, versionPage)
   const { profileQuery, versionsQuery } = operations
+  const versionNavigation = usePageNavigation({
+    page: versionPage,
+    lastPage: () => versionsQuery.data.value?.lastPage,
+    isFetching: versionsQuery.isFetching,
+  })
   const versions = computed(() => versionsQuery.data.value?.items ?? [])
 
   function loadProfile(profile: CvProfile | undefined): void {
@@ -272,7 +278,7 @@ export function useCvEditorController() {
     }
   }
 
-  return {
+  const editor = {
     isNew,
     activeSection,
     title,
@@ -280,26 +286,29 @@ export function useCvEditorController() {
     editableDocument,
     isDirty,
     completedSections,
-    currentProfile,
     saving,
     errorMessage,
     fieldErrors,
-    versionName,
-    versionMessage,
-    versionSaving,
-    versionPage,
-    versionTotalPages: computed(() => versionsQuery.data.value?.lastPage ?? 1),
-    versions,
-    profileLoadError: profileQuery.isError,
     selectSection,
     save,
-    saveVersion,
-    previousVersionPage: () => {
-      if (versionPage.value > 1) versionPage.value -= 1
-    },
-    nextVersionPage: () => {
-      const lastPage = versionsQuery.data.value?.lastPage ?? 1
-      if (versionPage.value < lastPage) versionPage.value += 1
-    },
   }
+  const profile = {
+    current: currentProfile,
+    loadError: profileQuery.isError,
+  }
+  const version = {
+    name: versionName,
+    message: versionMessage,
+    saving: versionSaving,
+    items: versions,
+    navigation: versionNavigation,
+    save: saveVersion,
+  }
+
+  return { editor, profile, version }
 }
+
+export type CvEditorController = ReturnType<typeof useCvEditorController>
+export type CvEditorContract = CvEditorController['editor']
+export type CvProfileContract = CvEditorController['profile']
+export type CvVersionContract = CvEditorController['version']

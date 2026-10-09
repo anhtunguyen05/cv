@@ -2,15 +2,21 @@
 import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useCvVersionsPageQuery } from '@/features/cv/api/cv.queries'
+import CvVersionSelector from '@/features/cv/components/CvVersionSelector.vue'
 import Button from '@/shared/components/ui/button/Button.vue'
 import { ROUTES } from '@/shared/constants/routes'
+import { usePageNavigation } from '@/shared/composables/usePageNavigation'
 
 const route = useRoute()
 const profileId = computed(() => String(route.params.id))
 const versionPage = ref(1)
 const versionsQuery = useCvVersionsPageQuery(versionPage, profileId)
+const versionNavigation = usePageNavigation({
+  page: versionPage,
+  lastPage: () => versionsQuery.data.value?.lastPage,
+  isFetching: versionsQuery.isFetching,
+})
 const versions = computed(() => versionsQuery.data.value?.items ?? [])
-const lastPage = computed(() => versionsQuery.data.value?.lastPage ?? 1)
 </script>
 
 <template>
@@ -26,40 +32,15 @@ const lastPage = computed(() => versionsQuery.data.value?.lastPage ?? 1)
     <p v-else-if="versionsQuery.isError.value" role="alert" class="text-sm text-danger-text">
       Unable to load saved Versions.
     </p>
-    <div v-else-if="versions.length" class="space-y-3">
-      <div
-        v-for="version in versions"
-        :key="version.id"
-        class="flex items-center justify-between gap-4 rounded-xl border border-border bg-white p-4"
-      >
-        <div>
-          <p class="font-semibold text-text">{{ version.name }}</p>
-          <p class="text-xs text-text-muted">
-            Source revision {{ version.source_profile_revision }}
-          </p>
-        </div>
-        <RouterLink :to="ROUTES.CV_VERSION_TEMPLATES(version.id)">
-          <Button size="sm">Choose template</Button>
-        </RouterLink>
-      </div>
-      <nav
-        v-if="lastPage > 1"
-        class="flex items-center justify-between"
-        aria-label="Saved Version pages"
-      >
-        <Button size="sm" variant="outline" :disabled="versionPage <= 1" @click="versionPage -= 1"
-          >Previous</Button
-        >
-        <span class="text-xs text-text-muted">Page {{ versionPage }} of {{ lastPage }}</span>
-        <Button
-          size="sm"
-          variant="outline"
-          :disabled="versionPage >= lastPage"
-          @click="versionPage += 1"
-          >Next</Button
-        >
-      </nav>
-    </div>
+    <CvVersionSelector
+      v-else-if="versions.length"
+      :versions="versions"
+      :page="versionNavigation.page.value"
+      :last-page="versionNavigation.lastPage.value"
+      :destination="(version) => ROUTES.CV_VERSION_TEMPLATES(version.id)"
+      @previous="versionNavigation.previous"
+      @next="versionNavigation.next"
+    />
     <div v-else class="rounded-xl border border-border bg-white p-5">
       <p class="text-sm text-text-muted">
         Create an immutable Version in the CV editor before previewing.

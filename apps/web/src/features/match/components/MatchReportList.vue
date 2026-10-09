@@ -1,23 +1,26 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useMatchReportsQuery } from '@/features/match/api/match.queries'
 import Card from '@/shared/components/ui/card/Card.vue'
 import Button from '@/shared/components/ui/button/Button.vue'
+import PaginationNav from '@/shared/components/PaginationNav.vue'
 import { ApiRequestError } from '@/shared/api/client'
 import { ROUTES } from '@/shared/constants/routes'
+import { usePageNavigation } from '@/shared/composables/usePageNavigation'
 import { RefreshCw } from 'lucide-vue-next'
 
 const page = ref(1)
 const perPage = 20
 const reportsQuery = useMatchReportsQuery(page, perPage)
+const pageNavigation = usePageNavigation({
+  page,
+  lastPage: () => reportsQuery.data.value?.lastPage,
+  isFetching: reportsQuery.isFetching,
+})
 
 const retryable = (error: unknown) =>
   error instanceof ApiRequestError && [429, 503].includes(error.status)
-const totalPages = computed(() => reportsQuery.data.value?.lastPage ?? 1)
-watch([totalPages, () => reportsQuery.isFetching.value], ([lastPage, isFetching]) => {
-  if (!isFetching && page.value > lastPage) page.value = lastPage
-})
 </script>
 
 <template>
@@ -96,21 +99,13 @@ watch([totalPages, () => reportsQuery.isFetching.value], ([lastPage, isFetching]
           </Card>
         </RouterLink>
       </div>
-      <nav
-        v-if="totalPages > 1"
-        class="flex items-center justify-between gap-3"
-        aria-label="Match Report pages"
-      >
-        <Button type="button" variant="outline" :disabled="page <= 1" @click="page -= 1">
-          Previous
-        </Button>
-        <span class="text-xs text-text-muted" aria-live="polite"
-          >Page {{ page }} of {{ totalPages }}</span
-        >
-        <Button type="button" variant="outline" :disabled="page >= totalPages" @click="page += 1">
-          Next
-        </Button>
-      </nav>
+      <PaginationNav
+        :page="pageNavigation.page.value"
+        :last-page="pageNavigation.lastPage.value"
+        label="Match Report pages"
+        @previous="pageNavigation.previous"
+        @next="pageNavigation.next"
+      />
     </div>
   </div>
 </template>

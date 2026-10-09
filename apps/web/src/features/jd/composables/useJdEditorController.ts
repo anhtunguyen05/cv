@@ -5,6 +5,7 @@ import { useCvVersionsPageQuery } from '@/features/cv/api/cv.queries'
 import { matchQueryKeys } from '@/features/match/api/match.keys'
 import { dashboardQueryKeys } from '@/features/dashboard/api/dashboard.keys'
 import { ROUTES } from '@/shared/constants/routes'
+import { usePageNavigation } from '@/shared/composables/usePageNavigation'
 import { jdQueryKeys } from '../api/jd.keys'
 import { useJobDescriptionAnalysisQuery, useJobDescriptionQuery } from '../api/jd.queries'
 import { useJdDraft } from './useJdDraft'
@@ -150,6 +151,11 @@ export function useJdEditorController() {
     undefined,
     computed(() => Boolean(current.value && analysis.value)),
   )
+  const cvVersionNavigation = usePageNavigation({
+    page: cvVersionPage,
+    lastPage: () => versionsQuery.data.value?.lastPage,
+    isFetching: versionsQuery.isFetching,
+  })
   const charCount = computed(() => countCodePoints(rawText.value))
   const overLimit = computed(() => charCount.value > 50000)
 
@@ -269,14 +275,6 @@ export function useJdEditorController() {
   const setErrorSummary = (element: HTMLElement | null) => {
     errorSummary.value = element
   }
-  const previousCvVersionPage = () => {
-    if (cvVersionPage.value > 1) cvVersionPage.value -= 1
-  }
-  const nextCvVersionPage = () => {
-    const lastPage = versionsQuery.data.value?.lastPage ?? 1
-    if (cvVersionPage.value < lastPage) cvVersionPage.value += 1
-  }
-
   function analyze(): void {
     if (!current.value || hasUnsavedChanges.value) return
     queryClient.removeQueries({ queryKey: jdQueryKeys.analysisRoot(jobDescriptionId.value) })
@@ -406,52 +404,68 @@ export function useJdEditorController() {
     if (message) void nextTick(() => errorSummary.value?.focus())
   })
 
-  return {
-    jobDescriptionId,
+  const form = {
     rawText,
     company,
     role,
     hasUnsavedChanges,
     localError,
     errorSummary,
-    selectedCvVersionId,
-    cvVersionPage,
-    jdQuery,
     current,
-    analysisQuery,
-    analysis,
-    versionsQuery,
-    analysisMutation,
-    saveMutation,
-    matchMutation,
-    deleteMutation,
     charCount,
     errorMessage,
-    retryable,
+    saveMutation,
+    deleteMutation,
     saveRetryable,
     deleteRetryable,
     saveConflict,
     deleteConflict,
-    analysisConflict,
-    matchRetryable,
+    analysisMutation,
+    analyze,
     submit,
     limitCodePoints,
     setCompany,
     setRole,
     setRawText,
-    setSelectedCvVersionId,
     setErrorSummary,
-    previousCvVersionPage,
-    nextCvVersionPage,
-    analyze,
-    createReport,
-    reloadCurrentRevision,
     confirmDelete,
-    retryMatch,
     retrySave: submit,
     retryDelete: runDelete,
+    reloadCurrentRevision,
     fieldError,
   }
+  const analysisPanel = {
+    analysisQuery,
+    analysisMutation,
+    analysis,
+    analysisConflict,
+    analyze,
+    reloadCurrentRevision,
+  }
+  const match = {
+    selectedCvVersionId,
+    hasUnsavedChanges,
+    versionsQuery,
+    navigation: cvVersionNavigation,
+    matchMutation,
+    matchRetryable,
+    setSelectedCvVersionId,
+    createReport,
+    retryMatch,
+  }
+  const page = {
+    jobDescriptionId,
+    jdQuery,
+    current,
+    errorMessage,
+    retryable,
+  }
+
+  return { page, form, analysis: analysisPanel, match }
 }
 
 export type JdEditorController = ReturnType<typeof useJdEditorController>
+export type JdFormContract = JdEditorController['form']
+export type JdAnalysisContract = JdEditorController['analysis']
+export type JdMatchContract = JdEditorController['match']
+export type JdPageContract = JdEditorController['page']

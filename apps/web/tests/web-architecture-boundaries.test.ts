@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
@@ -36,9 +36,15 @@ describe('web architecture boundaries', () => {
 
   it('keeps route pages as feature composition wrappers', () => {
     expect(readFileSync(resolve(pageRoot, 'cv/CvEditorPage.vue'), 'utf8')).toContain('<CvEditor />')
-    expect(readFileSync(resolve(pageRoot, 'cv/CvPreviewPage.vue'), 'utf8')).toContain('<CvPreview />')
-    expect(readFileSync(resolve(pageRoot, 'cv/CvVersionPage.vue'), 'utf8')).toContain('<CvVersionPreview />')
-    expect(readFileSync(resolve(pageRoot, 'cv/PatchReviewPage.vue'), 'utf8')).toContain('<PatchReview />')
+    expect(readFileSync(resolve(pageRoot, 'cv/CvPreviewPage.vue'), 'utf8')).toContain(
+      '<CvPreview />',
+    )
+    expect(readFileSync(resolve(pageRoot, 'cv/CvVersionPage.vue'), 'utf8')).toContain(
+      '<CvVersionPreview />',
+    )
+    expect(readFileSync(resolve(pageRoot, 'cv/PatchReviewPage.vue'), 'utf8')).toContain(
+      '<PatchReview />',
+    )
     expect(readFileSync(resolve(pageRoot, 'jd/JdInputPage.vue'), 'utf8')).toContain('<JdEditor />')
     expect(readFileSync(resolve(pageRoot, 'dashboard/DashboardPage.vue'), 'utf8')).toContain(
       '<DashboardView />',
@@ -52,12 +58,70 @@ describe('web architecture boundaries', () => {
   })
 
   it('splits dashboard and JD feature presentation boundaries', () => {
-    const dashboard = readFileSync(resolve(sourceRoot, 'features/dashboard/components/DashboardView.vue'), 'utf8')
-    const jdEditor = readFileSync(resolve(sourceRoot, 'features/jd/components/JdEditor.vue'), 'utf8')
+    const dashboard = readFileSync(
+      resolve(sourceRoot, 'features/dashboard/components/DashboardView.vue'),
+      'utf8',
+    )
+    const jdEditor = readFileSync(
+      resolve(sourceRoot, 'features/jd/components/JdEditor.vue'),
+      'utf8',
+    )
     expect(dashboard).toContain('<DashboardStats')
     expect(dashboard).toContain('<CvProfileList')
     expect(dashboard).toContain('<JdList')
     expect(jdEditor).toContain('<JdForm')
     expect(jdEditor).toContain('<JdAnalysisPanel')
+  })
+
+  it('passes dashboard capability contracts instead of the full controller', () => {
+    const stats = readFileSync(
+      resolve(sourceRoot, 'features/dashboard/components/DashboardStats.vue'),
+      'utf8',
+    )
+    const profiles = readFileSync(
+      resolve(sourceRoot, 'features/dashboard/components/CvProfileList.vue'),
+      'utf8',
+    )
+    const jobs = readFileSync(
+      resolve(sourceRoot, 'features/dashboard/components/JdList.vue'),
+      'utf8',
+    )
+
+    expect(stats).toContain('DashboardStatsContract')
+    expect(stats).toContain('stats: DashboardStatsContract')
+    expect(profiles).toContain('DashboardProfilesContract')
+    expect(profiles).toContain('profiles: DashboardProfilesContract')
+    expect(jobs).toContain('DashboardJobDescriptionsContract')
+    expect(jobs).toContain('jobDescriptions: DashboardJobDescriptionsContract')
+    expect(stats).not.toContain('controller: DashboardController')
+    expect(profiles).not.toContain('controller: DashboardController')
+    expect(jobs).not.toContain('controller: DashboardController')
+  })
+
+  it('keeps template routing thin and shares CV Version selection presentation', () => {
+    const templatePage = readFileSync(resolve(pageRoot, 'templates/TemplatePickerPage.vue'), 'utf8')
+    const templateFeature = readFileSync(
+      resolve(sourceRoot, 'features/templates/components/TemplatePicker.vue'),
+      'utf8',
+    )
+    const preview = readFileSync(
+      resolve(sourceRoot, 'features/cv/components/CvPreview.vue'),
+      'utf8',
+    )
+
+    expect(templatePage).toContain('<TemplatePicker />')
+    expect(templatePage).not.toContain('useTemplatePickerController')
+    expect(templateFeature).toContain('<CvVersionSelector')
+    expect(templateFeature).toContain("import { CvVersionSelector } from '@/features/cv'")
+    expect(preview).toContain('<CvVersionSelector')
+  })
+
+  it('removes the unused auth facade while retaining mutation exports', () => {
+    expect(existsSync(resolve(sourceRoot, 'features/auth/composables/useAuth.ts'))).toBe(false)
+    const authIndex = readFileSync(resolve(sourceRoot, 'features/auth/index.ts'), 'utf8')
+    expect(authIndex).not.toContain("./composables/useAuth'")
+    expect(authIndex).toContain('useLoginMutation')
+    expect(authIndex).toContain('useRegisterMutation')
+    expect(authIndex).toContain('useLogoutMutation')
   })
 })

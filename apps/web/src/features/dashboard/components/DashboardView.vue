@@ -38,12 +38,12 @@ const controller = useDashboardController()
       </div>
     </div>
 
-    <DashboardStats :controller="controller" />
+    <DashboardStats :stats="controller.stats" />
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
       <div class="space-y-8 lg:col-span-8">
-        <CvProfileList :controller="controller" />
-        <JdList :controller="controller" />
+        <CvProfileList :profiles="controller.profiles" />
+        <JdList :job-descriptions="controller.jobDescriptions" />
       </div>
 
       <aside class="space-y-5 lg:col-span-4">

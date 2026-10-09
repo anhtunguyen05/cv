@@ -126,16 +126,14 @@ src/
 ├── features/
 │   ├── auth/
 │   │   ├── api/
-│   │   │   ├── auth.api.ts
-│   │   │   ├── auth.queries.ts
-│   │   │   └── auth.mutations.ts
+│   │   │   └── auth.api.ts
 │   │   │
 │   │   ├── components/
 │   │   │   ├── LoginForm.vue
 │   │   │   └── RegisterForm.vue
 │   │   │
 │   │   ├── composables/
-│   │   │   └── useAuth.ts
+│   │   │   └── useAuthMutations.ts
 │   │   │
 │   │   ├── schemas/
 │   │   │   └── auth.schema.ts
@@ -175,8 +173,8 @@ src/
 │   │   │
 │   │   ├── molecules/
 │   │   │   ├── FormField.vue
-│   │   │   ├── SearchInput.vue
-│   │   │   └── PaginationControl.vue
+│   │   │   └── SearchInput.vue
+│   │   ├── PaginationNav.vue
 │   │   │
 │   │   └── organisms/
 │   │       ├── AppHeader.vue
@@ -189,7 +187,7 @@ src/
 │   │
 │   ├── composables/
 │   │   ├── useDebounce.ts
-│   │   ├── usePagination.ts
+│   │   ├── usePageNavigation.ts
 │   │   └── useModal.ts
 │   │
 │   ├── constants/
@@ -411,7 +409,7 @@ Ví dụ:
 ```text
 FormField
 SearchInput
-PaginationControl
+PaginationNav
 ```
 
 ---
@@ -702,13 +700,13 @@ import LoginForm from '@/features/auth/components/LoginForm.vue'
 Ưu tiên public exports khi feature lớn:
 
 ```ts
-import { useAuth } from '@/features/auth'
+import { useAuthStore, useLoginMutation } from '@/features/auth'
 ```
 
 thay vì deep import quá sâu:
 
 ```ts
-import { useAuth } from '@/features/auth/composables/internal/useAuth'
+import { useLoginMutation } from '@/features/auth/composables/useAuthMutations'
 ```
 
 ---
@@ -738,8 +736,8 @@ useSomething.ts
 Ví dụ:
 
 ```text
-useAuth.ts
-usePagination.ts
+useAuthMutations.ts
+usePageNavigation.ts
 ```
 
 Stores:

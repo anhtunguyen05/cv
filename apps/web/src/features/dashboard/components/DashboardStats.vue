@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { BarChart2, Briefcase, FileText, TrendingUp } from 'lucide-vue-next'
 import Card from '@/shared/components/ui/card/Card.vue'
-import type { DashboardController } from '../composables/useDashboardController'
-defineProps<{ controller: DashboardController }>()
+import type { DashboardStatsContract } from '../composables/useDashboardController'
+defineProps<{ stats: DashboardStatsContract }>()
 </script>
 <template>
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
@@ -20,7 +20,7 @@ defineProps<{ controller: DashboardController }>()
       </div>
       <div class="mt-3 flex items-baseline gap-2">
         <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">{{
-          controller.cvProfileTotal.value
+          stats.cvProfileTotal.value
         }}</span
         ><span
           class="text-xs font-semibold text-success-hover bg-success-muted border border-success-border px-2 py-0.5 rounded-full flex items-center gap-1"
@@ -45,7 +45,7 @@ defineProps<{ controller: DashboardController }>()
       </div>
       <div class="mt-3 flex items-baseline gap-2">
         <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">{{
-          controller.jobDescriptionTotal.value
+          stats.jobDescriptionTotal.value
         }}</span
         ><span
           class="text-xs font-semibold text-info bg-info-muted border border-info-border px-2 py-0.5 rounded-full"
@@ -72,7 +72,7 @@ defineProps<{ controller: DashboardController }>()
       </div>
       <div class="mt-3 flex items-baseline gap-2">
         <span class="text-2xl sm:text-3xl font-bold text-text font-mono tracking-tight">{{
-          controller.matchReportTotal.value
+          stats.matchReportTotal.value
         }}</span
         ><span
           class="text-xs font-semibold text-success-hover bg-success-muted border border-success-border px-2 py-0.5 rounded-full"
@@ -82,18 +82,12 @@ defineProps<{ controller: DashboardController }>()
       <p class="text-xs text-text-muted mt-1.5 leading-relaxed">
         Reports retain the CV and Job Description sources used.
       </p>
-      <p
-        v-if="controller.isMatchReportsLoading.value"
-        class="text-xs text-text-muted"
-        role="status"
-      >
+      <p v-if="stats.isMatchReportsLoading.value" class="text-xs text-text-muted" role="status">
         Loading stored reports…
       </p>
-      <p v-else-if="controller.isMatchReportsError.value" class="text-xs text-danger" role="alert">
+      <p v-else-if="stats.isMatchReportsError.value" class="text-xs text-danger" role="alert">
         Unable to load report totals.
-        <button type="button" class="underline" @click="controller.refetchMatchReports()">
-          Retry
-        </button>
+        <button type="button" class="underline" @click="stats.refetchMatchReports()">Retry</button>
       </p>
     </Card>
   </div>

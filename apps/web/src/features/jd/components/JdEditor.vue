@@ -18,29 +18,33 @@ const controller = useJdEditorController()
         ><ArrowLeft :size="14" aria-hidden="true" /> Dashboard</RouterLink
       >
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-text mt-3">
-        {{ controller.current.value ? 'Edit Job Description' : 'Save Job Description' }}
+        {{ controller.page.current.value ? 'Edit Job Description' : 'Save Job Description' }}
       </h1>
       <p class="text-xs sm:text-sm text-text-muted mt-1">
         Preserve the source exactly as pasted, then run the deterministic analysis when you are
         ready.
       </p>
     </div>
-    <Card v-if="controller.jdQuery.isLoading.value" aria-label="Loading Job Description"
+    <Card v-if="controller.page.jdQuery.isLoading.value" aria-label="Loading Job Description"
       ><div class="h-40 animate-pulse rounded bg-surface-muted"
     /></Card>
-    <Card v-else-if="controller.jdQuery.isError.value" role="alert" class="space-y-3"
+    <Card v-else-if="controller.page.jdQuery.isError.value" role="alert" class="space-y-3"
       ><h2 class="font-bold text-text">Unable to load this Job Description</h2>
       <p class="text-sm text-text-muted">
-        {{ controller.errorMessage.value || 'The resource was not found.' }}
+        {{ controller.page.errorMessage.value || 'The resource was not found.' }}
       </p>
       <Button
-        v-if="controller.retryable.value"
+        v-if="controller.page.retryable.value"
         variant="outline"
         type="button"
-        @click="controller.jdQuery.refetch()"
+        @click="controller.page.jdQuery.refetch()"
         ><RefreshCw :size="15" aria-hidden="true" /> Retry</Button
       ></Card
     >
-    <template v-else><JdForm :controller /><JdAnalysisPanel :controller /></template>
+    <template v-else
+      ><JdForm :form="controller.form" /><JdAnalysisPanel
+        :analysis="controller.analysis"
+        :match="controller.match"
+    /></template>
   </div>
 </template>
