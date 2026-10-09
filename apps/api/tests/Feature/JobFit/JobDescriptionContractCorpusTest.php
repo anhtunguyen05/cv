@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\JobFit;
 
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;

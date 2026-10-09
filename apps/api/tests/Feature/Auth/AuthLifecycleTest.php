@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Auth;
 
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Support\Facades\RateLimiter;

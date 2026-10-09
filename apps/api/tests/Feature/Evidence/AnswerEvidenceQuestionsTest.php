@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Evidence;
 
-use App\Models\EvidenceAnswer;
-use App\Models\EvidenceInterview;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\Evidence\Eloquent\Models\EvidenceAnswer;
+use App\Infrastructure\Persistence\Evidence\Eloquent\Models\EvidenceInterview;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -60,7 +60,7 @@ final class AnswerEvidenceQuestionsTest extends TestCase
         }
 
         $completedInterview = EvidenceInterview::query()->findOrFail($interview['id']);
-        self::assertSame('completed', $completedInterview->status);
+        self::assertSame('completed', $completedInterview->status->value);
         self::assertSame(2, EvidenceAnswer::query()->where('interview_id', $interview['id'])->count());
         self::assertSame(1, EvidenceAnswer::query()->where('outcome', 'cannot_provide')->count());
     }

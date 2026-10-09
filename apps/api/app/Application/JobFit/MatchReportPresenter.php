@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Application\JobFit;
 
 use App\Application\Cv\ApiProblem;
-use App\Models\MatchReport;
 
 final class MatchReportPresenter
 {
     /** @return array<string,mixed> */
-    public static function data(MatchReport $report): array
+    public static function data(object $report): array
     {
         $score = (float) $report->overall_score;
         $collections = [

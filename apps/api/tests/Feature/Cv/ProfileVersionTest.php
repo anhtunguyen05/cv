@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Cv;
 
 use App\Application\Cv\CanonicalJson;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;

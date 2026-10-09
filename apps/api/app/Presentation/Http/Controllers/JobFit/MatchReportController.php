@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Http\Controllers\JobFit;
 
+use App\Application\Auth\Data\AuthenticatedUser;
 use App\Application\Cv\ApiProblem;
-use App\Application\JobFit\MatchReportPresenter;
 use App\Application\JobFit\MatchService;
 use App\Presentation\Http\Controllers\Controller;
+use App\Presentation\Http\Errors\ProblemStatusMapper;
+use App\Presentation\Http\Resources\JobFit\MatchReportResource;
 use App\Presentation\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,10 +23,10 @@ final class MatchReportController extends Controller
         try {
             $page = $this->positiveQuery($request, 'page', 1);
             $perPage = min(100, $this->positiveQuery($request, 'per_page', 20));
-            $reports = $this->reports->list($request->user(), $page, $perPage)->appends($request->query());
+            $reports = $this->reports->list(new AuthenticatedUser((int) $request->user()->getAuthIdentifier()), $page, $perPage)->appends($request->query());
 
             return response()->json([
-                'data' => array_map(static fn ($item): array => MatchReportPresenter::data($item), $reports->items()),
+                'data' => array_map(static fn ($item): array => MatchReportResource::data($item), $reports->items()),
                 'meta' => [
                     'page' => $reports->currentPage(),
                     'per_page' => $reports->perPage(),
@@ -39,27 +41,27 @@ final class MatchReportController extends Controller
                 ],
             ])->header('Cache-Control', 'private, no-store');
         } catch (ApiProblem $problem) {
-            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, $problem->status);
+            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, ProblemStatusMapper::status($problem));
         }
     }
 
     public function store(Request $request): JsonResponse
     {
         try {
-            $result = $this->reports->create($request->user(), $request->all(), (string) $request->header('Idempotency-Key'), $request->path());
+            $result = $this->reports->create(new AuthenticatedUser((int) $request->user()->getAuthIdentifier()), $request->all(), (string) $request->header('Idempotency-Key'), $request->path());
 
             return ApiResponse::data($result['body']['data'], $result['status']);
         } catch (ApiProblem $problem) {
-            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, $problem->status);
+            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, ProblemStatusMapper::status($problem));
         }
     }
 
     public function show(Request $request, string $matchReport): JsonResponse
     {
         try {
-            return ApiResponse::data(MatchReportPresenter::data($this->reports->findOwned($request->user(), $matchReport)));
+            return ApiResponse::data(MatchReportResource::data($this->reports->findOwned(new AuthenticatedUser((int) $request->user()->getAuthIdentifier()), $matchReport)));
         } catch (ApiProblem $problem) {
-            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, $problem->status);
+            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, ProblemStatusMapper::status($problem));
         }
     }
 

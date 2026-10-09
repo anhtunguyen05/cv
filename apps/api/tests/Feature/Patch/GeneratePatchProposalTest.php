@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Patch;
 
-use App\Models\OperationalAuditEvent;
-use App\Models\Patch;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\OperationalSafety\Eloquent\Models\OperationalAuditEvent;
+use App\Infrastructure\Persistence\Patch\Eloquent\Models\Patch;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\Feature\Evidence\CreatesEpic4Context;
@@ -35,7 +35,7 @@ final class GeneratePatchProposalTest extends TestCase
         self::assertSame(1, Patch::query()->count());
         self::assertSame(1, Patch::query()->where('interview_id', $context['interview']->getKey())->count());
         self::assertSame(1, OperationalAuditEvent::query()->count());
-        self::assertSame('succeeded', OperationalAuditEvent::query()->firstOrFail()->status);
+        self::assertSame('succeeded', OperationalAuditEvent::query()->firstOrFail()->status->value);
     }
 
     public function test_generation_requires_completed_interview_and_does_not_create_patch(): void

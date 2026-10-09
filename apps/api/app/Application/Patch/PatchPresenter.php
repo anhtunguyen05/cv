@@ -6,18 +6,19 @@ namespace App\Application\Patch;
 
 use App\Application\Cv\ApiProblem;
 use App\Application\Cv\ProfileDocument;
-use App\Models\Patch;
+use App\Domain\Evidence\Enums\EvidenceAnswerOutcome;
+use App\Domain\Patch\Enums\PatchStatus;
 
 final class PatchPresenter
 {
     /** @return array<string,mixed> */
-    public static function data(Patch $patch): array
+    public static function data(object $patch): array
     {
         if (! ProfileDocument::isUlid((string) $patch->getKey())
             || ! ProfileDocument::isUlid((string) $patch->source_cv_version_id)
             || ! ProfileDocument::isUlid((string) $patch->match_report_id)
             || ! ProfileDocument::isUlid((string) $patch->interview_id)
-            || ! in_array($patch->status, ['pending_validation', 'pending', 'rejected', 'invalid', 'applied'], true)
+            || ! $patch->status instanceof PatchStatus
             || ! is_array($patch->target)
             || ! is_array($patch->old_value)
             || ! is_array($patch->new_value)
@@ -32,10 +33,10 @@ final class PatchPresenter
             'match_report_id' => (string) $patch->match_report_id,
             'interview_id' => (string) $patch->interview_id,
             'predecessor_patch_id' => $patch->predecessor_patch_id !== null ? (string) $patch->predecessor_patch_id : null,
-            'status' => (string) $patch->status,
+            'status' => $patch->status->value,
             'allowed_actions' => match ($patch->status) {
-                'pending' => ['edit', 'reject', 'approve'],
-                'rejected', 'invalid' => ['regenerate'],
+                PatchStatus::Pending => ['edit', 'reject', 'approve'],
+                PatchStatus::Rejected, PatchStatus::Invalid => ['regenerate'],
                 default => [],
             },
             'revision' => (int) $patch->revision,
@@ -61,8 +62,8 @@ final class PatchPresenter
                     'question_id' => (string) $answer->question_id,
                     'question_version' => (string) $answer->question_version,
                     'area_signal_id' => (string) $answer->area_signal_id,
-                    'outcome' => (string) $answer->outcome,
-                    'answer' => $answer->answer_original,
+                    'outcome' => $answer->outcome->value,
+                    'answer' => $answer->outcome === EvidenceAnswerOutcome::Answer ? $answer->answer_original : null,
                     'provenance' => (string) $answer->provenance,
                     'created_at' => $answer->created_at?->toISOString(),
                 ])->values()->all()

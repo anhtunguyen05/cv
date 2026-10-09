@@ -16,9 +16,10 @@ final class TemplateController extends Controller
 
     public function index(): JsonResponse
     {
-        $data = $this->templates->available()
-            ->map(fn ($template): array => TemplatePresenter::summary($template, $this->templates))
-            ->all();
+        $data = array_map(
+            fn ($template): array => TemplatePresenter::summary($template, $this->templates),
+            $this->templates->available(),
+        );
 
         return ApiResponse::data($data);
     }

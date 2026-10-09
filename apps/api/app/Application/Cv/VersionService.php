@@ -4,33 +4,43 @@ declare(strict_types=1);
 
 namespace App\Application\Cv;
 
-use App\Models\CvProfile;
-use App\Models\CvVersion;
-use App\Models\User;
-use Illuminate\Database\QueryException;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use App\Application\Auth\Data\AuthenticatedUser;
+use App\Application\Cv\Contracts\IdempotencyStore;
+use App\Application\Cv\Contracts\ProfileRepository;
+use App\Application\Cv\Contracts\VersionRepository;
+use App\Application\Cv\Data\ProfileRecord;
+use App\Application\Cv\Data\VersionPage;
+use App\Application\Cv\Data\VersionRecord;
+use App\Domain\Cv\Policies\ImmutableSnapshotPolicy;
+use App\Domain\Shared\ValueObjects\SnapshotHash;
+use App\Shared\Application\Contracts\TransactionManager;
+use DateTimeImmutable;
 
 final class VersionService
 {
+    public function __construct(
+        private readonly TransactionManager $transactions,
+        private readonly ProfileRepository $profiles,
+        private readonly VersionRepository $versions,
+        private readonly IdempotencyStore $idempotency,
+    ) {}
+
     /** @return array{body: array<string, mixed>, status: int, replayed: bool} */
-    public function create(User $user, string $profileId, string $name, string $ifMatch, string $idempotencyKey, string $route): array
+    public function create(AuthenticatedUser $user, string $profileId, string $name, string $ifMatch, string $idempotencyKey, string $route): array
     {
         CvIdempotency::validate($idempotencyKey);
         $payload = ProfileDocumentValidator::canonicalize(['name' => $name]);
         $hash = hash('sha256', CanonicalJson::encode($payload)."\n".$route."\n".$ifMatch);
 
-        return DB::transaction(function () use ($user, $profileId, $name, $ifMatch, $idempotencyKey, $hash): array {
+        return $this->transactions->run(function () use ($user, $profileId, $name, $ifMatch, $idempotencyKey, $hash): array {
             if (! ProfileDocument::isUlid($profileId)) {
                 throw $this->notFound();
             }
-            /** @var CvProfile|null $profile */
-            $profile = CvProfile::query()->where('id', $profileId)->where('user_id', $user->getKey())->lockForUpdate()->first();
-            if (! $profile instanceof CvProfile) {
+            $profile = $this->profiles->lockOwned($user->id, $profileId);
+            if ($profile === null) {
                 throw $this->notFound();
             }
-            $existing = CvIdempotency::existing($user, 'create-version', $idempotencyKey, $hash);
+            $existing = CvIdempotency::existing($this->idempotency, $user->id, 'create-version', $idempotencyKey, $hash);
             if ($existing['replayed']) {
                 return ['body' => $existing['body'] ?? [], 'status' => $existing['status'] ?? 201, 'replayed' => true];
             }
@@ -45,61 +55,53 @@ final class VersionService
                 ]);
             }
             $encodedSnapshot = CanonicalJson::encode($snapshot);
-            $version = new CvVersion([
+            $snapshotHash = hash('sha256', $encodedSnapshot);
+            if (! ImmutableSnapshotPolicy::matchesHash($encodedSnapshot, SnapshotHash::fromString($snapshotHash))) {
+                throw new ApiProblem('PROFILE_NOT_VERSIONABLE', 'The Profile snapshot could not be verified.', 409);
+            }
+            $version = $this->versions->create([
                 'id' => ProfileDocument::id(),
-                'user_id' => $user->getKey(),
-                'source_profile_id' => $profile->getKey(),
+                'user_id' => $user->id,
+                'source_profile_id' => $profile->id,
                 'source_profile_revision' => $profile->revision,
                 'name' => (string) ProfileDocumentValidator::canonicalize(['name' => $name])['name'],
                 'snapshot_schema_version' => '1.0',
                 'snapshot' => $snapshot,
-                'snapshot_hash' => hash('sha256', $encodedSnapshot),
-                'created_at' => Carbon::now(),
+                'snapshot_hash' => $snapshotHash,
+                'created_at' => new DateTimeImmutable,
             ]);
-            try {
-                $version->save();
-            } catch (QueryException $exception) {
-                throw $exception;
-            }
-            $body = ['data' => VersionPresenter::data($version->fresh())];
-            CvIdempotency::record($user, 'create-version', $idempotencyKey, $hash, $body, 201);
+            $body = ['data' => VersionPresenter::data($version)];
+            CvIdempotency::record($this->idempotency, $user->id, 'create-version', $idempotencyKey, $hash, $body, 201);
 
             return ['body' => $body, 'status' => 201, 'replayed' => false];
         });
     }
 
-    public function findOwned(User $user, string $id): CvVersion
+    public function findOwned(AuthenticatedUser $user, string $id): VersionRecord
     {
         if (! ProfileDocument::isUlid($id)) {
             throw $this->notFound();
         }
-        $version = CvVersion::query()->where('id', $id)->where('user_id', $user->getKey())->first();
-        if (! $version instanceof CvVersion) {
+        $version = $this->versions->findOwned($user->id, $id);
+        if ($version === null) {
             throw $this->notFound();
         }
 
         return $version;
     }
 
-    public function list(User $user, int $page, int $perPage, ?string $profileId): LengthAwarePaginator
+    public function list(AuthenticatedUser $user, int $page, int $perPage, ?string $profileId, array $query = []): VersionPage
     {
-        $query = CvVersion::query()->where('user_id', $user->getKey());
         if ($profileId !== null) {
-            if (! ProfileDocument::isUlid($profileId) || ! CvProfile::query()->where('id', $profileId)->where('user_id', $user->getKey())->exists()) {
+            if (! ProfileDocument::isUlid($profileId) || $this->profiles->findOwned($user->id, $profileId) === null) {
                 throw $this->notFound();
             }
-            $query->where('source_profile_id', $profileId);
         }
 
-        return $query
-            ->orderByDesc('created_at')
-            ->orderByDesc('id')
-            ->paginate($perPage, [
-                'id', 'user_id', 'source_profile_id', 'source_profile_revision', 'name', 'created_at',
-            ], 'page', $page);
+        return $this->versions->listOwned($user->id, $page, $perPage, $profileId, $query);
     }
 
-    private function assertRevision(CvProfile $profile, string $ifMatch): void
+    private function assertRevision(ProfileRecord $profile, string $ifMatch): void
     {
         if (preg_match('/^"([1-9][0-9]*)"$/', $ifMatch, $matches) !== 1) {
             throw new ApiProblem('VALIDATION_FAILED', 'One or more fields are invalid.', 422, [

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Http\Controllers\Cv;
 
+use App\Application\Auth\Data\AuthenticatedUser;
 use App\Application\Cv\ApiProblem;
 use App\Application\Cv\PreviewPresenter;
 use App\Application\Cv\PreviewService;
 use App\Presentation\Http\Controllers\Controller;
+use App\Presentation\Http\Errors\ProblemStatusMapper;
 use App\Presentation\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,13 +24,13 @@ final class PreviewController extends Controller
             [$templateId, $templateVersion] = $this->sourceQuery($request);
 
             return ApiResponse::data(PreviewPresenter::data($this->previews->resolve(
-                $request->user(),
+                new AuthenticatedUser((int) $request->user()->getAuthIdentifier()),
                 $cvVersion,
                 $templateId,
                 $templateVersion,
             )));
         } catch (ApiProblem $problem) {
-            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, $problem->status);
+            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, ProblemStatusMapper::status($problem));
         } catch (\Throwable) {
             return ApiResponse::error(
                 'PREVIEW_PROJECTION_FAILED',

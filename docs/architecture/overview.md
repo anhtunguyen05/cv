@@ -30,6 +30,18 @@ Laravel is the sole owner of authentication, authorization, validation,
 persistence, and trusted state transitions. Vue owns presentation and
 interaction state. A worker or provider never writes trusted state directly.
 
+## API layer boundaries
+
+The API uses module-level Ports-and-Adapters. `Domain` contains pure PHP
+enums, value objects, and lifecycle policies. `Application` owns use-case
+facades, contracts, DTOs, validation, and transaction ports. `Presentation`
+owns HTTP requests, controllers, resources, and error/status mapping.
+`Infrastructure` owns Eloquent models and repositories under
+`app/Infrastructure/Persistence`, database locks/transactions, outbound
+provider clients, and dependency-injection bindings. The recursive guard is
+`apps/api/tests/Architecture/LayerBoundaryTest.php`; its rules and migration
+notes are recorded in the Epic 6 planning package.
+
 ## Product-state invariants
 
 - A CV Profile is mutable; a saved CV Version is immutable.

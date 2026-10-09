@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Tests\Feature\Patch;
 
 use App\Application\Patch\Contracts\PatchProposalContractValidator;
-use App\Models\OperationalAuditEvent;
-use App\Models\Patch;
-use App\Models\PatchGenerationReservation;
-use App\Models\PatchProviderAttempt;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\OperationalSafety\Eloquent\Models\OperationalAuditEvent;
+use App\Infrastructure\Persistence\Patch\Eloquent\Models\Patch;
+use App\Infrastructure\Persistence\Patch\Eloquent\Models\PatchGenerationReservation;
+use App\Infrastructure\Persistence\Patch\Eloquent\Models\PatchProviderAttempt;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -214,7 +214,7 @@ final class RemotePatchProposalTest extends TestCase
         ])->assertStatus($publicStatus)->assertJsonPath('code', $code);
         self::assertDatabaseCount('patches', 0);
         $expectedState = $code === 'PATCH_PROPOSAL_INVALID' ? 'terminal_failure' : 'retryable_failure';
-        self::assertSame($expectedState, PatchProviderAttempt::query()->firstOrFail()->status);
-        self::assertSame($expectedState, PatchGenerationReservation::query()->firstOrFail()->status);
+        self::assertSame($expectedState, PatchProviderAttempt::query()->firstOrFail()->status->value);
+        self::assertSame($expectedState, PatchGenerationReservation::query()->firstOrFail()->status->value);
     }
 }

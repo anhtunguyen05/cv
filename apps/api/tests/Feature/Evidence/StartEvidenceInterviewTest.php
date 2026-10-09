@@ -6,14 +6,14 @@ namespace Tests\Feature\Evidence;
 
 use App\Application\Cv\CanonicalJson;
 use App\Application\Cv\ProfileDocument;
-use App\Models\CvProfile;
-use App\Models\CvVersion;
-use App\Models\EvidenceInterview;
-use App\Models\JobDescription;
-use App\Models\JobDescriptionAnalysis;
-use App\Models\JobDescriptionRevision;
-use App\Models\MatchReport;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\Cv\Eloquent\Models\CvProfile;
+use App\Infrastructure\Persistence\Cv\Eloquent\Models\CvVersion;
+use App\Infrastructure\Persistence\Evidence\Eloquent\Models\EvidenceInterview;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\JobDescription;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\JobDescriptionAnalysis;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\JobDescriptionRevision;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\MatchReport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

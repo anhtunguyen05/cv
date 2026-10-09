@@ -6,8 +6,8 @@ namespace Tests\Feature\OperationalSafety;
 
 use App\Application\Cv\CanonicalJson;
 use App\Application\OperationalSafety\OrchestrationMeasurementPlanValidator;
-use App\Models\MatchReport;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\MatchReport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

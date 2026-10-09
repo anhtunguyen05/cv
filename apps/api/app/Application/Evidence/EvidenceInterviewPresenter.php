@@ -6,13 +6,12 @@ namespace App\Application\Evidence;
 
 use App\Application\Cv\ApiProblem;
 use App\Application\Cv\ProfileDocument;
-use App\Models\EvidenceAnswer;
-use App\Models\EvidenceInterview;
+use App\Domain\Evidence\Enums\EvidenceInterviewStatus;
 
 final class EvidenceInterviewPresenter
 {
     /** @return array<string,mixed> */
-    public static function data(EvidenceInterview $interview): array
+    public static function data(object $interview): array
     {
         $areas = $interview->areas;
         $questions = $interview->questions;
@@ -23,7 +22,7 @@ final class EvidenceInterviewPresenter
             || ! ProfileDocument::isUlid((string) $interview->job_description_revision_id)
             || ! ProfileDocument::isUlid((string) $interview->analysis_id)
             || $interview->question_set_version !== '1.0'
-            || ! in_array($interview->status, ['active', 'completed', 'expired'], true)
+            || ! $interview->status instanceof EvidenceInterviewStatus
             || ! is_array($areas)
             || ! is_array($questions)
             || ! self::validAreas($areas)
@@ -46,12 +45,12 @@ final class EvidenceInterviewPresenter
             'areas' => $areas,
             'questions' => $questions,
             'question_set_version' => (string) $interview->question_set_version,
-            'status' => (string) $interview->status,
+            'status' => $interview->status->value,
             'expires_at' => $interview->expires_at?->toISOString(),
             'created_at' => $interview->created_at?->toISOString(),
             'updated_at' => $interview->updated_at?->toISOString(),
             'answers' => $interview->relationLoaded('answers')
-                ? $interview->answers->map(static fn (EvidenceAnswer $answer): array => EvidenceAnswerPresenter::data($answer))->values()->all()
+                ? $interview->answers->map(static fn (object $answer): array => EvidenceAnswerPresenter::data($answer))->values()->all()
                 : [],
             'progress' => [
                 'answered' => $interview->relationLoaded('answers') ? $interview->answers->count() : 0,

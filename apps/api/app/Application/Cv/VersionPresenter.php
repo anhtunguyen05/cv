@@ -4,37 +4,37 @@ declare(strict_types=1);
 
 namespace App\Application\Cv;
 
-use App\Models\CvVersion;
+use App\Application\Cv\Data\VersionRecord;
 
 final class VersionPresenter
 {
     /** @return array<string,mixed> */
-    public static function summary(CvVersion $version): array
+    public static function summary(VersionRecord $version): array
     {
         return [
-            'id' => (string) $version->getKey(),
+            'id' => $version->id,
             'name' => $version->name,
-            'source_profile_id' => (string) $version->source_profile_id,
-            'source_profile_revision' => (int) $version->source_profile_revision,
-            'created_at' => $version->created_at?->toISOString(),
+            'source_profile_id' => $version->sourceProfileId,
+            'source_profile_revision' => $version->sourceProfileRevision,
+            'created_at' => $version->createdAt,
         ];
     }
 
-    public static function data(CvVersion $version): array
+    public static function data(VersionRecord $version): array
     {
         return [
-            'id' => (string) $version->getKey(),
+            'id' => $version->id,
             'name' => $version->name,
-            'source_profile_id' => (string) $version->source_profile_id,
-            'source_profile_revision' => (int) $version->source_profile_revision,
-            'source_cv_version_id' => $version->source_cv_version_id !== null ? (string) $version->source_cv_version_id : null,
-            'source_match_report_id' => $version->source_match_report_id !== null ? (string) $version->source_match_report_id : null,
-            'source_interview_id' => $version->source_interview_id !== null ? (string) $version->source_interview_id : null,
-            'source_patch_id' => $version->source_patch_id !== null ? (string) $version->source_patch_id : null,
-            'snapshot_schema_version' => $version->snapshot_schema_version,
+            'source_profile_id' => $version->sourceProfileId,
+            'source_profile_revision' => $version->sourceProfileRevision,
+            'source_cv_version_id' => $version->sourceCvVersionId,
+            'source_match_report_id' => $version->sourceMatchReportId,
+            'source_interview_id' => $version->sourceInterviewId,
+            'source_patch_id' => $version->sourcePatchId,
+            'snapshot_schema_version' => $version->snapshotSchemaVersion,
             'snapshot' => $version->snapshot,
             'provenance' => $version->provenance,
-            'created_at' => $version->created_at?->toISOString(),
+            'created_at' => $version->createdAt,
         ];
     }
 }

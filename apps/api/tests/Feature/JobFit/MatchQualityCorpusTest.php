@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Feature\JobFit;
 
+use App\Application\Auth\Data\AuthenticatedUser;
 use App\Application\Cv\CanonicalJson;
 use App\Application\Cv\ProfileDocument;
 use App\Application\JobFit\JobDescriptionAnalyzer;
 use App\Application\JobFit\MatchService;
-use App\Models\CvProfile;
-use App\Models\CvVersion;
-use App\Models\JobDescription;
-use App\Models\JobDescriptionAnalysis;
-use App\Models\JobDescriptionRevision;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\Cv\Eloquent\Models\CvProfile;
+use App\Infrastructure\Persistence\Cv\Eloquent\Models\CvVersion;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\JobDescription;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\JobDescriptionAnalysis;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\JobDescriptionRevision;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -177,7 +178,7 @@ final class MatchQualityCorpusTest extends TestCase
             'job_description_id' => $jobDescription->getKey(),
         ];
         $service = app(MatchService::class);
-        $result = $service->create($user, $payload, $headers['Idempotency-Key'], '/api/v1/match-reports');
+        $result = $service->create(new AuthenticatedUser((int) $user->getKey()), $payload, $headers['Idempotency-Key'], '/api/v1/match-reports');
         self::assertSame(201, $result['status'], $case['id'].' status');
         $report = $result['body']['data'];
         $expected = $case['expected'];
@@ -220,7 +221,7 @@ final class MatchQualityCorpusTest extends TestCase
             self::assertSame(isset($requiredIds[$signalId]) ? 'projects_or_experience' : 'skills_or_summary', $recommendation['target_cv_section'], $case['id'].' recommendation section');
         }
 
-        $replay = $service->create($user, $payload, $headers['Idempotency-Key'], '/api/v1/match-reports');
+        $replay = $service->create(new AuthenticatedUser((int) $user->getKey()), $payload, $headers['Idempotency-Key'], '/api/v1/match-reports');
         self::assertSame(CanonicalJson::encode($result['body']), CanonicalJson::encode($replay['body']), $case['id'].' replay');
     }
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Cv;
 
-use App\Models\Template;
-use Illuminate\Database\Eloquent\Collection;
+use App\Application\Cv\Contracts\TemplateCatalog;
+use App\Application\Cv\Data\TemplateRecord;
 
 final class TemplateService
 {
@@ -24,55 +24,50 @@ final class TemplateService
         'activities',
     ];
 
-    /** @return Collection<int, Template> */
-    public function available(): Collection
+    public function __construct(private readonly TemplateCatalog $catalog) {}
+
+    /** @return list<TemplateRecord> */
+    public function available(): array
     {
-        return Template::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->orderBy('id')
-            ->get()
-            ->filter(fn (Template $template): bool => $this->isAvailable($template))
-            ->values();
+        return array_values(array_filter(
+            $this->catalog->available(),
+            fn (TemplateRecord $template): bool => $this->isAvailable($template),
+        ));
     }
 
-    public function findAvailablePair(string $id, string $version): Template
+    public function findAvailablePair(string $id, string $version): TemplateRecord
     {
         if (! ProfileDocument::isUlid($id) || ! $this->isVersion($version)) {
             throw $this->unavailable();
         }
 
-        $template = Template::query()
-            ->where('id', $id)
-            ->where('version', $version)
-            ->where('is_active', true)
-            ->first();
+        $template = $this->catalog->findAvailablePair($id, $version);
 
-        if (! $template instanceof Template || ! $this->isAvailable($template)) {
+        if ($template === null || ! $this->isAvailable($template)) {
             throw $this->unavailable();
         }
 
         return $template;
     }
 
-    public function isAvailable(Template $template): bool
+    public function isAvailable(TemplateRecord $template): bool
     {
-        $name = trim((string) $template->name);
-        $description = $template->description === null ? null : trim((string) $template->description);
-        $supportedSchemas = $template->supported_snapshot_schema_versions;
+        $name = trim($template->name);
+        $description = $template->description === null ? null : trim($template->description);
+        $supportedSchemas = $template->supportedSnapshotSchemaVersions;
 
-        return $template->is_active
+        return $template->isActive
             && $name !== ''
             && mb_strlen($name) <= 120
             && ($description === null || mb_strlen($description) <= 500)
-            && $this->isVersion((string) $template->version)
+            && $this->isVersion($template->version)
             && is_array($supportedSchemas)
             && $supportedSchemas !== []
             && in_array(self::SNAPSHOT_SCHEMA_VERSION, $supportedSchemas, true);
     }
 
     /** @return list<string> */
-    public function supportedSections(Template $template): array
+    public function supportedSections(TemplateRecord $template): array
     {
         // Renderer order is application-owned. Template JSON is inert metadata,
         // never executable renderer configuration supplied by a catalog row.

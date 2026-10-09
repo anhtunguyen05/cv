@@ -6,6 +6,7 @@
     <testsuites>
         <testsuite name="Fast unit">
             <directory>tests/Unit</directory>
+            <directory>tests/Architecture</directory>
         </testsuite>
     </testsuites>
     <source><include><directory>app</directory></include></source>
