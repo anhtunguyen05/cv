@@ -123,3 +123,22 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-5-2-provider-recovery-mvp.md`
   summary: Supersede the earlier dormant-classifier note for synchronous Patch recovery.
   evidence: E5-DEC-002/E5-DEC-003 are now self-approved for the disposable MVP; PatchService integrates bounded synchronous retry classification and sanitized audit emission, while only the async branch remains deferred.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-01-worker-foundation.md`
+  summary: Select and implement the production internal identity profile, including mTLS or short-lived audience-bound tokens and rotation/replay controls.
+  evidence: The approved AI-PR-01 scope intentionally provides only a deterministic static-token test seam and marks production identity as Ask First.
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-01-worker-foundation.md`
+  summary: Add container packaging and container-level verification for the AI worker.
+  evidence: The architecture blueprint calls for a Dockerfile after the runtime/dependency command is selected; this foundation spec limits delivery to the FastAPI process, lockfile, CI, and local tests.
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-01-worker-foundation.md`
+  summary: Add correlation-aware safe telemetry for unexpected failures and operational events.
+  evidence: AI-PR-01 returns sanitized envelopes and correlation metadata but deliberately does not add provider, logging, or telemetry infrastructure.
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-01-worker-foundation.md`
+  summary: Make outermost unhandled-exception responses carry the correlation ID in the response header as well as the safe body envelope.
+  evidence: Starlette's outer ServerErrorMiddleware handles an unexpected exception outside the application correlation middleware; the body remains correlated, while the header requires a dedicated outer middleware strategy.
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-01-worker-foundation.md`
+  summary: Reconcile the AI blueprint and Patch Proposal v1 contract/schema examples for hash prefixes, source_fragment naming, and v1 target allowlists.
+  evidence: The review found conflicting examples and schema constraints in the newly added AI architecture and contract documents; resolving them belongs to the AI-PR-02 contract slice, not the worker foundation.
+- source_spec: `_bmad-output/implementation-artifacts/spec-ai-pr-01-worker-foundation.md`
+  summary: Add the AI-PR-02 valid/invalid fixture corpus and compatibility validator tests.
+  evidence: The foundation references the contract but explicitly excludes AI-PR-02 implementation; fixture and contract-validation coverage must land with that slice.
