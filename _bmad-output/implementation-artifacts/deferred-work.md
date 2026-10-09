@@ -1,5 +1,9 @@
 ## Deferred from: code review of spec-epic-2-job-fit (2026-10-07)
 
+- source_spec: `_bmad-output/implementation-artifacts/spec-refactor-auth-mutation-boundary.md`
+  summary: Refresh documentation and older implementation-artifact links that still reference `features/auth/api/auth.mutations.ts`.
+  evidence: The auth mutation module was intentionally relocated to `features/auth/composables/useAuthMutations.ts`; the approved refactor excludes broader documentation and planning-artifact updates.
+
 - Shared ATS/AI chrome copy is pre-existing outside the Epic 2 feature surface; product-owner scope decision is recorded in the Epic 2 spec before changing it.
 - Database/model-level immutability guards for revisions, analyses, and Match Reports are deferred; Epic 2 relies on the application-level no-mutation API surface.
 
