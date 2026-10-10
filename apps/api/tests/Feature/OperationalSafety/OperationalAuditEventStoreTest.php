@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\OperationalSafety;
 
-use App\Application\OperationalSafety\OperationalAuditEventQuery;
-use App\Application\OperationalSafety\OperationalAuditEventStore;
 use App\Application\OperationalSafety\SanitizedAuditEventBuilder;
-use App\Models\OperationalAuditEvent;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\OperationalSafety\Eloquent\Models\OperationalAuditEvent;
+use App\Infrastructure\Persistence\OperationalSafety\EloquentAuditEventQuery;
+use App\Infrastructure\Persistence\OperationalSafety\EloquentAuditEventStore;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use InvalidArgumentException;
@@ -22,7 +22,7 @@ final class OperationalAuditEventStoreTest extends TestCase
     public function test_appends_only_a_builder_approved_event_and_uses_server_actor_identity(): void
     {
         $actor = User::factory()->create();
-        $event = $this->store()->append($this->context(), $this->successOutcome(), $actor);
+        $event = $this->store()->append($this->context(), $this->successOutcome(), (int) $actor->getKey());
 
         self::assertSame('01J9AUDIT00000000000000000', $event->getKey());
         self::assertSame($actor->getKey(), $event->actor_user_id);
@@ -86,7 +86,7 @@ final class OperationalAuditEventStoreTest extends TestCase
         $second['operation'] = 'validate-match';
         $store->append($second, $this->successOutcome());
 
-        $page = (new OperationalAuditEventQuery)->paginate('generate-patch', 'corr-01J9AUDIT', 1, 10);
+        $page = (new EloquentAuditEventQuery)->paginate('generate-patch', 'corr-01J9AUDIT', 1, 10);
 
         self::assertSame(1, $page->total());
         self::assertCount(1, $page->items());
@@ -96,12 +96,12 @@ final class OperationalAuditEventStoreTest extends TestCase
     public function test_query_service_rejects_unbounded_or_unknown_filters(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        (new OperationalAuditEventQuery)->paginate('unknown-operation');
+        (new EloquentAuditEventQuery)->paginate('unknown-operation');
     }
 
-    private function store(): OperationalAuditEventStore
+    private function store(): EloquentAuditEventStore
     {
-        return new OperationalAuditEventStore(new SanitizedAuditEventBuilder);
+        return new EloquentAuditEventStore(new SanitizedAuditEventBuilder);
     }
 
     /** @return array<string,mixed> */

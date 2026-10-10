@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\JobFit;
 
 use App\Application\Cv\ProfileDocument;
-use App\Models\CvProfile;
-use App\Models\CvVersion;
-use App\Models\MatchReport;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\Cv\Eloquent\Models\CvProfile;
+use App\Infrastructure\Persistence\Cv\Eloquent\Models\CvVersion;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\MatchReport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Tests\TestCase;

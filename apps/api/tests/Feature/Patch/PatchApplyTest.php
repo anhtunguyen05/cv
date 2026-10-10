@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Patch;
 
-use App\Models\CvVersion;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\Cv\Eloquent\Models\CvVersion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\Feature\Evidence\CreatesEpic4Context;

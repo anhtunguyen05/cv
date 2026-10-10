@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Cv;
 
-use App\Models\Template;
-use App\Models\User;
+use App\Application\Auth\Data\AuthenticatedUser;
+use App\Application\Cv\Data\TemplateRecord;
 
 final class PreviewService
 {
@@ -15,7 +15,7 @@ final class PreviewService
     ) {}
 
     /** @return array<string, mixed> */
-    public function resolve(User $user, string $versionId, string $templateId, string $templateVersion): array
+    public function resolve(AuthenticatedUser $user, string $versionId, string $templateId, string $templateVersion): array
     {
         try {
             $version = $this->versions->findOwned($user, $versionId);
@@ -29,28 +29,28 @@ final class PreviewService
             throw new ApiProblem('PREVIEW_SOURCE_INVALID', 'The saved CV Version cannot be rendered safely.', 422);
         }
         $this->assertSnapshotShape($snapshot);
-        if ((string) $version->snapshot_schema_version !== TemplateService::SNAPSHOT_SCHEMA_VERSION) {
+        if ($version->snapshotSchemaVersion !== TemplateService::SNAPSHOT_SCHEMA_VERSION) {
             throw new ApiProblem('RENDER_SOURCE_UNSUPPORTED', 'This CV Version uses an unsupported snapshot schema.', 422);
         }
 
         $this->assertSafeLinks($snapshot);
 
         return [
-            'cv_version_id' => (string) $version->getKey(),
-            'template_id' => (string) $template->getKey(),
-            'template_version' => (string) $template->version,
-            'template_name' => trim((string) $template->name),
+            'cv_version_id' => $version->id,
+            'template_id' => $template->id,
+            'template_version' => $template->version,
+            'template_name' => trim($template->name),
             'renderer_version' => '1.0.0',
-            'version_name' => (string) $version->name,
-            'snapshot_schema_version' => (string) $version->snapshot_schema_version,
-            'source_profile_revision' => (int) $version->source_profile_revision,
+            'version_name' => $version->name,
+            'snapshot_schema_version' => $version->snapshotSchemaVersion,
+            'source_profile_revision' => $version->sourceProfileRevision,
             'sections' => $this->sections($snapshot, $template),
             'rendered_at' => null,
         ];
     }
 
     /** @return list<array{key: string, data: mixed}> */
-    private function sections(array $snapshot, Template $template): array
+    private function sections(array $snapshot, TemplateRecord $template): array
     {
         $personal = $snapshot['personal_information'] ?? [];
         $all = [

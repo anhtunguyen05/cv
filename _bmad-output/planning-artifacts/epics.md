@@ -115,6 +115,22 @@ AI integrations, retention, and monitoring are introduced.
 
 **FRs covered:** NFR1, NFR2, NFR3, NFR4, NFR5
 
+### Epic 6: Harden API Architecture Boundaries
+
+The product API is refactored to module-level Ports-and-Adapters without
+changing routes, JSON/error contracts, status behavior, database schema, or
+persisted data. Domain policies/value objects/enums remain pure PHP;
+Application contracts and use-case façades remain framework-independent;
+Presentation owns HTTP mapping; Infrastructure owns Eloquent, transactions,
+locks, outbound providers, and composition-root bindings.
+
+**Shared planning package:**
+[`epics/epic-6-api-architecture-boundary-hardening/README.md`](epics/epic-6-api-architecture-boundary-hardening/README.md)
+
+**Verification contract:** existing Epic 2/4/5 feature suites are regression
+contracts, with recursive layer-boundary tests, pure Domain tests, Pint, and
+the `api-fast`, `api-pg`, and `e2e` gates defined in the Epic 6 sprint charter.
+
 ## Epic 1: Create and Manage a Trusted CV
 
 Users can create an account, build a structured CV Profile, and preserve named

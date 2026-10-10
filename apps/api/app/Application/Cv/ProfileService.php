@@ -4,27 +4,37 @@ declare(strict_types=1);
 
 namespace App\Application\Cv;
 
-use App\Models\CvProfile;
-use App\Models\User;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
+use App\Application\Auth\Data\AuthenticatedUser;
+use App\Application\Cv\Contracts\IdempotencyStore;
+use App\Application\Cv\Contracts\ProfileRepository;
+use App\Application\Cv\Data\ProfileRecord;
+use App\Application\Cv\Exceptions\ProfileTitleUnavailable;
+use App\Shared\Application\Contracts\AdvisoryLock;
+use App\Shared\Application\Contracts\TransactionManager;
 
 final class ProfileService
 {
+    public function __construct(
+        private readonly TransactionManager $transactions,
+        private readonly AdvisoryLock $advisoryLocks,
+        private readonly ProfileRepository $profiles,
+        private readonly IdempotencyStore $idempotency,
+    ) {}
+
     /** @return array{body: array<string, mixed>, status: int, replayed: bool} */
-    public function create(User $user, array $payload, string $idempotencyKey, string $route): array
+    public function create(AuthenticatedUser $user, array $payload, string $idempotencyKey, string $route): array
     {
         CvIdempotency::validate($idempotencyKey);
         $payload = ProfileDocumentValidator::canonicalize($payload);
         $hash = hash('sha256', CanonicalJson::encode($payload)."\n".$route);
 
-        return DB::transaction(function () use ($user, $payload, $idempotencyKey, $hash): array {
-            $this->advisoryLock($user);
-            $existing = CvIdempotency::existing($user, 'create-profile', $idempotencyKey, $hash);
+        return $this->transactions->run(function () use ($user, $payload, $idempotencyKey, $hash): array {
+            $this->advisoryLocks->forUser($user->id);
+            $existing = CvIdempotency::existing($this->idempotency, $user->id, 'create-profile', $idempotencyKey, $hash);
             if ($existing['replayed']) {
                 return ['body' => $existing['body'] ?? [], 'status' => $existing['status'] ?? 201, 'replayed' => true];
             }
-            if (CvProfile::query()->where('user_id', $user->getKey())->count() >= 10) {
+            if ($this->profiles->countOwned($user->id) >= 10) {
                 throw new ApiProblem('VALIDATION_FAILED', 'One or more fields are invalid.', 422, [
                     'profiles' => [['code' => 'LIMIT_REACHED', 'message' => 'The profile limit has been reached.']],
                 ]);
@@ -33,41 +43,34 @@ final class ProfileService
             $title = (string) ($payload['title'] ?? '');
             $document = ProfileDocument::empty((string) ($payload['personal_information']['full_name'] ?? ''));
             $document['personal_information'] = $payload['personal_information'];
-            $profile = new CvProfile([
-                'id' => ProfileDocument::id(),
-                'user_id' => $user->getKey(),
-                'title' => $title,
-                'normalized_title' => $this->normalizedTitle($title),
-                'revision' => 1,
-                'schema_version' => '1.0',
-                'document' => $document,
-            ]);
-
             try {
-                $profile->save();
-            } catch (QueryException $exception) {
-                if ($this->isConstraint($exception)) {
-                    throw new ApiProblem('VALIDATION_FAILED', 'One or more fields are invalid.', 422, [
-                        'title' => [['code' => 'INVALID', 'message' => 'The title is unavailable.']],
-                    ]);
-                }
-                throw $exception;
+                $profile = $this->profiles->create(
+                    userId: $user->id,
+                    id: ProfileDocument::id(),
+                    title: $title,
+                    normalizedTitle: $this->normalizedTitle($title),
+                    document: $document,
+                );
+            } catch (ProfileTitleUnavailable) {
+                throw new ApiProblem('VALIDATION_FAILED', 'One or more fields are invalid.', 422, [
+                    'title' => [['code' => 'INVALID', 'message' => 'The title is unavailable.']],
+                ]);
             }
-            $body = ['data' => ProfilePresenter::data($profile->fresh())];
-            CvIdempotency::record($user, 'create-profile', $idempotencyKey, $hash, $body, 201);
+            $body = ['data' => ProfilePresenter::data($profile)];
+            CvIdempotency::record($this->idempotency, $user->id, 'create-profile', $idempotencyKey, $hash, $body, 201);
 
             return ['body' => $body, 'status' => 201, 'replayed' => false];
         });
     }
 
-    public function findOwned(User $user, string $id): CvProfile
+    public function findOwned(AuthenticatedUser $user, string $id): ProfileRecord
     {
         if (! ProfileDocument::isUlid($id)) {
             throw $this->notFound();
         }
 
-        $profile = CvProfile::query()->where('id', $id)->where('user_id', $user->getKey())->first();
-        if (! $profile instanceof CvProfile) {
+        $profile = $this->profiles->findOwned($user->id, $id);
+        if ($profile === null) {
             throw $this->notFound();
         }
 
@@ -75,41 +78,38 @@ final class ProfileService
     }
 
     /** @return array{body: array<string, mixed>, status: int, etag: string} */
-    public function updatePersonal(User $user, string $id, array $value, string $ifMatch): array
+    public function updatePersonal(AuthenticatedUser $user, string $id, array $value, string $ifMatch): array
     {
         return $this->updateSection($user, $id, 'personal_information', $value, $ifMatch);
     }
 
     /** @return array{body: array<string, mixed>, status: int, etag: string} */
-    public function updateTitle(User $user, string $id, string $title, string $ifMatch): array
+    public function updateTitle(AuthenticatedUser $user, string $id, string $title, string $ifMatch): array
     {
-        return DB::transaction(function () use ($user, $id, $title, $ifMatch): array {
+        return $this->transactions->run(function () use ($user, $id, $title, $ifMatch): array {
             $profile = $this->lockOwned($user, $id);
             $this->assertRevision($profile, $ifMatch);
             $title = ProfileDocumentValidator::canonicalize(['title' => $title])['title'];
             try {
-                $profile->forceFill([
+                $profile = $this->profiles->update($profile, [
                     'title' => $title,
                     'normalized_title' => $this->normalizedTitle($title),
                     'revision' => $profile->revision + 1,
-                ])->save();
-            } catch (QueryException $exception) {
-                if ($this->isConstraint($exception)) {
-                    throw new ApiProblem('VALIDATION_FAILED', 'One or more fields are invalid.', 422, [
-                        'title' => [['code' => 'INVALID', 'message' => 'The title is unavailable.']],
-                    ]);
-                }
-                throw $exception;
+                ]);
+            } catch (ProfileTitleUnavailable) {
+                throw new ApiProblem('VALIDATION_FAILED', 'One or more fields are invalid.', 422, [
+                    'title' => [['code' => 'INVALID', 'message' => 'The title is unavailable.']],
+                ]);
             }
 
-            return $this->updated($profile->fresh());
+            return $this->updated($profile);
         });
     }
 
     /** @return array{body: array<string, mixed>, status: int, etag: string} */
-    public function updateSection(User $user, string $id, string $section, mixed $value, string $ifMatch): array
+    public function updateSection(AuthenticatedUser $user, string $id, string $section, mixed $value, string $ifMatch): array
     {
-        return DB::transaction(function () use ($user, $id, $section, $value, $ifMatch): array {
+        return $this->transactions->run(function () use ($user, $id, $section, $value, $ifMatch): array {
             $profile = $this->lockOwned($user, $id);
             $this->assertRevision($profile, $ifMatch);
             $errors = $section === 'personal_information'
@@ -126,14 +126,14 @@ final class ProfileService
             }
             $this->assertExistingItemOwnership($profile, $section, $canonicalValue);
             $document[$section] = $this->assignIds($section, $canonicalValue);
-            $profile->forceFill(['document' => $document, 'revision' => $profile->revision + 1])->save();
+            $profile = $this->profiles->update($profile, ['document' => $document, 'revision' => $profile->revision + 1]);
 
-            return $this->updated($profile->fresh());
+            return $this->updated($profile);
         });
     }
 
     /** @return array{body: array<string, mixed>, status: int, etag: string} */
-    private function updated(CvProfile $profile): array
+    private function updated(ProfileRecord $profile): array
     {
         return [
             'body' => ['data' => ProfilePresenter::data($profile)],
@@ -142,20 +142,20 @@ final class ProfileService
         ];
     }
 
-    private function lockOwned(User $user, string $id): CvProfile
+    private function lockOwned(AuthenticatedUser $user, string $id): ProfileRecord
     {
         if (! ProfileDocument::isUlid($id)) {
             throw $this->notFound();
         }
-        $profile = CvProfile::query()->where('id', $id)->where('user_id', $user->getKey())->lockForUpdate()->first();
-        if (! $profile instanceof CvProfile) {
+        $profile = $this->profiles->lockOwned($user->id, $id);
+        if ($profile === null) {
             throw $this->notFound();
         }
 
         return $profile;
     }
 
-    private function assertRevision(CvProfile $profile, string $ifMatch): void
+    private function assertRevision(ProfileRecord $profile, string $ifMatch): void
     {
         if (preg_match('/^"([1-9][0-9]*)"$/', $ifMatch, $matches) !== 1) {
             throw new ApiProblem('VALIDATION_FAILED', 'One or more fields are invalid.', 422, [
@@ -169,7 +169,7 @@ final class ProfileService
         }
     }
 
-    private function assertExistingItemOwnership(CvProfile $profile, string $section, mixed $value): void
+    private function assertExistingItemOwnership(ProfileRecord $profile, string $section, mixed $value): void
     {
         if ($section === 'personal_information' || $section === 'summary') {
             return;
@@ -227,21 +227,9 @@ final class ProfileService
         return $value;
     }
 
-    private function advisoryLock(User $user): void
-    {
-        if (DB::connection()->getDriverName() === 'pgsql') {
-            DB::select('SELECT pg_advisory_xact_lock(?)', [(int) $user->getKey()]);
-        }
-    }
-
     private function normalizedTitle(string $title): string
     {
         return trim($title);
-    }
-
-    private function isConstraint(QueryException $exception): bool
-    {
-        return in_array((string) $exception->getCode(), ['23505', '23000', '19'], true);
     }
 
     private function notFound(): ApiProblem

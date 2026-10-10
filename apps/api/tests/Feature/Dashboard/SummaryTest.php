@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Dashboard;
 
 use App\Application\Cv\ProfileDocument;
-use App\Models\JobDescription;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\JobDescription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Evidence\CreatesEpic4Context;
 use Tests\TestCase;

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Cv;
 
-use Illuminate\Support\Str;
-
 final class ProfileDocument
 {
     public const SECTIONS = [
@@ -49,7 +47,22 @@ final class ProfileDocument
 
     public static function id(): string
     {
-        return (string) Str::ulid();
+        $timestamp = (int) floor(microtime(true) * 1000);
+        $bytes = pack('N', ($timestamp >> 32) & 0xFFFFFFFF)
+            .pack('N', $timestamp & 0xFFFFFFFF)
+            .random_bytes(10);
+        $bits = '00';
+        foreach (unpack('C*', $bytes) as $byte) {
+            $bits .= str_pad(decbin($byte), 8, '0', STR_PAD_LEFT);
+        }
+
+        $alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+        $id = '';
+        for ($index = 0; $index < 26; $index++) {
+            $id .= $alphabet[bindec(substr($bits, $index * 5, 5))];
+        }
+
+        return $id;
     }
 
     public static function normalizeText(string $value): string

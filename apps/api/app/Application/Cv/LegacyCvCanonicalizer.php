@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Cv;
 
-use Illuminate\Support\Str;
-
 /**
  * Converts the preliminary scaffold's section names/shapes into Profile v1.
  * It is deliberately additive and is only used when the aligned JSON column is empty.
@@ -190,6 +188,6 @@ final class LegacyCvCanonicalizer
 
     private static function id(mixed $value): string
     {
-        return ProfileDocument::isUlid($value) ? $value : (string) Str::ulid();
+        return ProfileDocument::isUlid($value) ? $value : ProfileDocument::id();
     }
 }

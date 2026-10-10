@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Http\Controllers\Evidence;
 
+use App\Application\Auth\Data\AuthenticatedUser;
 use App\Application\Cv\ApiProblem;
 use App\Application\Evidence\EvidenceAnswerService;
 use App\Application\Evidence\EvidenceInterviewService;
 use App\Presentation\Http\Controllers\Controller;
+use App\Presentation\Http\Errors\ProblemStatusMapper;
 use App\Presentation\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,7 +25,7 @@ final class EvidenceInterviewController extends Controller
     {
         try {
             $result = $this->interviews->start(
-                $request->user(),
+                new AuthenticatedUser((int) $request->user()->getAuthIdentifier()),
                 $matchReport,
                 (string) $request->header('Idempotency-Key'),
                 $request->path(),
@@ -32,16 +34,16 @@ final class EvidenceInterviewController extends Controller
 
             return ApiResponse::data($result['body']['data'], $result['status']);
         } catch (ApiProblem $problem) {
-            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, $problem->status);
+            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, ProblemStatusMapper::status($problem));
         }
     }
 
     public function show(Request $request, string $interview): JsonResponse
     {
         try {
-            return ApiResponse::data($this->interviews->show($request->user(), $interview));
+            return ApiResponse::data($this->interviews->show(new AuthenticatedUser((int) $request->user()->getAuthIdentifier()), $interview));
         } catch (ApiProblem $problem) {
-            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, $problem->status);
+            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, ProblemStatusMapper::status($problem));
         }
     }
 
@@ -49,7 +51,7 @@ final class EvidenceInterviewController extends Controller
     {
         try {
             $result = $this->answers->answer(
-                $request->user(),
+                new AuthenticatedUser((int) $request->user()->getAuthIdentifier()),
                 $interview,
                 $request->all(),
                 (string) $request->header('Idempotency-Key'),
@@ -58,7 +60,7 @@ final class EvidenceInterviewController extends Controller
 
             return ApiResponse::data($result['body']['data'], $result['status']);
         } catch (ApiProblem $problem) {
-            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, $problem->status);
+            return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, ProblemStatusMapper::status($problem));
         }
     }
 }

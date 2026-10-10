@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Http\Controllers\JobFit;
 
+use App\Application\Auth\Data\AuthenticatedUser;
 use App\Application\Cv\ApiProblem;
-use App\Application\JobFit\JobDescriptionPresenter;
 use App\Application\JobFit\JobDescriptionService;
 use App\Presentation\Http\Controllers\Controller;
+use App\Presentation\Http\Errors\ProblemStatusMapper;
+use App\Presentation\Http\Resources\JobFit\JobDescriptionResource;
 use App\Presentation\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,10 +24,10 @@ final class JobDescriptionController extends Controller
         try {
             $page = $this->positiveQuery($request, 'page', 1);
             $perPage = min(100, $this->positiveQuery($request, 'per_page', 20));
-            $jobDescriptions = $this->jobDescriptions->list($request->user(), $page, $perPage)->appends($request->query());
+            $jobDescriptions = $this->jobDescriptions->list(new AuthenticatedUser((int) $request->user()->getAuthIdentifier()), $page, $perPage)->appends($request->query());
 
             return response()->json([
-                'data' => array_map(static fn ($item): array => JobDescriptionPresenter::data($item), $jobDescriptions->items()),
+                'data' => array_map(static fn ($item): array => JobDescriptionResource::data($item), $jobDescriptions->items()),
                 'meta' => [
                     'page' => $jobDescriptions->currentPage(),
                     'per_page' => $jobDescriptions->perPage(),
@@ -47,7 +49,7 @@ final class JobDescriptionController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $result = $this->jobDescriptions->create($request->user(), $request->all(), (string) $request->header('Idempotency-Key'), $request->path());
+            $result = $this->jobDescriptions->create(new AuthenticatedUser((int) $request->user()->getAuthIdentifier()), $request->all(), (string) $request->header('Idempotency-Key'), $request->path());
 
             return ApiResponse::data($result['body']['data'], $result['status']);
         } catch (ApiProblem $problem) {
@@ -58,7 +60,7 @@ final class JobDescriptionController extends Controller
     public function show(Request $request, string $jobDescription): JsonResponse
     {
         try {
-            return ApiResponse::data(JobDescriptionPresenter::data($this->jobDescriptions->findOwnedActive($request->user(), $jobDescription)));
+            return ApiResponse::data(JobDescriptionResource::data($this->jobDescriptions->findOwnedActive(new AuthenticatedUser((int) $request->user()->getAuthIdentifier()), $jobDescription)));
         } catch (ApiProblem $problem) {
             return $this->problem($problem);
         }
@@ -68,7 +70,7 @@ final class JobDescriptionController extends Controller
     {
         try {
             $result = $this->jobDescriptions->update(
-                $request->user(), $jobDescription, $request->all(),
+                new AuthenticatedUser((int) $request->user()->getAuthIdentifier()), $jobDescription, $request->all(),
                 (string) $request->header('If-Match'), (string) $request->header('Idempotency-Key'), $request->path(),
             );
             $response = ApiResponse::data($result['body']['data'], $result['status']);
@@ -84,7 +86,7 @@ final class JobDescriptionController extends Controller
     {
         try {
             $result = $this->jobDescriptions->delete(
-                $request->user(), $jobDescription, (string) $request->header('If-Match'),
+                new AuthenticatedUser((int) $request->user()->getAuthIdentifier()), $jobDescription, (string) $request->header('If-Match'),
                 (string) $request->header('Idempotency-Key'), $request->path(),
             );
 
@@ -111,6 +113,6 @@ final class JobDescriptionController extends Controller
 
     private function problem(ApiProblem $problem): JsonResponse
     {
-        return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, $problem->status);
+        return ApiResponse::error($problem->errorCode, $problem->getMessage(), $problem->details, ProblemStatusMapper::status($problem));
     }
 }

@@ -7,8 +7,8 @@ namespace Tests\Feature\JobFit;
 use App\Application\JobFit\JobDescriptionAnalyzer;
 use App\Application\JobFit\MatchEvaluator;
 use App\Application\JobFit\MatchQualityEvaluator;
-use App\Models\MatchReport;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\JobFit\Eloquent\Models\MatchReport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

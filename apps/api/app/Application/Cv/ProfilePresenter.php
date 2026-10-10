@@ -4,33 +4,33 @@ declare(strict_types=1);
 
 namespace App\Application\Cv;
 
-use App\Models\CvProfile;
+use App\Application\Cv\Data\ProfileRecord;
 
 final class ProfilePresenter
 {
     /** @return array<string,mixed> */
-    public static function summary(CvProfile $profile): array
+    public static function summary(ProfileRecord $profile): array
     {
         return [
-            'id' => (string) $profile->getKey(),
+            'id' => $profile->id,
             'title' => $profile->title,
-            'revision' => (int) $profile->revision,
-            'created_at' => $profile->created_at?->toISOString(),
-            'updated_at' => $profile->updated_at?->toISOString(),
+            'revision' => $profile->revision,
+            'created_at' => $profile->createdAt,
+            'updated_at' => $profile->updatedAt,
         ];
     }
 
-    public static function data(CvProfile $profile): array
+    public static function data(ProfileRecord $profile): array
     {
-        $document = is_array($profile->document) ? $profile->document : [];
+        $document = $profile->document;
 
         return [
-            'id' => (string) $profile->getKey(),
+            'id' => $profile->id,
             'title' => $profile->title,
-            'revision' => (int) $profile->revision,
+            'revision' => $profile->revision,
             ...$document,
-            'created_at' => $profile->created_at?->toISOString(),
-            'updated_at' => $profile->updated_at?->toISOString(),
+            'created_at' => $profile->createdAt,
+            'updated_at' => $profile->updatedAt,
         ];
     }
 }

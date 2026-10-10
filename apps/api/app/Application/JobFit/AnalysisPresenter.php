@@ -6,18 +6,18 @@ namespace App\Application\JobFit;
 
 use App\Application\Cv\ApiProblem;
 use App\Application\Cv\ProfileDocument;
-use App\Models\JobDescriptionAnalysis;
+use App\Domain\JobFit\Enums\AnalysisStatus;
 
 final class AnalysisPresenter
 {
     /** @return array<string,mixed> */
-    public static function data(JobDescriptionAnalysis $analysis): array
+    public static function data(object $analysis): array
     {
         if (! self::validIdentifier((string) $analysis->getKey())
             || ! self::validIdentifier((string) $analysis->job_description_revision_id)
             || (string) $analysis->analysis_schema_version !== JobDescriptionAnalyzer::SCHEMA_VERSION
             || (string) $analysis->analysis_rule_version !== JobDescriptionAnalyzer::RULE_VERSION
-            || ! in_array($analysis->status, ['succeeded', 'failed', 'pending', 'running'], true)
+            || ! $analysis->status instanceof AnalysisStatus
             || ! self::validSignal($analysis->extracted_role, true)
             || ! self::validSignal($analysis->required_skills)
             || ! self::validSignal($analysis->nice_to_have_skills)
@@ -44,7 +44,7 @@ final class AnalysisPresenter
             'job_description_revision_id' => (string) $analysis->job_description_revision_id,
             'analysis_schema_version' => (string) ($analysis->analysis_schema_version ?: '1.0.0'),
             'analysis_rule_version' => (string) $analysis->analysis_rule_version,
-            'status' => (string) $analysis->status,
+            'status' => $analysis->status->value,
             'signals' => $signals,
             'created_at' => $analysis->created_at?->toISOString(),
         ];

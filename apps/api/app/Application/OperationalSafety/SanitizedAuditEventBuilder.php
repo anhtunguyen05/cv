@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\OperationalSafety;
 
+use App\Domain\OperationalSafety\Enums\AuditFailureCategory;
+use App\Domain\OperationalSafety\Enums\AuditLatencyCategory;
+use App\Domain\OperationalSafety\Policies\AuditEventConsistency;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -194,13 +197,13 @@ final class SanitizedAuditEventBuilder
     /** @param array<string,mixed> $outcome */
     private function isOutcomeConsistent(array $outcome): bool
     {
-        return match ($outcome['status']) {
-            'succeeded' => $outcome['failure_category'] === 'none' && $outcome['latency_class'] === 'fast',
-            'timed_out' => $outcome['failure_category'] === 'timeout' && $outcome['latency_class'] === 'timeout',
-            'cancelled' => $outcome['failure_category'] === 'cancelled' && $outcome['latency_class'] === 'cancelled',
-            'failed' => $outcome['failure_category'] !== 'none' && $outcome['latency_class'] === 'bounded_failure',
-            default => false,
-        };
+        $failure = AuditFailureCategory::tryFrom((string) $outcome['failure_category']);
+        $latency = AuditLatencyCategory::tryFrom((string) $outcome['latency_class']);
+        if ($failure === null || $latency === null) {
+            return false;
+        }
+
+        return AuditEventConsistency::isConsistent((string) $outcome['status'], $failure, $latency);
     }
 
     private function isSafeIdentifier(string $value): bool

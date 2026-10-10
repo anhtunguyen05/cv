@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Presentation\Http\Controllers\Auth;
 
 use App\Application\Auth\Data\RegisterUserData;
+use App\Application\Auth\Exceptions\UserAlreadyExists;
 use App\Application\Auth\RegisterUser;
 use App\Presentation\Http\Controllers\Controller;
 use App\Presentation\Http\Requests\RegisterRequest;
-use App\Presentation\Http\Resources\PublicUserResource;
 use App\Presentation\Http\Responses\ApiResponse;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,20 +33,20 @@ final class RegisterController extends Controller
 
         try {
             $user = $registerUser->handle($data);
-        } catch (QueryException $exception) {
-            if (! in_array((string) $exception->getCode(), ['23505', '23000'], true)) {
-                throw $exception;
-            }
-
+        } catch (UserAlreadyExists) {
             return $this->duplicateEmailResponse();
         }
 
-        Auth::login($user);
+        Auth::loginUsingId($user->id);
         $request->session()->regenerate();
 
         $response = response()->json([
             'data' => [
-                'user' => (new PublicUserResource($user))->resolve($request),
+                'user' => [
+                    'id' => (string) $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ],
             ],
         ], 201);
         $response->headers->set('Cache-Control', 'private, no-store');

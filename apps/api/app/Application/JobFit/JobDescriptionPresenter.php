@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\JobFit;
 
-use App\Models\JobDescription;
-
 final class JobDescriptionPresenter
 {
     /** @return array<string,mixed> */
-    public static function data(JobDescription $jobDescription): array
+    public static function data(object $jobDescription): array
     {
         $revision = $jobDescription->relationLoaded('currentRevision')
             ? $jobDescription->currentRevision

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Patch;
 
-use App\Models\Patch;
-use App\Models\User;
+use App\Infrastructure\Persistence\Auth\Eloquent\Models\User;
+use App\Infrastructure\Persistence\Patch\Eloquent\Models\Patch;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\Feature\Evidence\CreatesEpic4Context;
@@ -38,7 +38,7 @@ final class PatchRegenerationTest extends TestCase
 
         self::assertSame($patch['id'], $regenerated['predecessor_patch_id']);
         self::assertNotSame($patch['id'], $regenerated['id']);
-        self::assertSame('rejected', Patch::query()->findOrFail($patch['id'])->status);
+        self::assertSame('rejected', Patch::query()->findOrFail($patch['id'])->status->value);
         self::assertSame(2, Patch::query()->count());
     }
 }
