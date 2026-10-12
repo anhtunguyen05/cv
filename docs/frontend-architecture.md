@@ -18,6 +18,10 @@ Shared UI uses Atomic Design only where it improves reuse:
 and `organisms` are project-level reusable abstractions. Feature-specific UI
 stays in its feature.
 
+Native `input`, `textarea`, `select`, `label`, and `button` elements belong only
+inside `shared/components/ui` primitives. Consumers compose those primitives so
+their model, validation, ARIA, and disabled/loading contracts remain consistent.
+
 ## Dependency rules
 
 The intended direction is `app/pages/features -> shared`. Shared code must not
@@ -35,8 +39,9 @@ Use `PascalCase.vue`, `useSomething.ts`, `*.store.ts`, `*.api.ts`, `*.queries.ts
 
 For example, a user capability belongs under `features/users/` with its endpoint
 in `api/users.api.ts`, its query in `api/users.queries.ts`, and its UI in
-`components/UserTable.vue`. A generic `AppButton.vue` may belong in
-`shared/components/atoms/`; `LoginForm.vue` belongs in `features/auth/components/`.
+`components/UserTable.vue`. Reuse the shared `Button` primitive (or a
+consumer-backed atom/molecule) before adding another action abstraction;
+`LoginForm.vue` belongs in `features/auth/components/`.
 
 No product feature, authentication flow, or shadcn component has been invented
 or implemented as part of this foundation.

@@ -2,7 +2,16 @@
 import { computed } from 'vue'
 
 interface Props {
-  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'secondary' | 'glass'
+  variant?:
+    | 'default'
+    | 'outline'
+    | 'ghost'
+    | 'destructive'
+    | 'secondary'
+    | 'glass'
+    | 'link'
+    | 'text'
+    | 'unstyled'
   size?: 'xs' | 'sm' | 'md' | 'lg'
   disabled?: boolean
   loading?: boolean
@@ -46,9 +55,18 @@ const classes = computed(() => {
       'bg-danger text-white hover:bg-danger-hover shadow-control focus-visible:ring-danger',
     glass:
       'bg-white/10 text-white border border-white/15 hover:bg-white/20 backdrop-blur-md focus-visible:ring-white/40',
+    link: 'h-auto rounded-none px-0 py-0 text-current underline-offset-2',
+    text: 'h-auto rounded-none px-0 py-0 text-current underline-offset-2',
+    unstyled: '',
   }
 
-  return [...base, sizes[props.size], variants[props.variant]].join(' ')
+  return [
+    ...base,
+    props.variant === 'link' || props.variant === 'text' || props.variant === 'unstyled'
+      ? ''
+      : sizes[props.size],
+    variants[props.variant] ?? '',
+  ].join(' ')
 })
 </script>
 

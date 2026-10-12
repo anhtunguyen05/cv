@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { Search, X } from 'lucide-vue-next'
+import AppIcon from '@/shared/components/atoms/AppIcon.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
+import Input from '@/shared/components/ui/input/Input.vue'
 
 interface Props {
   modelValue?: string
@@ -44,8 +47,7 @@ watch(
   },
 )
 
-function onInput(event: Event): void {
-  const value = (event.target as HTMLInputElement).value
+function onInput(value: string): void {
   inputValue.value = value
   scheduleSearch(value)
 }
@@ -60,26 +62,27 @@ onBeforeUnmount(cancelPendingSearch)
 
 <template>
   <div class="relative flex items-center">
-    <Search
-      class="absolute left-3.5 text-text-subtle pointer-events-none"
+    <AppIcon
+      :icon="Search"
       :size="18"
-      :stroke-width="1.5"
+      class="absolute left-3.5 text-text-subtle pointer-events-none"
     />
-    <input
-      :value="inputValue"
+    <Input
+      :model-value="inputValue"
       type="search"
       :placeholder="placeholder"
       class="w-full h-10 sm:h-11 pl-10 pr-9 text-sm rounded-xl border border-border bg-white placeholder:text-text-subtle focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 hover:border-border-hover transition-all"
-      @input="onInput"
+      @update:model-value="onInput"
     />
-    <button
+    <Button
       v-if="inputValue"
       type="button"
+      variant="unstyled"
       class="absolute right-3.5 text-text-subtle hover:text-text-muted transition-colors p-1"
       aria-label="Clear search"
       @click="clear"
     >
-      <X :size="15" :stroke-width="1.5" />
-    </button>
+      <AppIcon :icon="X" :size="15" />
+    </Button>
   </div>
 </template>

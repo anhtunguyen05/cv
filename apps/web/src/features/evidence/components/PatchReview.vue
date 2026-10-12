@@ -3,6 +3,8 @@ import { ArrowLeft, Check, RefreshCw, X } from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
 import { ROUTES } from '@/shared/constants/routes'
 import Button from '@/shared/components/ui/button/Button.vue'
+import Label from '@/shared/components/ui/label/Label.vue'
+import Textarea from '@/shared/components/ui/textarea/Textarea.vue'
 import AppBadge from '@/shared/components/atoms/AppBadge.vue'
 import Card from '@/shared/components/ui/card/Card.vue'
 import { usePatchReviewController } from '@/features/evidence/composables/usePatchReviewController'
@@ -142,14 +144,14 @@ const {
           v-if="query.data.value.allowed_actions.includes('edit')"
           class="border-t border-border pt-4 space-y-3"
         >
-          <label for="patch-edit" class="text-sm font-semibold text-text"
-            >Edit the proposed value (optional)</label
+          <Label for="patch-edit" class="text-sm font-semibold text-text"
+            >Edit the proposed value (optional)</Label
           >
-          <textarea
+          <Textarea
             id="patch-edit"
             v-model="draft"
             rows="4"
-            class="w-full rounded-xl border border-border p-3 text-sm"
+            class="w-full rounded-xl border border-border !p-3 text-sm"
             @focus="startEdit"
           />
           <div class="flex flex-wrap gap-2">

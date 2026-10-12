@@ -2,6 +2,8 @@
 import { RouterLink } from 'vue-router'
 import CvSectionNav from '@/features/cv/components/CvSectionNav.vue'
 import Button from '@/shared/components/ui/button/Button.vue'
+import Input from '@/shared/components/ui/input/Input.vue'
+import Textarea from '@/shared/components/ui/textarea/Textarea.vue'
 import FormField from '@/shared/components/molecules/FormField.vue'
 import PaginationNav from '@/shared/components/PaginationNav.vue'
 import { useCvEditorController } from '@/features/cv/composables/useCvEditorController'
@@ -26,11 +28,11 @@ const { editor, profile, version } = controller
       </div>
       <div class="flex items-center gap-2">
         <FormField v-slot="{ controlProps }" label="Profile title" html-for="profile-title">
-          <input
+          <Input
             v-bind="controlProps"
             v-model="editor.title.value"
             aria-label="Profile title"
-            class="h-10 rounded-lg border border-border px-3 text-sm"
+            class="h-10 rounded-lg border border-border !px-3 text-sm"
             placeholder="Profile title"
           />
         </FormField>
@@ -93,13 +95,13 @@ const { editor, profile, version } = controller
             :error="editor.fieldErrors.value[key]"
             :required="key === 'full_name'"
           >
-            <input
+            <Input
               v-bind="controlProps"
               v-model="
                 editor.editableDocument.value.personal_information[key as keyof PersonalInformation]
               "
               :type="key === 'email' ? 'email' : key.endsWith('_url') ? 'url' : 'text'"
-              class="w-full rounded-lg border border-border px-3 py-2"
+              class="w-full rounded-lg border border-border !px-3 !py-2"
             />
           </FormField>
         </div>
@@ -110,10 +112,10 @@ const { editor, profile, version } = controller
           <p class="text-sm text-text-muted">
             Replace this complete section. Existing item IDs are preserved by the server.
           </p>
-          <textarea
+          <Textarea
             v-model="editor.sectionText.value"
             :aria-label="`${editor.activeSection.value} section`"
-            class="min-h-[360px] w-full rounded-lg border border-border p-3 font-mono text-sm"
+            class="min-h-[360px] w-full rounded-lg border border-border !p-3 font-mono text-sm"
             :placeholder="
               editor.activeSection.value === 'summary'
                 ? 'Write a concise professional summary'
@@ -136,11 +138,11 @@ const { editor, profile, version } = controller
           html-for="version-name"
           class="flex-1"
         >
-          <input
+          <Input
             v-bind="controlProps"
             v-model="version.name.value"
             aria-label="Version name"
-            class="h-10 w-full rounded-lg border border-border px-3 text-sm"
+            class="h-10 w-full rounded-lg border border-border !px-3 text-sm"
             placeholder="Version name"
           />
         </FormField>

@@ -9,7 +9,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <label class="block text-sm font-medium text-text">
+  <label v-bind="$attrs" class="block text-sm font-medium text-text">
     <slot />
     <span v-if="required" class="text-danger ml-0.5" aria-hidden="true">*</span>
   </label>

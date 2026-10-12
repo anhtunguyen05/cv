@@ -42,14 +42,25 @@ test('creates, analyzes, and reviews a source-pinned Match Report', async ({ pag
   await expect(page.getByText('Deterministic analysis')).toBeVisible()
   await expect(page.getByText('Analysis rule 1.0.0')).toBeVisible()
 
-  await page.getByLabel('CV Version').selectOption({ label: 'Epic Two baseline' })
-  const selectedCvVersionId = await page.getByLabel('CV Version').inputValue()
+  const cvVersionTrigger = page.locator('#cv-version')
+  await cvVersionTrigger.click()
+  await page.getByRole('option', { name: 'Epic Two baseline' }).click()
+  await expect(cvVersionTrigger).toContainText('Epic Two baseline')
   const analysisMeta = await page.getByText(/Analysis rule 1\.0\.0 · revision /).textContent()
   const sourceRevisionId = analysisMeta?.match(/revision ([0-9A-Z]{26})/)?.[1] ?? ''
   const analysisId = analysisMeta?.match(/Analysis ID ([0-9A-Z]{26})/)?.[1] ?? ''
   expect(sourceRevisionId).toMatch(/^[0-9A-Z]{26}$/)
   expect(analysisId).toMatch(/^[0-9A-Z]{26}$/)
+  const matchRequestPromise = page.waitForRequest(
+    (request) =>
+      request.method() === 'POST' &&
+      new URL(request.url()).pathname.endsWith('/api/v1/match-reports'),
+  )
   await page.getByRole('button', { name: 'Create Match Report' }).click()
+  const matchRequest = await matchRequestPromise
+  const matchRequestBody = matchRequest.postDataJSON() as { cv_version_id?: string }
+  const selectedCvVersionId = matchRequestBody.cv_version_id ?? ''
+  expect(selectedCvVersionId).toMatch(/^[0-9A-Z]{26}$/)
   await expect(page).toHaveURL(/\/match\/[0-9A-Z]{26}$/)
   const reportUrl = page.url()
   const reportId = reportUrl.match(/\/match\/[0-9A-Z]{26}$/)?.[1] ?? ''

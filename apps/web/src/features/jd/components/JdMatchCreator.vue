@@ -1,8 +1,19 @@
 <script setup lang="ts">
+import { computed, toRef } from 'vue'
 import Button from '@/shared/components/ui/button/Button.vue'
+import Label from '@/shared/components/ui/label/Label.vue'
 import PaginationNav from '@/shared/components/PaginationNav.vue'
+import Select from '@/shared/components/ui/select/Select.vue'
 import type { JdMatchContract } from '../composables/useJdEditorController'
-defineProps<{ match: JdMatchContract }>()
+
+const props = defineProps<{ match: JdMatchContract }>()
+const match = toRef(props, 'match')
+const versionOptions = computed(() =>
+  (match.value.versionsQuery.data.value?.items ?? []).map((version) => ({
+    value: version.id,
+    label: version.name,
+  })),
+)
 </script>
 <template>
   <div class="rounded-xl border border-border bg-surface-muted/40 p-4 space-y-3">
@@ -13,24 +24,18 @@ defineProps<{ match: JdMatchContract }>()
       </p>
     </div>
     <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
-      <label class="flex-1 flex flex-col gap-1.5 text-sm font-semibold text-text" for="cv-version"
-        >CV Version
-        <select
+      <div class="flex-1 flex flex-col gap-1.5 text-sm font-semibold text-text">
+        <Label for="cv-version" class="font-semibold">CV Version</Label>
+        <Select
+          :model-value="match.selectedCvVersionId.value || undefined"
+          :options="versionOptions"
+          placeholder="Select a CV Version"
+          clearable
           id="cv-version"
-          :value="match.selectedCvVersionId.value"
-          class="h-10 px-3 rounded-lg border border-border bg-white font-normal focus:outline-none focus:ring-2 focus:ring-primary/20"
-          @change="match.setSelectedCvVersionId(($event.target as HTMLSelectElement).value)"
-        >
-          <option value="">Select a CV Version</option>
-          <option
-            v-for="version in match.versionsQuery.data.value?.items ?? []"
-            :key="version.id"
-            :value="version.id"
-          >
-            {{ version.name }}
-          </option>
-        </select>
-      </label>
+          class="h-10 rounded-lg border border-border bg-white font-normal focus:outline-none focus:ring-2 focus:ring-primary/20"
+          @update:model-value="match.setSelectedCvVersionId"
+        />
+      </div>
       <Button
         type="button"
         :loading="match.matchMutation.isPending.value"
@@ -59,7 +64,13 @@ defineProps<{ match: JdMatchContract }>()
     />
     <p v-else-if="match.versionsQuery.isError.value" class="text-xs text-danger">
       Unable to load CV Versions.
-      <button type="button" class="underline" @click="match.versionsQuery.refetch()">Retry</button>
+      <Button
+        type="button"
+        variant="link"
+        class="text-inherit underline"
+        @click="match.versionsQuery.refetch()"
+        >Retry</Button
+      >
     </p>
     <p v-if="match.hasUnsavedChanges.value" class="text-xs text-warning-text" role="status">
       Save this edited revision before analyzing or matching.
@@ -70,14 +81,15 @@ defineProps<{ match: JdMatchContract }>()
           ? match.matchMutation.error.value.message
           : 'The Match Report could not be created.'
       }}
-      <button
+      <Button
         v-if="match.matchRetryable.value"
         type="button"
-        class="underline"
+        variant="link"
+        class="text-inherit underline"
         @click="match.retryMatch"
       >
         Retry
-      </button>
+      </Button>
     </p>
   </div>
 </template>

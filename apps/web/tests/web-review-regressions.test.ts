@@ -40,6 +40,18 @@ describe('web review regressions', () => {
     expect(wrapper.emitted('search')).toBeUndefined()
   })
 
+  it('clears SearchInput through the controlled model and debounced search event', async () => {
+    vi.useFakeTimers()
+    const wrapper = mount(SearchInput, { props: { modelValue: 'query' } })
+
+    await wrapper.get('button').trigger('click')
+    await vi.advanceTimersByTimeAsync(350)
+
+    expect(wrapper.get('input').element.value).toBe('')
+    expect(wrapper.emitted('update:modelValue')).toEqual([['']])
+    expect(wrapper.emitted('search')).toEqual([['']])
+  })
+
   it('renders every CV section, including experience', () => {
     const wrapper = mount(CvSectionNav, {
       props: { activeSection: 'personal_information' },
@@ -132,10 +144,7 @@ describe('web review regressions', () => {
       personalInformation: structuredClone(profile.personal_information),
     }
     draft.sectionText.value = 'Newer local summary'
-    draft.applyMutationResult(
-      { ...profile, revision: 2, summary: 'Submitted summary' },
-      submission,
-    )
+    draft.applyMutationResult({ ...profile, revision: 2, summary: 'Submitted summary' }, submission)
 
     expect(draft.sectionText.value).toBe('Newer local summary')
     expect(draft.isDirty.value).toBe(true)

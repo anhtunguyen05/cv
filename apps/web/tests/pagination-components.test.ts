@@ -65,7 +65,7 @@ describe('PaginationNav', () => {
     expect(buttons[1].classes()).toContain('underline')
     expect(buttons[0].text()).toBe('Previous versions')
     expect(buttons[1].text()).toBe('Next versions')
-    expect(wrapper.findComponent(ButtonStub).exists()).toBe(false)
+    expect(wrapper.findAllComponents(ButtonStub)).toHaveLength(2)
   })
 })
 

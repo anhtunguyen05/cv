@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import Button from '@/shared/components/ui/button/Button.vue'
+import Input from '@/shared/components/ui/input/Input.vue'
+import Textarea from '@/shared/components/ui/textarea/Textarea.vue'
 import FormField from '@/shared/components/molecules/FormField.vue'
 import type { JdFormContract } from '../composables/useJdEditorController'
 import JdDeleteConfirmation from './JdDeleteConfirmation.vue'
@@ -56,11 +58,11 @@ defineProps<{ form: JdFormContract }>()
         html-for="company"
         :error="form.fieldError('company')"
       >
-        <input
+        <Input
           v-bind="controlProps"
-          :value="form.company.value"
-          class="h-10 px-3 rounded-lg border border-border bg-white font-normal focus:outline-none focus:ring-2 focus:ring-primary/20"
-          @input="form.setCompany(($event.target as HTMLInputElement).value)"
+          :model-value="form.company.value"
+          class="h-10 !px-3 rounded-lg border border-border bg-white font-normal focus:outline-none focus:ring-2 focus:ring-primary/20"
+          @update:model-value="form.setCompany"
         />
       </FormField>
       <FormField
@@ -70,11 +72,11 @@ defineProps<{ form: JdFormContract }>()
         html-for="role"
         :error="form.fieldError('role')"
       >
-        <input
+        <Input
           v-bind="controlProps"
-          :value="form.role.value"
-          class="h-10 px-3 rounded-lg border border-border bg-white font-normal focus:outline-none focus:ring-2 focus:ring-primary/20"
-          @input="form.setRole(($event.target as HTMLInputElement).value)"
+          :model-value="form.role.value"
+          class="h-10 !px-3 rounded-lg border border-border bg-white font-normal focus:outline-none focus:ring-2 focus:ring-primary/20"
+          @update:model-value="form.setRole"
         />
       </FormField>
     </div>
@@ -85,13 +87,13 @@ defineProps<{ form: JdFormContract }>()
       :error="form.fieldError('raw_text')"
       required
     >
-      <textarea
+      <Textarea
         v-bind="controlProps"
-        :value="form.rawText.value"
+        :model-value="form.rawText.value"
         rows="16"
         :aria-describedby="form.fieldError('raw_text') ? 'jd-help jd-text-error' : 'jd-help'"
-        class="w-full p-4 rounded-xl text-sm font-mono border border-border bg-white text-text focus:outline-none focus:ring-2 focus:ring-primary/20 leading-relaxed resize-y"
-        @input="form.setRawText(($event.target as HTMLTextAreaElement).value)"
+        class="w-full !p-4 rounded-xl text-sm font-mono border border-border bg-white text-text focus:outline-none focus:ring-2 focus:ring-primary/20 leading-relaxed resize-y"
+        @update:model-value="form.setRawText"
       />
       <div id="jd-help" class="flex justify-between text-xs text-text-muted">
         <span>{{ form.charCount.value }} / 50,000 Unicode code points</span
