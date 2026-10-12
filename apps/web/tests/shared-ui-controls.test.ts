@@ -72,6 +72,7 @@ describe('shared UI control contracts', () => {
     const wrapper = mount(Select, {
       props: {
         modelValue: 'one',
+        error: true,
         options: [
           { value: 'one', label: 'One' },
           { value: 'two', label: 'Two', disabled: true },
@@ -86,6 +87,7 @@ describe('shared UI control contracts', () => {
       'aria-describedby': 'choice-hint',
       'aria-invalid': 'true',
     })
+    expect(trigger.classes()).toContain('border-danger')
   })
 
   it('forwards Select value updates from the Reka root and preserves disabled option metadata', async () => {

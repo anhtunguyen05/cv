@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 import {
   SelectRoot,
   SelectTrigger,
@@ -27,6 +27,7 @@ interface Props {
   placeholder?: string
   options: SelectOption[]
   disabled?: boolean
+  error?: boolean
   clearable?: boolean
 }
 
@@ -35,14 +36,20 @@ const props = withDefaults(defineProps<Props>(), {
   defaultValue: undefined,
   placeholder: 'Select an option',
   disabled: false,
+  error: false,
   clearable: false,
 })
 
+const attrs = useAttrs()
 const placeholderValue = '__select_placeholder__'
 const displayedOptions = computed(() =>
   props.clearable
     ? [{ value: placeholderValue, label: props.placeholder }, ...props.options]
     : props.options,
+)
+const triggerAriaInvalid = computed(
+  () =>
+    props.error || (attrs['aria-invalid'] as boolean | 'true' | 'false' | undefined) || undefined,
 )
 
 const emit = defineEmits<{
@@ -61,7 +68,13 @@ const emit = defineEmits<{
   >
     <SelectTrigger
       v-bind="$attrs"
-      class="inline-flex items-center justify-between gap-2 h-9 px-3 w-full rounded-md border border-border bg-white text-sm text-text hover:bg-surface focus:outline-hidden focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+      :aria-invalid="triggerAriaInvalid"
+      :class="[
+        'inline-flex items-center justify-between gap-2 h-9 px-3 w-full rounded-md border bg-white text-sm text-text hover:bg-surface focus:outline-hidden focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer',
+        props.error
+          ? 'border-danger focus:border-danger focus:ring-danger/30'
+          : 'border-border focus:border-primary focus:ring-primary',
+      ]"
     >
       <SelectValue :placeholder="placeholder" />
       <ChevronDown :size="14" :stroke-width="1.5" class="text-text-muted" />
