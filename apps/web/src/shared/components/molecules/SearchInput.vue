@@ -77,7 +77,7 @@ onBeforeUnmount(cancelPendingSearch)
     <Button
       v-if="inputValue"
       type="button"
-      variant="link"
+      variant="unstyled"
       class="absolute right-3.5 text-text-subtle hover:text-text-muted transition-colors p-1"
       aria-label="Clear search"
       @click="clear"
