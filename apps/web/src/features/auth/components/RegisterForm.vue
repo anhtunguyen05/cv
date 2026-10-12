@@ -6,6 +6,7 @@ import { registerSchema } from '../schemas/auth.schema'
 import { useRegisterMutation } from '../composables/useAuthMutations'
 import FormField from '@/shared/components/molecules/FormField.vue'
 import Button from '@/shared/components/ui/button/Button.vue'
+import Input from '@/shared/components/ui/input/Input.vue'
 import { ROUTES } from '@/shared/constants/routes'
 import { User, Mail, Lock, ArrowRight } from 'lucide-vue-next'
 import { ApiRequestError } from '@/shared/api/client'
@@ -102,7 +103,7 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
       >
         <div class="relative flex items-center">
           <User :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
-          <input
+          <Input
             v-model="name"
             v-bind="{ ...nameAttrs, ...controlProps }"
             type="text"
@@ -127,7 +128,7 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
       >
         <div class="relative flex items-center">
           <Mail :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
-          <input
+          <Input
             v-model="email"
             v-bind="{ ...emailAttrs, ...controlProps }"
             type="email"
@@ -152,7 +153,7 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
       >
         <div class="relative flex items-center">
           <Lock :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
-          <input
+          <Input
             v-model="password"
             v-bind="{ ...passwordAttrs, ...controlProps }"
             type="password"
@@ -191,7 +192,7 @@ const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong']
       >
         <div class="relative flex items-center">
           <Lock :size="16" class="absolute left-3.5 text-text-subtle pointer-events-none" />
-          <input
+          <Input
             v-model="passwordConfirmation"
             v-bind="{ ...passwordConfirmationAttrs, ...controlProps }"
             type="password"

@@ -33,9 +33,15 @@ const emit = defineEmits<{
     :aria-label="label"
   >
     <template v-if="appearance === 'text'">
-      <button type="button" class="underline" :disabled="page <= 1" @click="emit('previous')">
+      <Button
+        type="button"
+        variant="link"
+        class="text-inherit underline"
+        :disabled="page <= 1"
+        @click="emit('previous')"
+      >
         {{ previousLabel }}
-      </button>
+      </Button>
     </template>
     <Button
       v-else
@@ -51,9 +57,15 @@ const emit = defineEmits<{
       >Page {{ page }} of {{ lastPage }}</span
     >
     <template v-if="appearance === 'text'">
-      <button type="button" class="underline" :disabled="page >= lastPage" @click="emit('next')">
+      <Button
+        type="button"
+        variant="link"
+        class="text-inherit underline"
+        :disabled="page >= lastPage"
+        @click="emit('next')"
+      >
         {{ nextLabel }}
-      </button>
+      </Button>
     </template>
     <Button
       v-else

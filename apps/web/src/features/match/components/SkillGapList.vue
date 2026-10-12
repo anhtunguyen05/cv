@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import type { SkillMatch } from '../types/match.types'
 import AppBadge from '@/shared/components/atoms/AppBadge.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
 import { CheckCircle2, XCircle, AlertCircle } from 'lucide-vue-next'
 
 interface Props {
@@ -50,8 +51,10 @@ const statusConfig = {
     </p>
     <!-- Filter Tabs -->
     <div class="flex items-center gap-2 pb-2.5 border-b border-border overflow-x-auto">
-      <button
+      <Button
         type="button"
+        variant="unstyled"
+        size="xs"
         :class="[
           'px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer select-none whitespace-nowrap',
           activeTab === 'all'
@@ -62,10 +65,12 @@ const statusConfig = {
         :aria-pressed="activeTab === 'all'"
       >
         All ({{ allSkills.length }})
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
+        variant="unstyled"
+        size="xs"
         :class="[
           'px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer select-none flex items-center gap-1.5 whitespace-nowrap',
           activeTab === 'matched'
@@ -77,10 +82,12 @@ const statusConfig = {
       >
         <span class="w-1.5 h-1.5 rounded-full bg-success" />
         Matched ({{ matched.length }})
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
+        variant="unstyled"
+        size="xs"
         :class="[
           'px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer select-none flex items-center gap-1.5 whitespace-nowrap',
           activeTab === 'weak'
@@ -92,10 +99,12 @@ const statusConfig = {
       >
         <span class="w-1.5 h-1.5 rounded-full bg-warning" />
         Weak ({{ weak.length }})
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
+        variant="unstyled"
+        size="xs"
         :class="[
           'px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer select-none flex items-center gap-1.5 whitespace-nowrap',
           activeTab === 'missing'
@@ -107,7 +116,7 @@ const statusConfig = {
       >
         <span class="w-1.5 h-1.5 rounded-full bg-danger" />
         Missing ({{ missing.length }})
-      </button>
+      </Button>
     </div>
 
     <!-- Skills List -->

@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from 'lucide-vue-next'
 import { ROUTES } from '@/shared/constants/routes'
+import Button from '@/shared/components/ui/button/Button.vue'
 
 interface Props {
   collapsed?: boolean
@@ -51,14 +52,16 @@ const navItems = [
       >
         Workspace
       </span>
-      <button
+      <Button
+        type="button"
+        variant="unstyled"
         class="p-1.5 rounded-lg text-text-muted hover:bg-white hover:text-text border border-transparent hover:border-border transition-colors ml-auto cursor-pointer"
         :aria-label="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
         :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
         @click="toggle"
       >
         <PanelLeft :size="16" :stroke-width="1.5" />
-      </button>
+      </Button>
     </div>
 
     <!-- Navigation List -->

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { BarChart2, Briefcase, FileText, TrendingUp } from 'lucide-vue-next'
 import Card from '@/shared/components/ui/card/Card.vue'
+import Button from '@/shared/components/ui/button/Button.vue'
 import type { DashboardStatsContract } from '../composables/useDashboardController'
 defineProps<{ stats: DashboardStatsContract }>()
 </script>
@@ -87,7 +88,13 @@ defineProps<{ stats: DashboardStatsContract }>()
       </p>
       <p v-else-if="stats.isMatchReportsError.value" class="text-xs text-danger" role="alert">
         Unable to load report totals.
-        <button type="button" class="underline" @click="stats.refetchMatchReports()">Retry</button>
+        <Button
+          type="button"
+          variant="link"
+          class="text-inherit underline"
+          @click="stats.refetchMatchReports()"
+          >Retry</Button
+        >
       </p>
     </Card>
   </div>

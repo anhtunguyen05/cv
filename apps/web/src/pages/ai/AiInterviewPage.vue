@@ -2,6 +2,8 @@
 import { RouterLink } from 'vue-router'
 import { ArrowLeft, RefreshCw, ShieldCheck } from 'lucide-vue-next'
 import Button from '@/shared/components/ui/button/Button.vue'
+import Label from '@/shared/components/ui/label/Label.vue'
+import Textarea from '@/shared/components/ui/textarea/Textarea.vue'
 import AppBadge from '@/shared/components/atoms/AppBadge.vue'
 import Card from '@/shared/components/ui/card/Card.vue'
 import { ROUTES } from '@/shared/constants/routes'
@@ -134,13 +136,13 @@ const {
                 )
               "
             >
-              <label :for="`answer-${question.id}`" class="sr-only">Your answer</label>
-              <textarea
+              <Label :for="`answer-${question.id}`" class="sr-only">Your answer</Label>
+              <Textarea
                 :id="`answer-${question.id}`"
                 v-model="answers[question.id]"
                 rows="4"
                 maxlength="4000"
-                class="w-full rounded-xl border border-border bg-white p-3 text-sm text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                class="w-full rounded-xl border border-border bg-white !p-3 text-sm text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 placeholder="Share a specific, truthful example."
               />
               <div class="flex flex-wrap gap-2">

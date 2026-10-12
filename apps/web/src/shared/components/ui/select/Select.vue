@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import {
   SelectRoot,
   SelectTrigger,
@@ -12,6 +13,8 @@ import {
 } from 'reka-ui'
 import { ChevronDown, Check } from 'lucide-vue-next'
 
+defineOptions({ inheritAttrs: false })
+
 export interface SelectOption {
   value: string
   label: string
@@ -24,14 +27,23 @@ interface Props {
   placeholder?: string
   options: SelectOption[]
   disabled?: boolean
+  clearable?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   modelValue: undefined,
   defaultValue: undefined,
   placeholder: 'Select an option',
   disabled: false,
+  clearable: false,
 })
+
+const placeholderValue = '__select_placeholder__'
+const displayedOptions = computed(() =>
+  props.clearable
+    ? [{ value: placeholderValue, label: props.placeholder }, ...props.options]
+    : props.options,
+)
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
@@ -40,12 +52,15 @@ const emit = defineEmits<{
 
 <template>
   <SelectRoot
-    :model-value="modelValue"
+    :model-value="modelValue || undefined"
     :default-value="defaultValue"
     :disabled="disabled"
-    @update:model-value="emit('update:modelValue', $event as string)"
+    @update:model-value="
+      emit('update:modelValue', ($event as string) === placeholderValue ? '' : ($event as string))
+    "
   >
     <SelectTrigger
+      v-bind="$attrs"
       class="inline-flex items-center justify-between gap-2 h-9 px-3 w-full rounded-md border border-border bg-white text-sm text-text hover:bg-surface focus:outline-hidden focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
     >
       <SelectValue :placeholder="placeholder" />
@@ -60,7 +75,7 @@ const emit = defineEmits<{
       >
         <SelectViewport class="p-1">
           <SelectItem
-            v-for="opt in options"
+            v-for="opt in displayedOptions"
             :key="opt.value"
             :value="opt.value"
             :disabled="opt.disabled"

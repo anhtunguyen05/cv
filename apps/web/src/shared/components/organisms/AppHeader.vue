@@ -15,6 +15,7 @@ import {
 } from 'lucide-vue-next'
 import { RouterLink, useRouter, useRoute } from 'vue-router'
 import { ROUTES } from '@/shared/constants/routes'
+import Button from '@/shared/components/ui/button/Button.vue'
 
 const mobileMenuOpen = ref(false)
 const userMenuOpen = ref(false)
@@ -90,7 +91,10 @@ function logout() {
 
       <!-- User profile button & dropdown -->
       <div class="relative">
-        <button
+        <Button
+          type="button"
+          variant="unstyled"
+          size="sm"
           class="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-lg text-xs sm:text-sm font-medium text-text-secondary border border-transparent hover:border-border hover:bg-surface transition-all cursor-pointer select-none"
           :aria-expanded="userMenuOpen"
           @click="userMenuOpen = !userMenuOpen"
@@ -102,7 +106,7 @@ function logout() {
           </div>
           <span class="hidden sm:inline font-semibold text-text">Nguyen Anh Tu</span>
           <ChevronDown :size="14" :stroke-width="1.5" class="text-text-subtle" />
-        </button>
+        </Button>
 
         <!-- Dropdown menu -->
         <div
@@ -134,26 +138,30 @@ function logout() {
           </div>
 
           <div class="pt-1 border-t border-surface-muted">
-            <button
+            <Button
+              type="button"
+              variant="unstyled"
               class="flex w-full items-center gap-2 px-3.5 py-1.5 text-xs text-danger hover:bg-danger-muted transition-colors cursor-pointer"
               @click="logout"
             >
               <LogOut :size="14" :stroke-width="1.5" />
               Sign out
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
       <!-- Mobile hamburger toggle -->
-      <button
+      <Button
+        type="button"
+        variant="unstyled"
         class="md:hidden p-1.5 rounded-lg text-text-muted hover:bg-surface hover:text-text transition-colors"
         :aria-label="mobileMenuOpen ? 'Close menu' : 'Open menu'"
         @click="toggleMobileMenu"
       >
         <X v-if="mobileMenuOpen" :size="18" :stroke-width="1.5" />
         <Menu v-else :size="18" :stroke-width="1.5" />
-      </button>
+      </Button>
     </div>
   </header>
 

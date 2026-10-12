@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import type { CvSectionKey } from '../types/cv.types'
+import Button from '@/shared/components/ui/button/Button.vue'
 import {
   User,
   FileText,
@@ -58,8 +59,10 @@ const sections = (Object.keys(sectionMetadata) as CvSectionKey[]).map((key) => (
 
       <ul class="space-y-1 px-2.5">
         <li v-for="section in sections" :key="section.key">
-          <button
+          <Button
             type="button"
+            variant="unstyled"
+            size="xs"
             :class="[
               'w-full flex items-center justify-between px-3 py-2 text-xs sm:text-[13px] font-medium rounded-lg transition-all duration-150 text-left cursor-pointer group',
               activeSection === section.key
@@ -89,7 +92,7 @@ const sections = (Object.keys(sectionMetadata) as CvSectionKey[]).map((key) => (
               :stroke-width="2"
               class="text-success flex-shrink-0 ml-1"
             />
-          </button>
+          </Button>
         </li>
       </ul>
     </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import Label from '@/shared/components/ui/label/Label.vue'
 // FormField: label above → input slot → optional helper → error below
 // Always use this wrapper for all form fields.
 interface Props {
@@ -33,10 +34,9 @@ const controlProps = computed(() => ({
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <label :for="htmlFor" class="block text-sm font-medium text-text">
+    <Label :for="htmlFor" :required="required">
       {{ label }}
-      <span v-if="required" class="text-danger ml-0.5" aria-hidden="true">*</span>
-    </label>
+    </Label>
 
     <slot :control-props="controlProps" />
 

@@ -12,6 +12,10 @@ function vueFiles(root: string): string[] {
     .map((file) => resolve(root, file))
 }
 
+function sourceVueFilesOutsideSharedUi(): string[] {
+  return vueFiles(sourceRoot).filter((file) => !file.includes('/shared/components/ui/'))
+}
+
 describe('web architecture boundaries', () => {
   it('keeps query primitives and feature API functions out of route pages', () => {
     for (const file of vueFiles(pageRoot)) {
@@ -25,6 +29,14 @@ describe('web architecture boundaries', () => {
   it('uses the Button primitive without the removed pass-through wrapper', () => {
     for (const file of vueFiles(sourceRoot)) {
       expect(readFileSync(file, 'utf8'), file).not.toContain('AppButton')
+    }
+  })
+
+  it('keeps native controls inside shared UI primitives', () => {
+    const nativeControlPattern = /<\s*(?:input|textarea|select|label|button)(?=\s|>)/
+
+    for (const file of sourceVueFilesOutsideSharedUi()) {
+      expect(readFileSync(file, 'utf8'), file).not.toMatch(nativeControlPattern)
     }
   })
 
