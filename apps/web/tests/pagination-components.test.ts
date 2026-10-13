@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import PaginationNav from '@/shared/components/PaginationNav.vue'
+import PaginationNav from '@/shared/components/molecules/PaginationNav.vue'
 import CvVersionSelector from '@/features/cv/components/CvVersionSelector.vue'
 import type { CvVersionSummary } from '@/features/cv/types/cv.types'
 

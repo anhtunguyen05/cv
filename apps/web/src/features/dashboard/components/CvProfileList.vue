@@ -5,7 +5,7 @@ import Button from '@/shared/components/ui/button/Button.vue'
 import Card from '@/shared/components/ui/card/Card.vue'
 import EmptyState from '@/shared/components/molecules/EmptyState.vue'
 import SkeletonCard from '@/shared/components/molecules/SkeletonCard.vue'
-import PaginationNav from '@/shared/components/PaginationNav.vue'
+import PaginationNav from '@/shared/components/molecules/PaginationNav.vue'
 import { ROUTES } from '@/shared/constants/routes'
 import type { DashboardProfilesContract } from '../composables/useDashboardController'
 defineProps<{ profiles: DashboardProfilesContract }>()

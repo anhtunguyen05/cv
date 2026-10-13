@@ -173,8 +173,8 @@ src/
 │   │   │
 │   │   ├── molecules/
 │   │   │   ├── FormField.vue
-│   │   │   └── SearchInput.vue
-│   │   ├── PaginationNav.vue
+│   │   │   ├── SearchInput.vue
+│   │   │   └── PaginationNav.vue
 │   │   │
 │   │   └── organisms/
 │   │       ├── AppHeader.vue
