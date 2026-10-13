@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 import Card from '@/shared/components/ui/card/Card.vue'
 import EmptyState from '@/shared/components/molecules/EmptyState.vue'
 import SkeletonCard from '@/shared/components/molecules/SkeletonCard.vue'
-import PaginationNav from '@/shared/components/PaginationNav.vue'
+import PaginationNav from '@/shared/components/molecules/PaginationNav.vue'
 import { ROUTES } from '@/shared/constants/routes'
 import type { DashboardJobDescriptionsContract } from '../composables/useDashboardController'
 defineProps<{ jobDescriptions: DashboardJobDescriptionsContract }>()

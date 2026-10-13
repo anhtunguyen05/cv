@@ -2,7 +2,7 @@
 import { computed, toRef } from 'vue'
 import Button from '@/shared/components/ui/button/Button.vue'
 import Label from '@/shared/components/ui/label/Label.vue'
-import PaginationNav from '@/shared/components/PaginationNav.vue'
+import PaginationNav from '@/shared/components/molecules/PaginationNav.vue'
 import Select from '@/shared/components/ui/select/Select.vue'
 import type { JdMatchContract } from '../composables/useJdEditorController'
 

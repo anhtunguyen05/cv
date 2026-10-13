@@ -23,6 +23,7 @@ test('creates, analyzes, and reviews a source-pinned Match Report', async ({ pag
 
   await page.getByRole('link', { name: 'Dashboard' }).first().click()
   await page.getByRole('link', { name: 'Analyze Job' }).click()
+  await expect(page).toHaveURL(/\/jd\/new$/)
   await page.getByLabel('Company').fill('Example Co')
   await page.getByLabel('Role').fill('Frontend Engineer')
   await page

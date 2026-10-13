@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import Button from '@/shared/components/ui/button/Button.vue'
-import PaginationNav from '@/shared/components/PaginationNav.vue'
+import PaginationNav from '@/shared/components/molecules/PaginationNav.vue'
 import type { CvVersionSummary } from '../types/cv.types'
 
 withDefaults(
